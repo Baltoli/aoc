@@ -3,12 +3,9 @@
 #include <map>
 #include <set>
 
-std::map<std::pair<int, int>, int> read_wire_line()
+std::map<std::pair<int, int>, int> read_wire_line(std::string const& line)
 {
   auto ret = std::map<std::pair<int, int>, int> {};
-
-  std::string line;
-  std::getline(std::cin, line);
 
   int x = 0;
   int y = 0;
@@ -16,14 +13,14 @@ std::map<std::pair<int, int>, int> read_wire_line()
   int steps = 0;
 
   while (true) {
-    steps++;
-
     char dir = line[pos++];
     int next_pos = line.find(",", pos);
 
     auto len = std::stoi(line.substr(pos, next_pos - pos));
 
     for (int i = 0; i < len; ++i) {
+      steps++;
+
       switch (std::toupper(dir)) {
       case 'R':
         x += 1;
@@ -65,8 +62,13 @@ std::set<std::pair<int, int>> to_part_1(
 
 int main()
 {
-  auto x_steps = read_wire_line();
-  auto y_steps = read_wire_line();
+  std::string line;
+
+  std::getline(std::cin, line);
+  auto x_steps = read_wire_line(line);
+
+  std::getline(std::cin, line);
+  auto y_steps = read_wire_line(line);
 
   auto x = to_part_1(x_steps);
   auto y = to_part_1(y_steps);

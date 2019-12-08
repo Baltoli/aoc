@@ -1,10 +1,11 @@
 #include <algorithm>
 #include <iostream>
+#include <map>
 #include <set>
 
-std::set<std::pair<int, int>> read_wire_line()
+std::map<std::pair<int, int>, int> read_wire_line()
 {
-  auto ret = std::set<std::pair<int, int>> {};
+  auto ret = std::map<std::pair<int, int>, int> {};
 
   std::string line;
   std::getline(std::cin, line);
@@ -12,8 +13,11 @@ std::set<std::pair<int, int>> read_wire_line()
   int x = 0;
   int y = 0;
   int pos = 0;
+  int steps = 0;
 
   while (true) {
+    steps++;
+
     char dir = line[pos++];
     int next_pos = line.find(",", pos);
 
@@ -35,7 +39,7 @@ std::set<std::pair<int, int>> read_wire_line()
         break;
       }
 
-      ret.emplace(x, y);
+      ret.try_emplace({ x, y }, steps);
     }
 
     if (next_pos == std::string::npos) {
@@ -48,10 +52,27 @@ std::set<std::pair<int, int>> read_wire_line()
   return ret;
 }
 
+std::set<std::pair<int, int>> to_part_1(
+    std::map<std::pair<int, int>, int> const& steps)
+{
+  std::set<std::pair<int, int>> ret {};
+
+  std::transform(steps.begin(), steps.end(), std::inserter(ret, ret.begin()),
+      [](auto p) { return p.first; });
+
+  return ret;
+}
+
 int main()
 {
-  auto x = read_wire_line();
-  auto y = read_wire_line();
+  auto x_steps = read_wire_line();
+  auto y_steps = read_wire_line();
+
+  auto x = to_part_1(x_steps);
+  auto y = to_part_1(y_steps);
+
+  // Part 1
+
   auto cross = std::set<std::pair<int, int>> {};
 
   std::set_intersection(x.begin(), x.end(), y.begin(), y.end(),
@@ -63,4 +84,15 @@ int main()
       [](auto p) { return std::abs(p.first) + std::abs(p.second); });
 
   std::cout << *std::min_element(dists.begin(), dists.end()) << '\n';
+
+  // Part 2
+  auto min_steps = std::numeric_limits<int>::max();
+  for (auto inter : cross) {
+    int steps = x_steps.at(inter) + y_steps.at(inter);
+    if (steps < min_steps) {
+      min_steps = steps;
+    }
+  }
+
+  std::cout << min_steps << '\n';
 }

@@ -29,7 +29,8 @@ int opcode(int instr) { return instr % 100; }
 
 int pc_advance(int opcode)
 {
-  std::unordered_map<int, int> data {{1, 4}, {2, 4}, {3, 2}, {4, 2}};
+  std::unordered_map<int, int> data {{1, 4}, {2, 4}, {3, 2}, {4, 2},
+                                     {5, 3}, {6, 3}, {7, 4}, {8, 4}};
   return data[opcode];
 }
 
@@ -100,6 +101,40 @@ void computer::run()
     case 4:
       output(current_param(0));
       break;
+
+    case 5: {
+      if (current_param(0) != 0) {
+        pc_ = current_param(1);
+        continue;
+      }
+      break;
+    }
+
+    case 6: {
+      if (current_param(0) == 0) {
+        pc_ = current_param(1);
+        continue;
+      }
+      break;
+    }
+
+    case 7: {
+      if (current_param(0) < current_param(1)) {
+        current_param(2) = 1;
+      } else {
+        current_param(2) = 0;
+      }
+      break;
+    }
+
+    case 8: {
+      if (current_param(0) == current_param(1)) {
+        current_param(2) = 1;
+      } else {
+        current_param(2) = 0;
+      }
+      break;
+    }
 
     case 99:
       return;

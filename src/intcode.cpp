@@ -9,18 +9,23 @@ namespace ic {
 
 void tests()
 {
+  assert(opcode(1002) == 2);
   assert(param_mode(0, 1002) == 0);
   assert(param_mode(1, 1002) == 1);
   assert(param_mode(2, 1002) == 0);
 
+  assert(opcode(11103) == 3);
   assert(param_mode(0, 11103) == 1);
   assert(param_mode(1, 11103) == 1);
   assert(param_mode(2, 11103) == 1);
 
+  assert(opcode(3) == 3);
   assert(param_mode(0, 3) == 0);
   assert(param_mode(1, 3) == 0);
   assert(param_mode(2, 3) == 0);
 }
+
+int opcode(int instr) { return instr % 100; }
 
 int param_mode(int param, int instr)
 {

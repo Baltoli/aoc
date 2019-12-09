@@ -9,6 +9,7 @@ namespace ic {
 
 void tests();
 
+int opcode(int instr);
 int param_mode(int param, int instr);
 
 class computer {

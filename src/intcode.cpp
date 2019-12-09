@@ -61,6 +61,19 @@ computer::computer(std::string const& code)
   }
 }
 
+int& computer::current_param(int idx)
+{
+  int instr = program_[pc_];
+
+  if (param_mode(idx, instr) == 0) {
+    return program_[program_[pc_ + idx + 1]];
+  } else if (param_mode(idx, instr) == 1) {
+    return program_[pc_ + idx + 1];
+  } else {
+    assert(false && "Invalid mode");
+  }
+}
+
 void computer::run()
 {
   while (true) {
@@ -69,34 +82,23 @@ void computer::run()
 
     switch (op) {
     case 1: {
-      auto lhs = param_mode(0, instr) ? program_[pc_ + 1]
-                                      : program_[program_[pc_ + 1]];
-      auto rhs = param_mode(1, instr) ? program_[pc_ + 2]
-                                      : program_[program_[pc_ + 2]];
-      program_[program_[pc_ + 3]] = lhs + rhs;
+      current_param(2) = current_param(0) + current_param(1);
       break;
     }
 
     case 2: {
-      auto lhs = param_mode(0, instr) ? program_[pc_ + 1]
-                                      : program_[program_[pc_ + 1]];
-      auto rhs = param_mode(1, instr) ? program_[pc_ + 2]
-                                      : program_[program_[pc_ + 2]];
-      program_[program_[pc_ + 3]] = lhs * rhs;
+      current_param(2) = current_param(0) * current_param(1);
       break;
     }
 
     case 3: {
-      auto in = inputs_.front();
+      current_param(0) = inputs_.front();
       inputs_.pop();
-      program_[program_[pc_ + 1]] = in;
       break;
     }
 
     case 4:
-      output(
-          param_mode(0, instr) ? program_[pc_ + 1]
-                               : program_[program_[pc_ + 1]]);
+      output(current_param(0));
       break;
 
     case 99:

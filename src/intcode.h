@@ -21,6 +21,7 @@ public:
   template <typename Iterator>
   computer(Iterator begin, Iterator end);
 
+  int& current_param(int idx);
   void run();
 
   void input(int);

@@ -1,3 +1,12 @@
 #include <intcode.h>
 
-int main() {}
+#include <iostream>
+#include <string>
+
+int main()
+{
+  std::string program;
+  std::getline(std::cin, program);
+
+  auto c = ic::computer(program);
+}

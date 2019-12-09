@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <queue>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 namespace ic {
@@ -10,6 +11,7 @@ namespace ic {
 void tests();
 
 int opcode(int instr);
+int pc_advance(int opcode);
 int param_mode(int param, int instr);
 
 class computer {
@@ -18,6 +20,8 @@ public:
 
   template <typename Iterator>
   computer(Iterator begin, Iterator end);
+
+  void run();
 
   void input(int);
 

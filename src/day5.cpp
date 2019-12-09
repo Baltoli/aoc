@@ -12,4 +12,6 @@ int main()
 
   auto c = ic::computer(program);
   c.input(1);
+
+  c.run();
 }

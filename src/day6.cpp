@@ -2,6 +2,7 @@
 #include <cassert>
 #include <iostream>
 #include <map>
+#include <numeric>
 #include <set>
 #include <string>
 #include <vector>
@@ -72,11 +73,35 @@ std::vector<std::string> topo_sort(adjacency_t const& adj)
     topo_visit(next->first, adj, marks, ret);
   }
 
+  std::reverse(ret.begin(), ret.end());
+  return ret;
+}
+
+std::map<std::string, int> distances(adjacency_t const& adj)
+{
+  auto order = topo_sort(adj);
+
+  auto ret   = std::map<std::string, int> {};
+  ret["COM"] = 0;
+
+  for (auto const& from : order) {
+    for (auto const& [f, t] : adj) {
+      if (from == f) {
+        ret[t] = ret[f] + 1;
+      }
+    }
+  }
+
   return ret;
 }
 
 int main()
 {
-  auto adj = read_adjacencies();
-  auto ns  = topo_sort(adj);
+  auto adj   = read_adjacencies();
+  auto dists = distances(adj);
+
+  auto total_dist = std::accumulate(
+      dists.begin(), dists.end(), 0,
+      [](auto acc, auto const& dist) { return acc + dist.second; });
+  std::cout << total_dist << '\n';
 }

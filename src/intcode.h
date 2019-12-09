@@ -22,6 +22,9 @@ public:
   template <typename F>
   computer(std::string const&, F);
 
+  template <typename F>
+  computer(std::string const&, F, bool);
+
   template <typename Iterator>
   computer(Iterator begin, Iterator end);
 
@@ -39,6 +42,7 @@ private:
   int              pc_ = 0;
   std::queue<int>  inputs_ {};
   std::vector<int> program_;
+  bool             halt_on_output_;
   bool             halted_ = false;
 
   std::function<void(int)> output_;
@@ -48,9 +52,10 @@ private:
 };
 
 template <typename F>
-computer::computer(std::string const& code, F func)
+computer::computer(std::string const& code, F func, bool hop)
     : program_ {}
     , output_(func)
+    , halt_on_output_(hop)
 {
   auto ptr = 0;
 
@@ -66,6 +71,12 @@ computer::computer(std::string const& code, F func)
 
     ptr = next_comma + 1;
   }
+}
+
+template <typename F>
+computer::computer(std::string const& code, F func)
+    : computer(code, func, false)
+{
 }
 
 template <typename Iterator>

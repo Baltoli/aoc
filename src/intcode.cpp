@@ -44,7 +44,8 @@ int param_mode(int param, int instr)
 }
 
 computer::computer(std::string const& code)
-    : computer(code, [](int i) { std::cout << i << '\n'; })
+    : computer(
+        code, [](int i) { std::cout << i << '\n'; }, false)
 {
 }
 
@@ -90,6 +91,10 @@ void computer::run()
 
     case 4:
       output(current_param(0));
+      if (halt_on_output_) {
+        pc_ += pc_advance(op);
+        return;
+      }
       break;
 
     case 5: {

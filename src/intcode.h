@@ -25,10 +25,9 @@ public:
   template <typename Iterator>
   computer(Iterator begin, Iterator end);
 
-  int& current_param(int idx);
   void run();
-
   void input(int);
+  bool halted() const { return halted_; }
 
   int&       operator[](size_t);
   int const& operator[](size_t) const;
@@ -40,9 +39,11 @@ private:
   int              pc_ = 0;
   std::queue<int>  inputs_ {};
   std::vector<int> program_;
+  bool             halted_ = false;
 
   std::function<void(int)> output_;
 
+  int& current_param(int idx);
   void output(int);
 };
 

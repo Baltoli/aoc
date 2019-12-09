@@ -79,6 +79,10 @@ void computer::run()
     }
 
     case 3: {
+      if (inputs_.empty()) {
+        return;
+      }
+
       current_param(0) = inputs_.front();
       inputs_.pop();
       break;
@@ -123,6 +127,7 @@ void computer::run()
     }
 
     case 99:
+      halted_ = true;
       return;
 
     default:

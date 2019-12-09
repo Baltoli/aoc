@@ -28,32 +28,32 @@ public:
   computer(std::string const&, F, bool);
 
   void run();
-  void input(int);
+  void input(long);
   bool halted() const { return halted_; }
 
-  int&       operator[](size_t);
-  int const& operator[](size_t) const;
+  long&       operator[](size_t);
+  long const& operator[](size_t) const;
 
   decltype(auto) begin() const { return program_.begin(); }
   decltype(auto) end() const { return program_.end(); }
 
 private:
-  int              pc_       = 0;
-  int              rel_base_ = 0;
-  std::queue<int>  inputs_ {};
-  std::vector<int> program_;
-  bool             halt_on_output_;
-  bool             halted_ = false;
+  int               pc_       = 0;
+  int               rel_base_ = 0;
+  std::queue<long>  inputs_ {};
+  std::vector<long> program_;
+  bool              halt_on_output_;
+  bool              halted_ = false;
 
-  std::function<void(int)> output_;
+  std::function<void(long)> output_;
 
-  int& current_param(int idx);
-  void output(int);
+  long& current_param(int idx);
+  void  output(long);
 };
 
 template <typename F>
 computer::computer(std::string const& code, F func, bool hop)
-    : program_(mem_size, 0)
+    : program_(mem_size, 0L)
     , output_(func)
     , halt_on_output_(hop)
 {
@@ -64,7 +64,7 @@ computer::computer(std::string const& code, F func, bool hop)
     auto next_comma = code.find(",", ptr);
     auto str        = code.substr(ptr, next_comma - ptr);
 
-    program_[i++] = std::stoi(str);
+    program_[i++] = std::stol(str);
 
     if (next_comma == std::string::npos) {
       break;

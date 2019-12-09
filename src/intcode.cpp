@@ -50,13 +50,13 @@ int param_mode(int param, int instr)
 
 computer::computer(std::string const& code)
     : computer(
-        code, [](int i) { std::cout << i << '\n'; }, false)
+        code, [](auto i) { std::cout << i << '\n'; }, false)
 {
 }
 
-int& computer::current_param(int idx)
+long& computer::current_param(int idx)
 {
-  int  instr = program_[pc_];
+  long instr = program_[pc_];
   auto mode  = param_mode(idx, instr);
 
   switch (mode) {
@@ -157,11 +157,11 @@ void computer::run()
   }
 }
 
-void computer::input(int in) { inputs_.push(in); }
+void computer::input(long in) { inputs_.push(in); }
 
-void computer::output(int out) { output_(out); }
+void computer::output(long out) { output_(out); }
 
-int& computer::operator[](size_t i) { return program_[i]; }
-int const& computer::operator[](size_t i) const { return program_[i]; }
+long& computer::operator[](size_t i) { return program_[i]; }
+long const& computer::operator[](size_t i) const { return program_[i]; }
 
 }

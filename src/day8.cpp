@@ -57,7 +57,21 @@ void checksum(std::vector<int> const& img)
 
 std::array<int, width * height> render(std::vector<int> const& img)
 {
-  return {};
+  auto ret = std::array<int, width * height> {};
+
+  auto layers = n_layers(img);
+  for (int row = 0; row < height; ++row) {
+    for (int col = 0; col < width; ++col) {
+      auto visible = 2;
+      for (int layer = 0; layer < layers && visible == 2; ++layer) {
+        auto idx = (layer * width * height) + (row * width) + col;
+        visible  = img[idx];
+      }
+      ret[col + row * width] = visible;
+    }
+  }
+
+  return ret;
 }
 
 void print(std::array<int, width * height> const& img)

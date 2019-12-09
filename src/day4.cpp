@@ -19,7 +19,7 @@ bool big_group(std::string const& str)
 
   for (int i = 0; i < str.length(); ++i) {
     runs[i] = 1;
-    auto c = str[i];
+    auto c  = str[i];
     for (int j = i + 1; j < str.length() && str[j] == c; ++j) {
       runs[i]++;
     }
@@ -70,7 +70,7 @@ void solve(std::string const& in)
 {
   tests();
 
-  auto low = std::stoi(in.substr(0, 6));
+  auto low  = std::stoi(in.substr(0, 6));
   auto high = std::stoi(in.substr(7, 6));
 
   int total = 0;

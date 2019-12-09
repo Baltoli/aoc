@@ -1,15 +1,20 @@
-﻿---
+---
 BasedOnStyle: WebKit
 AccessModifierOffset: '-2'
+AlignAfterOpenBracket: AlwaysBreak
+AlignOperands: 'true'
+AlignTrailingComments: 'true'
+AlignConsecutiveAssignments: 'true'
+AlignConsecutiveDeclarations: 'true'
 AllowShortBlocksOnASingleLine: 'false'
 AllowShortCaseLabelsOnASingleLine: 'false'
 AllowShortFunctionsOnASingleLine: All
 AllowShortIfStatementsOnASingleLine: 'false'
 AllowShortLoopsOnASingleLine: 'false'
+AlwaysBreakTemplateDeclarations: 'true'
 ColumnLimit: '80'
+Cpp11BracedListStyle: 'true'
 IndentWidth: '2'
 Language: Cpp
 NamespaceIndentation: None
-AlwaysBreakTemplateDeclarations: 'true'
-FixNamespaceComments: true
 ...

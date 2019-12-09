@@ -7,14 +7,14 @@ std::map<std::pair<int, int>, int> read_wire_line(std::string const& line)
 {
   auto ret = std::map<std::pair<int, int>, int> {};
 
-  int x = 0;
-  int y = 0;
-  int pos = 0;
+  int x     = 0;
+  int y     = 0;
+  int pos   = 0;
   int steps = 0;
 
   while (true) {
-    char dir = line[pos++];
-    int next_pos = line.find(",", pos);
+    char dir      = line[pos++];
+    int  next_pos = line.find(",", pos);
 
     auto len = std::stoi(line.substr(pos, next_pos - pos));
 
@@ -36,7 +36,7 @@ std::map<std::pair<int, int>, int> read_wire_line(std::string const& line)
         break;
       }
 
-      ret.try_emplace({ x, y }, steps);
+      ret.try_emplace({x, y}, steps);
     }
 
     if (next_pos == std::string::npos) {
@@ -49,12 +49,13 @@ std::map<std::pair<int, int>, int> read_wire_line(std::string const& line)
   return ret;
 }
 
-std::set<std::pair<int, int>> to_part_1(
-    std::map<std::pair<int, int>, int> const& steps)
+std::set<std::pair<int, int>>
+to_part_1(std::map<std::pair<int, int>, int> const& steps)
 {
   std::set<std::pair<int, int>> ret {};
 
-  std::transform(steps.begin(), steps.end(), std::inserter(ret, ret.begin()),
+  std::transform(
+      steps.begin(), steps.end(), std::inserter(ret, ret.begin()),
       [](auto p) { return p.first; });
 
   return ret;
@@ -77,12 +78,13 @@ int main()
 
   auto cross = std::set<std::pair<int, int>> {};
 
-  std::set_intersection(x.begin(), x.end(), y.begin(), y.end(),
+  std::set_intersection(
+      x.begin(), x.end(), y.begin(), y.end(),
       std::inserter(cross, cross.begin()));
 
   auto dists = std::set<int> {};
-  std::transform(cross.begin(), cross.end(),
-      std::inserter(dists, dists.begin()),
+  std::transform(
+      cross.begin(), cross.end(), std::inserter(dists, dists.begin()),
       [](auto p) { return std::abs(p.first) + std::abs(p.second); });
 
   std::cout << *std::min_element(dists.begin(), dists.end()) << '\n';

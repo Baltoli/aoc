@@ -2,13 +2,15 @@
 #include <iostream>
 #include <string>
 
-int fuel_req(int mass) {
+int fuel_req(int mass)
+{
   int req = (mass / 3) - 2;
   return req > 0 ? req : 0;
 }
 
-int fixed_req(int mass) {
-  int fuel = fuel_req(mass);
+int fixed_req(int mass)
+{
+  int fuel  = fuel_req(mass);
   int extra = fuel;
   while (extra != 0) {
     extra = fuel_req(extra);
@@ -17,7 +19,8 @@ int fixed_req(int mass) {
   return fuel;
 }
 
-void tests() {
+void tests()
+{
   assert(fuel_req(2) == 0);
   assert(fuel_req(12) == 2);
   assert(fuel_req(14) == 2);
@@ -30,7 +33,8 @@ void tests() {
   assert(fixed_req(100756) == 50346);
 }
 
-int main() {
+int main()
+{
   tests();
 
   int total_fuel = 0;

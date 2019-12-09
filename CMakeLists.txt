@@ -13,6 +13,7 @@ target_include_directories(intcode PUBLIC
 add_executable(day1 src/day1.cpp)
 
 add_executable(day2 src/day2.cpp)
+target_link_libraries(day2 intcode)
 
 add_executable(day3 src/day3.cpp)
 

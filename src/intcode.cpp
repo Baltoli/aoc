@@ -23,21 +23,26 @@ void tests()
   assert(param_mode(0, 3) == 0);
   assert(param_mode(1, 3) == 0);
   assert(param_mode(2, 3) == 0);
+
+  assert(opcode(2105) == 5);
+  assert(param_mode(0, 2105) == 1);
+  assert(param_mode(1, 2105) == 2);
+  assert(param_mode(2, 2105) == 0);
 }
 
 int opcode(int instr) { return instr % 100; }
 
 int pc_advance(int opcode)
 {
-  std::unordered_map<int, int> data {{1, 4}, {2, 4}, {3, 2}, {4, 2},
-                                     {5, 3}, {6, 3}, {7, 4}, {8, 4}};
+  std::unordered_map<int, int> data {{1, 4}, {2, 4}, {3, 2}, {4, 2}, {5, 3},
+                                     {6, 3}, {7, 4}, {8, 4}, {9, 2}};
   return data[opcode];
 }
 
 int param_mode(int param, int instr)
 {
   assert(param >= 0 && "Invalid: param < 0");
-  assert(param < 3 && "Invalid: param > 2");
+  assert(param < 4 && "Invalid: param > 3");
 
   int div = std::pow(10, param + 2);
   return (instr / div) % 10;
@@ -51,13 +56,17 @@ computer::computer(std::string const& code)
 
 int& computer::current_param(int idx)
 {
-  int instr = program_[pc_];
+  int  instr = program_[pc_];
+  auto mode  = param_mode(idx, instr);
 
-  if (param_mode(idx, instr) == 0) {
+  switch (mode) {
+  case 0:
     return program_[program_[pc_ + idx + 1]];
-  } else if (param_mode(idx, instr) == 1) {
+  case 1:
     return program_[pc_ + idx + 1];
-  } else {
+  case 2:
+    return program_[program_[pc_ + idx + 1] + rel_base_];
+  default:
     assert(false && "Invalid mode");
   }
 }
@@ -128,6 +137,11 @@ void computer::run()
       } else {
         current_param(2) = 0;
       }
+      break;
+    }
+
+    case 9: {
+      rel_base_ += current_param(0);
       break;
     }
 

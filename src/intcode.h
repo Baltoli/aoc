@@ -16,6 +16,8 @@ int pc_advance(int opcode);
 int param_mode(int param, int instr);
 
 class computer {
+  static constexpr auto mem_size = 128 * 1024;
+
 public:
   explicit computer(std::string const&);
 
@@ -24,9 +26,6 @@ public:
 
   template <typename F>
   computer(std::string const&, F, bool);
-
-  template <typename Iterator>
-  computer(Iterator begin, Iterator end);
 
   void run();
   void input(int);
@@ -39,7 +38,8 @@ public:
   decltype(auto) end() const { return program_.end(); }
 
 private:
-  int              pc_ = 0;
+  int              pc_       = 0;
+  int              rel_base_ = 0;
   std::queue<int>  inputs_ {};
   std::vector<int> program_;
   bool             halt_on_output_;
@@ -53,17 +53,18 @@ private:
 
 template <typename F>
 computer::computer(std::string const& code, F func, bool hop)
-    : program_ {}
+    : program_(mem_size, 0)
     , output_(func)
     , halt_on_output_(hop)
 {
   auto ptr = 0;
+  auto i   = 0;
 
   while (true) {
     auto next_comma = code.find(",", ptr);
     auto str        = code.substr(ptr, next_comma - ptr);
 
-    program_.push_back(std::stoi(str));
+    program_[i++] = std::stoi(str);
 
     if (next_comma == std::string::npos) {
       break;
@@ -76,12 +77,6 @@ computer::computer(std::string const& code, F func, bool hop)
 template <typename F>
 computer::computer(std::string const& code, F func)
     : computer(code, func, false)
-{
-}
-
-template <typename Iterator>
-computer::computer(Iterator begin, Iterator end)
-    : program_(begin, end)
 {
 }
 

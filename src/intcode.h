@@ -1,6 +1,7 @@
 #pragma once
 
 #include <algorithm>
+#include <functional>
 #include <queue>
 #include <string>
 #include <unordered_map>
@@ -17,6 +18,9 @@ int param_mode(int param, int instr);
 class computer {
 public:
   explicit computer(std::string const&);
+
+  template <typename F>
+  computer(std::string const&, F);
 
   template <typename Iterator>
   computer(Iterator begin, Iterator end);
@@ -37,8 +41,31 @@ private:
   std::queue<int>  inputs_ {};
   std::vector<int> program_;
 
+  std::function<void(int)> output_;
+
   void output(int);
 };
+
+template <typename F>
+computer::computer(std::string const& code, F func)
+    : program_ {}
+    , output_(func)
+{
+  auto ptr = 0;
+
+  while (true) {
+    auto next_comma = code.find(",", ptr);
+    auto str        = code.substr(ptr, next_comma - ptr);
+
+    program_.push_back(std::stoi(str));
+
+    if (next_comma == std::string::npos) {
+      break;
+    }
+
+    ptr = next_comma + 1;
+  }
+}
 
 template <typename Iterator>
 computer::computer(Iterator begin, Iterator end)

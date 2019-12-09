@@ -44,22 +44,8 @@ int param_mode(int param, int instr)
 }
 
 computer::computer(std::string const& code)
-    : program_ {}
+    : computer(code, [](int i) { std::cout << i << '\n'; })
 {
-  auto ptr = 0;
-
-  while (true) {
-    auto next_comma = code.find(",", ptr);
-    auto str        = code.substr(ptr, next_comma - ptr);
-
-    program_.push_back(std::stoi(str));
-
-    if (next_comma == std::string::npos) {
-      break;
-    }
-
-    ptr = next_comma + 1;
-  }
 }
 
 int& computer::current_param(int idx)
@@ -149,7 +135,7 @@ void computer::run()
 
 void computer::input(int in) { inputs_.push(in); }
 
-void computer::output(int out) { std::cout << out << '\n'; }
+void computer::output(int out) { output_(out); }
 
 int& computer::operator[](size_t i) { return program_[i]; }
 int const& computer::operator[](size_t i) const { return program_[i]; }

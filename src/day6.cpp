@@ -95,6 +95,24 @@ std::map<std::string, int> distances(adjacency_t const& adj)
   return ret;
 }
 
+std::vector<std::string> path(std::string node, adjacency_t const& adj)
+{
+  auto ret  = std::vector<std::string> {};
+  auto work = node;
+
+  while (work != "COM") {
+    for (auto const& [f, t] : adj) {
+      if (t == work) {
+        ret.push_back(work);
+        work = f;
+      }
+    }
+  }
+
+  std::reverse(ret.begin(), ret.end());
+  return ret;
+}
+
 int main()
 {
   auto adj   = read_adjacencies();
@@ -104,4 +122,17 @@ int main()
       dists.begin(), dists.end(), 0,
       [](auto acc, auto const& dist) { return acc + dist.second; });
   std::cout << total_dist << '\n';
+
+  auto path_san = path("SAN", adj);
+  auto path_you = path("YOU", adj);
+
+  auto [ms, my]
+      = std::mismatch(path_san.begin(), path_san.end(), path_you.begin());
+
+  auto parent = *(ms - 1);
+  assert(parent == *(my - 1) && "Not common parent!");
+
+  auto transfers
+      = (dists["YOU"] - dists[parent] - 1) + (dists["SAN"] - dists[parent] - 1);
+  std::cout << transfers << '\n';
 }

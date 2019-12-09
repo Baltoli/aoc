@@ -16,7 +16,7 @@ int pc_advance(int opcode);
 int param_mode(int param, int instr);
 
 class computer {
-  static constexpr auto mem_size = 128 * 1024;
+  static constexpr auto mem_size = 1024;
 
 public:
   explicit computer(std::string const&);

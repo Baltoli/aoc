@@ -15,6 +15,9 @@ struct asteroids {
   loc to_loc(int idx) const;
   int to_idx(loc l) const;
 
+  int visible_count(loc l) const;
+  loc most_visible() const;
+
   std::vector<char> map;
   int               width;
   int               height;
@@ -44,6 +47,29 @@ asteroids::asteroids()
 loc asteroids::to_loc(int idx) const { return {idx % width, idx / width}; }
 int asteroids::to_idx(loc l) const { return l.y * width + l.x; }
 
+int asteroids::visible_count(loc l) const
+{
+  auto masked = map;
+
+  return std::count(masked.begin(), masked.end(), 1);
+}
+
+loc asteroids::most_visible() const
+{
+  int max_vis = -1;
+  loc max_loc;
+
+  for (int i = 0; i < (width * height); ++i) {
+    auto vis = visible_count(to_loc(i));
+    if (vis > max_vis) {
+      max_vis = vis;
+      max_loc = to_loc(i);
+    }
+  }
+
+  return max_loc;
+}
+
 void tests(asteroids const& a)
 {
   for (int i = 0; i < (a.width * a.height); ++i) {
@@ -55,4 +81,6 @@ int main()
 {
   auto ast = asteroids();
   tests(ast);
+
+  std::cout << ast.visible_count(ast.most_visible()) << '\n';
 }

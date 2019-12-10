@@ -4,8 +4,16 @@
 #include <string>
 #include <vector>
 
+struct loc {
+  int x;
+  int y;
+};
+
 struct asteroids {
   asteroids();
+
+  loc to_loc(int idx) const;
+  int to_idx(loc l) const;
 
   std::vector<char> map;
   int               width;
@@ -33,4 +41,18 @@ asteroids::asteroids()
   }
 }
 
-int main() { auto ast = asteroids(); }
+loc asteroids::to_loc(int idx) const { return {idx % width, idx / width}; }
+int asteroids::to_idx(loc l) const { return l.y * width + l.x; }
+
+void tests(asteroids const& a)
+{
+  for (int i = 0; i < (a.width * a.height); ++i) {
+    assert(i == a.to_idx(a.to_loc(i)) && "Bad conversion logic");
+  }
+}
+
+int main()
+{
+  auto ast = asteroids();
+  tests(ast);
+}

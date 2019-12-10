@@ -56,8 +56,8 @@ int asteroids::visible_count(loc l) const
   for (int i = 0; i < (width * height); ++i) {
     if (map[i] == 1) {
       auto a_loc = to_loc(i);
-      auto dx    = l.x - a_loc.x;
-      auto dy    = l.y - a_loc.y;
+      auto dx    = a_loc.x - l.x;
+      auto dy    = a_loc.y - l.y;
       auto step  = std::gcd(dx, dy);
 
       if (step == 0) {
@@ -68,8 +68,8 @@ int asteroids::visible_count(loc l) const
       dy /= step;
 
       int x, y;
-      for (x = l.x - dx, y = l.y - dy; map[to_idx({x, y})] == 0;
-           x -= dx, y -= dy) {
+      for (x = l.x + dx, y = l.y + dy; map[to_idx({x, y})] == 0;
+           x += dx, y += dy) {
       }
 
       masked[to_idx({x, y})] = 1;

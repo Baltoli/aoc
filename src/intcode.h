@@ -16,7 +16,7 @@ int pc_advance(int opcode);
 int param_mode(int param, int instr);
 
 class computer {
-  static constexpr auto mem_size = 1024;
+  static constexpr auto mem_size = 4096;
 
 public:
   explicit computer(std::string const&);
@@ -40,7 +40,7 @@ public:
 private:
   int               pc_       = 0;
   int               rel_base_ = 0;
-  std::queue<long>  inputs_ {};
+  std::queue<long>  inputs_{};
   std::vector<long> program_;
   bool              halt_on_output_;
   bool              halted_ = false;
@@ -79,5 +79,4 @@ computer::computer(std::string const& code, F func)
     : computer(code, func, false)
 {
 }
-
 }

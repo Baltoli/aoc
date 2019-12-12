@@ -1,5 +1,6 @@
 #include <intcode.h>
 
+#include <array>
 #include <cassert>
 #include <iostream>
 #include <map>
@@ -9,29 +10,33 @@ using loc_t = std::pair<int, int>;
 
 class painter {
 public:
-  painter(std::string const&);
+  painter(std::string const&, int start);
 
   void run();
+  void render() const;
 
   int count() const;
 
 private:
   void paint(int col);
   int  get() const;
+  int  get(loc_t) const;
   void left();
   void right();
   void step();
 
   int comp_out_;
 
+  int                  start_;
   int                  dir_;
   loc_t                loc_;
   ic::computer         computer_;
   std::map<loc_t, int> grid_;
 };
 
-painter::painter(std::string const& prog)
-    : dir_(0)
+painter::painter(std::string const& prog, int start)
+    : start_(start)
+    , dir_(0)
     , comp_out_(0)
     , loc_ {0, 0}
     , computer_(
@@ -42,15 +47,17 @@ painter::painter(std::string const& prog)
 
 void painter::paint(int col) { grid_[loc_] = col; }
 
-int painter::get() const
+int painter::get(loc_t loc) const
 {
-  auto lookup = grid_.find(loc_);
+  auto lookup = grid_.find(loc);
   if (lookup != grid_.end()) {
     return lookup->second;
   } else {
     return 0;
   }
 }
+
+int painter::get() const { return get(loc_); }
 
 void painter::left() { dir_ = (dir_ + 3) % 4; }
 
@@ -80,8 +87,9 @@ int painter::count() const { return grid_.size(); }
 
 void painter::run()
 {
+  int inp = start_;
   while (!computer_.halted()) {
-    computer_.input(get());
+    computer_.input(inp);
 
     computer_.run();
     int col = comp_out_;
@@ -100,6 +108,43 @@ void painter::run()
     }
 
     step();
+
+    inp = get();
+  }
+}
+
+void painter::render() const
+{
+  // minX maxX minY maxY
+  auto bounds = std::array {0, 0, 0, 0};
+
+  for (auto [loc, c] : grid_) {
+    if (loc.first < bounds[0]) {
+      bounds[0] = loc.first;
+    }
+
+    if (loc.first > bounds[1]) {
+      bounds[1] = loc.first;
+    }
+
+    if (loc.second < bounds[2]) {
+      bounds[2] = loc.second;
+    }
+
+    if (loc.second > bounds[3]) {
+      bounds[3] = loc.second;
+    }
+  }
+
+  for (int row = bounds[2]; row <= bounds[3]; ++row) {
+    for (int col = bounds[0]; col <= bounds[1]; ++col) {
+      if (get({col, row}) == 1) {
+        std::cout << "█";
+      } else {
+        std::cout << ' ';
+      }
+    }
+    std::cout << '\n';
   }
 }
 
@@ -108,8 +153,11 @@ int main()
   std::string line;
   std::getline(std::cin, line);
 
-  auto paint = painter(line);
+  auto paint = painter(line, 0);
   paint.run();
-
   std::cout << paint.count() << '\n';
+
+  auto p2 = painter(line, 1);
+  p2.run();
+  p2.render();
 }

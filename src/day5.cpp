@@ -13,11 +13,13 @@ int main()
   auto c = ic::computer(program, [](auto) {});
   c.input(1);
 
-  long out;
-  do {
-    out = c.run();
-  } while (out == 0);
-  std::cout << out << '\n';
+  while (true) {
+    auto out = c.run();
+    if (out != 0) {
+      std::cout << out << '\n';
+      break;
+    }
+  }
 
   auto c2 = ic::computer(program, [](auto) {});
   c2.input(5);

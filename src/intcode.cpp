@@ -101,11 +101,8 @@ long computer::run()
     case 4: {
       auto out = current_param(0);
       output(out);
-      if (halt_on_output_) {
-        pc_ += pc_advance(op);
-        return out;
-      }
-      break;
+      pc_ += pc_advance(op);
+      return out;
     }
 
     case 5: {

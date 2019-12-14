@@ -42,7 +42,6 @@ private:
   int               rel_base_ = 0;
   std::queue<long>  inputs_ {};
   std::vector<long> program_;
-  bool              halt_on_output_;
   bool              halted_ = false;
 
   std::function<void(long)> output_;
@@ -55,7 +54,6 @@ template <typename F>
 computer::computer(std::string const& code, F func, bool hop)
     : program_(mem_size, 0L)
     , output_(func)
-    , halt_on_output_(hop)
 {
   auto ptr = 0;
   auto i   = 0;

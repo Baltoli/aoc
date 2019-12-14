@@ -27,7 +27,7 @@ public:
   template <typename F>
   computer(std::string const&, F, bool);
 
-  void run();
+  long run();
   void input(long);
   bool halted() const { return halted_; }
 
@@ -40,7 +40,7 @@ public:
 private:
   int               pc_       = 0;
   int               rel_base_ = 0;
-  std::queue<long>  inputs_{};
+  std::queue<long>  inputs_ {};
   std::vector<long> program_;
   bool              halt_on_output_;
   bool              halted_ = false;

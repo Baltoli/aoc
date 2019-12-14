@@ -71,7 +71,7 @@ long& computer::current_param(int idx)
   }
 }
 
-void computer::run()
+long computer::run()
 {
   while (true) {
     auto instr = program_[pc_];
@@ -98,13 +98,15 @@ void computer::run()
       break;
     }
 
-    case 4:
-      output(current_param(0));
+    case 4: {
+      auto out = current_param(0);
+      output(out);
       if (halt_on_output_) {
         pc_ += pc_advance(op);
-        return;
+        return out;
       }
       break;
+    }
 
     case 5: {
       if (current_param(0) != 0) {
@@ -147,7 +149,7 @@ void computer::run()
 
     case 99:
       halted_ = true;
-      return;
+      return 0; // Not a real output
 
     default:
       assert(false && "Invalid opcode");

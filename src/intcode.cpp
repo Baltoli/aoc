@@ -90,7 +90,7 @@ void computer::run()
 
     case 3: {
       if (inputs_.empty()) {
-        return;
+        throw "Not enough inputs";
       }
 
       current_param(0) = inputs_.front();

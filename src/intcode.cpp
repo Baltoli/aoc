@@ -146,7 +146,7 @@ long computer::run()
 
     case 99:
       halted_ = true;
-      return 0; // Not a real output
+      return 43; // Not a real output
 
     default:
       assert(false && "Invalid opcode");

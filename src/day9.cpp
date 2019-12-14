@@ -11,7 +11,7 @@ int main()
   std::getline(std::cin, program);
 
   for (auto inp : {1, 2}) {
-    auto comp = ic::computer(program, [](auto) {});
+    auto comp = ic::computer(program);
     comp.input(inp);
     std::cout << comp.run() << '\n';
   }

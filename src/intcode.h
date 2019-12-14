@@ -21,12 +21,6 @@ class computer {
 public:
   explicit computer(std::string const&);
 
-  template <typename F>
-  computer(std::string const&, F);
-
-  template <typename F>
-  computer(std::string const&, F, bool);
-
   long run();
   void input(long);
   bool halted() const { return halted_; }
@@ -44,37 +38,7 @@ private:
   std::vector<long> program_;
   bool              halted_ = false;
 
-  std::function<void(long)> output_;
-
   long& current_param(int idx);
-  void  output(long);
 };
 
-template <typename F>
-computer::computer(std::string const& code, F func, bool hop)
-    : program_(mem_size, 0L)
-    , output_(func)
-{
-  auto ptr = 0;
-  auto i   = 0;
-
-  while (true) {
-    auto next_comma = code.find(",", ptr);
-    auto str        = code.substr(ptr, next_comma - ptr);
-
-    program_[i++] = std::stol(str);
-
-    if (next_comma == std::string::npos) {
-      break;
-    }
-
-    ptr = next_comma + 1;
-  }
-}
-
-template <typename F>
-computer::computer(std::string const& code, F func)
-    : computer(code, func, false)
-{
-}
 }

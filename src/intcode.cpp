@@ -49,9 +49,23 @@ int param_mode(int param, int instr)
 }
 
 computer::computer(std::string const& code)
-    : computer(
-        code, [](auto i) { std::cout << i << '\n'; }, false)
+    : program_(mem_size, 0L)
 {
+  auto ptr = 0;
+  auto i   = 0;
+
+  while (true) {
+    auto next_comma = code.find(",", ptr);
+    auto str        = code.substr(ptr, next_comma - ptr);
+
+    program_[i++] = std::stol(str);
+
+    if (next_comma == std::string::npos) {
+      break;
+    }
+
+    ptr = next_comma + 1;
+  }
 }
 
 long& computer::current_param(int idx)
@@ -100,7 +114,6 @@ long computer::run()
 
     case 4: {
       auto out = current_param(0);
-      output(out);
       pc_ += pc_advance(op);
       return out;
     }
@@ -157,8 +170,6 @@ long computer::run()
 }
 
 void computer::input(long in) { inputs_.push(in); }
-
-void computer::output(long out) { output_(out); }
 
 long& computer::operator[](size_t i) { return program_[i]; }
 long const& computer::operator[](size_t i) const { return program_[i]; }

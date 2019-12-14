@@ -8,7 +8,7 @@
 int max_signal(std::string const& program)
 {
   int  output    = 0;
-  auto initial_c = ic::computer(program, [](auto) {});
+  auto initial_c = ic::computer(program);
 
   int  max_s  = 0;
   auto phases = std::vector {0, 1, 2, 3, 4};
@@ -39,8 +39,7 @@ int max_feedback(std::string const& program)
 
     auto amps = std::vector<ic::computer> {};
     for (auto i = 0; i < 5; ++i) {
-      amps.emplace_back(
-          program, [&outs, i](int o) {}, true);
+      amps.emplace_back(program);
     }
 
     auto halted = [&amps] {

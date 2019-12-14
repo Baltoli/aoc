@@ -10,7 +10,7 @@ int main()
   std::string program;
   std::getline(std::cin, program);
 
-  auto c = ic::computer(program, [](auto) {});
+  auto c = ic::computer(program);
   c.input(1);
 
   while (true) {
@@ -21,7 +21,7 @@ int main()
     }
   }
 
-  auto c2 = ic::computer(program, [](auto) {});
+  auto c2 = ic::computer(program);
   c2.input(5);
   std::cout << c2.run() << '\n';
 }

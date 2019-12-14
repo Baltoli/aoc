@@ -39,8 +39,7 @@ painter::painter(std::string const& prog, int start)
     , dir_(0)
     , comp_out_(0)
     , loc_ {0, 0}
-    , computer_(
-          prog, [](auto) {}, true)
+    , computer_(prog)
     , grid_ {}
 {
 }

@@ -40,7 +40,7 @@ painter::painter(std::string const& prog, int start)
     , comp_out_(0)
     , loc_ {0, 0}
     , computer_(
-          prog, [this](auto i) { comp_out_ = i; }, true)
+          prog, [](auto) {}, true)
     , grid_ {}
 {
 }
@@ -88,14 +88,15 @@ int painter::count() const { return grid_.size(); }
 void painter::run()
 {
   int inp = start_;
-  while (!computer_.halted()) {
+  while (true) {
     computer_.input(inp);
 
-    computer_.run();
-    int col = comp_out_;
+    auto col  = computer_.run();
+    auto turn = computer_.run();
 
-    computer_.run();
-    int turn = comp_out_;
+    if (computer_.halted()) {
+      break;
+    }
 
     paint(col);
 
@@ -110,7 +111,7 @@ void painter::run()
     step();
 
     inp = get();
-  }
+  };
 }
 
 void painter::render() const

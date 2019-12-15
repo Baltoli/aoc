@@ -48,8 +48,9 @@ int param_mode(int param, int instr)
   return (instr / div) % 10;
 }
 
-computer::computer(std::string const& code)
+computer::computer(std::string const& code, int buf)
     : program_(mem_size, 0L)
+    , buffer_(buf)
 {
   auto ptr = 0;
   auto i   = 0;
@@ -66,6 +67,11 @@ computer::computer(std::string const& code)
 
     ptr = next_comma + 1;
   }
+}
+
+computer::computer(std::string const& code)
+    : computer(code, -1)
+{
 }
 
 long& computer::current_param(int idx)
@@ -169,7 +175,15 @@ long computer::run()
   }
 }
 
-void computer::input(long in) { inputs_.push(in); }
+void computer::input(long in)
+{
+  if (buffer_ >= 0) {
+    while (inputs_.size() > buffer_) {
+      inputs_.pop();
+    }
+  }
+  inputs_.push(in);
+}
 
 long& computer::operator[](size_t i) { return program_[i]; }
 long const& computer::operator[](size_t i) const { return program_[i]; }

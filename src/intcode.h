@@ -21,6 +21,8 @@ class computer {
 public:
   explicit computer(std::string const&);
 
+  explicit computer(std::string const&, int);
+
   long run();
   void input(long);
   bool halted() const { return halted_; }
@@ -37,6 +39,7 @@ private:
   std::queue<long>  inputs_ {};
   std::vector<long> program_;
   bool              halted_ = false;
+  int               buffer_;
 
   long& current_param(int idx);
 };

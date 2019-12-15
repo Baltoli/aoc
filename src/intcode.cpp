@@ -175,17 +175,8 @@ long computer::run()
   }
 }
 
-void computer::input(long in)
-{
-  if (buffer_ >= 0) {
-    while (inputs_.size() > buffer_) {
-      inputs_.pop();
-    }
-  }
-  inputs_.push(in);
-}
+void computer::input(long in) { inputs_.push(in); }
 
 long& computer::operator[](size_t i) { return program_[i]; }
 long const& computer::operator[](size_t i) const { return program_[i]; }
-
 }

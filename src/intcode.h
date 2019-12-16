@@ -25,6 +25,7 @@ public:
 
   long run();
   void input(long);
+  int  backlog() const;
   bool halted() const { return halted_; }
 
   long&       operator[](size_t);

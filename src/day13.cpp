@@ -1,9 +1,13 @@
 #include <intcode.h>
 
+#include <array>
+#include <cstdlib>
 #include <iostream>
 #include <map>
 #include <string>
 #include <thread>
+
+static bool do_dump = false;
 
 char pretty(long in)
 {
@@ -35,12 +39,19 @@ public:
   int  score() const;
 
   void dump();
+  auto inputs() const { return inputs_; }
+  auto missed_by() const { return missed_; }
 
   int num_blocks() const;
 
+  long paddle_ = 0;
+  long used_   = 0;
+
 private:
   long ball_     = 0;
-  long paddle_   = 0;
+  long ball_y_   = 0;
+  long paddle_y_ = 0;
+  long missed_   = 0;
   long joystick_ = 0;
   long score_    = 0;
 
@@ -79,11 +90,17 @@ void arcade::step()
     screen_[coord] = id;
 
     if (id == 3) {
-      paddle_ = x;
+      paddle_   = x;
+      paddle_y_ = y;
     }
 
     if (id == 4) {
-      ball_ = x;
+      ball_   = x;
+      ball_y_ = y;
+    }
+
+    if (ball_y_ != 0 && paddle_y_ != 0 && ball_y_ == paddle_y_) {
+      missed_ = ball_ - paddle_;
     }
   }
 }
@@ -97,21 +114,23 @@ void arcade::run()
 
 void arcade::interact()
 {
-  int i     = 0;
-  int input = 0;
+  int i = 0;
+
   while (!computer_.halted()) {
-    if (input < inputs_.size()) {
-      computer_.input(inputs_[input++]);
-    } else {
-      computer_.input(0);
-    }
+    if (i++ >= 880) {
+      if (computer_.backlog() == 0) {
+        if (used_ == inputs_.size()) {
+          inputs_.push_back(0);
+        }
+        computer_.input(inputs_[used_++]);
+      }
 
+      if (do_dump) {
+        dump();
+        std::this_thread::sleep_for(std::chrono::milliseconds(20));
+      }
+    }
     step();
-    if (i++ > 870) {
-      /* dump(); */
-
-      /* std::this_thread::sleep_for(std::chrono::milliseconds(20)); */
-    }
   }
 }
 
@@ -145,6 +164,8 @@ void arcade::dump()
   std::cout << "\033[2J\033[H";
 }
 
+int tie_break() { return (std::rand() % 3) - 1; }
+
 int main()
 {
   std::string line;
@@ -155,32 +176,50 @@ int main()
 
   std::cout << game.num_blocks() << '\n';
 
-  auto steps = std::vector<int> {};
+  auto inputs    = std::vector<int> {};
+  auto cycle     = std::array {-1, 0, 1};
+  auto block_cyc = std::array {-1, 0, 1};
+  auto cyc_i     = 0;
 
-  int i = 0;
-  do {
-    auto best_score = 0;
-    auto best_inst  = 2;
-    auto blocks     = 0;
+  while (true) {
+    auto breaker = 0;
+    auto game_2  = arcade(line, inputs);
+    game_2.enable();
+    game_2.interact();
 
-    for (auto i : {-1, 0, 1}) {
-      auto new_s = steps;
-      new_s.push_back(i);
+    if (game_2.num_blocks() == 0) {
+      std::cout << "Winner: " << game_2.score() << '\n';
+      break;
+    } else {
+      std::cout << game_2.num_blocks() << " : " << game_2.score() << " ("
+                << game_2.paddle_ << ")"
+                << "\t[" << game_2.used_ << "]" << '\t' << game_2.missed_by()
+                << '\n';
+    }
 
-      auto game_2 = arcade(line, new_s);
-      game_2.enable();
-      game_2.interact();
+    cycle[cyc_i]     = game_2.paddle_;
+    block_cyc[cyc_i] = game_2.num_blocks();
 
-      if (game_2.score() > best_score) {
-        best_score = game_2.score();
-        best_inst  = i;
-        blocks     = game_2.num_blocks();
+    inputs = game_2.inputs();
+
+    std::map<int, int> breaks = {{3315, 0}, {3475, -1}, {3513, -1}};
+
+    if (breaks.find(game_2.used_) != breaks.end()) {
+      breaker = breaks[game_2.used_];
+    } else if (cycle[2] == cycle[0]) {
+      breaker = 1;
+    }
+
+    for (auto i = 0; i < std::abs(game_2.missed_by()) + breaker; ++i) {
+      if (game_2.missed_by() < 0) {
+        inputs[inputs.size() - (3 + i)] = -1;
+      } else {
+        inputs[inputs.size() - (3 + i)] = 1;
       }
     }
 
-    steps.push_back(best_inst);
+    cyc_i = (cyc_i + 1) % 3;
 
-    std::cout << (i++) << " " << best_score << ": " << blocks << '\n';
-    /* std::this_thread::sleep_for(std::chrono::milliseconds(5000)); */
-  } while (true);
+    /* std::this_thread::sleep_for(std::chrono::milliseconds(1000)); */
+  }
 }

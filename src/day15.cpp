@@ -81,12 +81,12 @@ public:
 
   void dump() const;
 
-  loc oxygen_ = {0, 0};
+  loc                 oxygen_ = {0, 0};
+  std::map<loc, long> map_    = {{{0, 0}, 1}};
 
 private:
-  loc                 location_ = {0, 0};
-  std::map<loc, long> map_      = {{{0, 0}, 1}};
-  std::set<loc>       queue_    = {};
+  loc           location_ = {0, 0};
+  std::set<loc> queue_    = {};
 
   ic::computer computer_;
 };
@@ -245,9 +245,7 @@ void robot::explore()
     auto dirs = path(location_, dest);
 
     for (auto d : dirs) {
-      /* dump(); */
       step(d);
-      /* std::this_thread::sleep_for(std::chrono::milliseconds(50)); */
     }
   }
 }
@@ -259,7 +257,19 @@ int main()
 
   auto rob = robot(line);
   rob.explore();
-  rob.dump();
 
   std::cout << rob.path(loc {0, 0}, rob.oxygen_).size() << '\n';
+
+  size_t max_ox = 0;
+  int    i      = 0;
+  for (auto [l, v] : rob.map_) {
+    if (rob.map_[l] == 1) {
+      auto path = rob.path(rob.oxygen_, l);
+      if (path.size() > max_ox) {
+        max_ox = path.size();
+      }
+    }
+  }
+
+  std::cout << max_ox << '\n';
 }

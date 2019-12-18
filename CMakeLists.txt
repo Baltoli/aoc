@@ -43,3 +43,6 @@ add_executable(day13 src/day13.cpp)
 target_link_libraries(day13 intcode)
 
 add_executable(day14 src/day14.cpp)
+
+add_executable(day15 src/day15.cpp)
+target_link_libraries(day15 intcode)

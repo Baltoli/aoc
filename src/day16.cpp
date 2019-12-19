@@ -45,14 +45,29 @@ lookup_table patterns(int max_len)
   return ret;
 }
 
-std::vector<int> fft_phase(std::vector<int> data)
+void fft_phase(std::vector<int>& data)
 {
   auto base_pattern = std::array {0, 1, 0, -1};
 
-  auto ret = data;
-
-  auto max_len = ret.size();
+  auto max_len = data.size();
   for (int digit = 0; digit < max_len; ++digit) {
+    auto sum  = 0;
+    auto base = 1;
+    auto skip = false;
+
+    for (auto group = digit; group < max_len; group += (digit + 1)) {
+      if (!skip) {
+        for (auto i = group; i < group + (digit + 1) && i < max_len; ++i) {
+          sum += data[i] * base;
+        }
+
+        base = -base;
+      }
+
+      skip = !skip;
+    }
+
+    data[digit] = ones(sum);
   }
 
   /* for (int i = 0; i < data.size(); ++i) { */
@@ -65,8 +80,6 @@ std::vector<int> fft_phase(std::vector<int> data)
 
   /*   ret[i] = ones(sum); */
   /* } */
-
-  return ret;
 }
 
 void part_1(std::string const& line)
@@ -74,7 +87,7 @@ void part_1(std::string const& line)
   auto in = read_input(line, 1);
 
   for (int i = 0; i < 100; ++i) {
-    in = fft_phase(in);
+    fft_phase(in);
   }
 
   for (int i = 0; i < 8; ++i) {
@@ -95,7 +108,7 @@ void part_2(std::string const& line)
 
   for (int i = 0; i < 100; ++i) {
     std::cout << "Phase " << i << '\n';
-    in = fft_phase(in);
+    fft_phase(in);
   }
 
   auto off = get_offset(in);

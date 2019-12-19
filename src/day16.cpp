@@ -93,16 +93,17 @@ int get_offset(std::vector<int> const& m)
 
 void part_2(std::string const& line)
 {
-  auto in = read_input(line, 10000);
+  auto in  = read_input(line, 10000);
+  auto off = get_offset(in);
+
+  in.erase(in.begin(), in.begin() + off);
 
   for (int i = 0; i < 100; ++i) {
     std::cout << "Phase " << i << '\n';
     fft_phase(in);
   }
 
-  auto off = get_offset(in);
-
-  for (int i = off; i < off + 8; ++i) {
+  for (int i = 0; i < 8; ++i) {
     std::cout << in[i];
   }
   std::cout << '\n';

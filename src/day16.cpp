@@ -68,15 +68,15 @@ fft_phase(std::vector<int> const& data, lookup_table const& lut)
 
 int main()
 {
-  auto in   = read_input();
-  auto pats = patterns(in.size());
+  /* auto in   = read_input(); */
+  /* auto pats = patterns(in.size()); */
 
-  for (int i = 0; i < 100; ++i) {
-    in = fft_phase(in, pats);
-  }
+  /* for (int i = 0; i < 100; ++i) { */
+  /*   in = fft_phase(in, pats); */
+  /* } */
 
-  for (int i = 0; i < 8; ++i) {
-    std::cout << in[i];
-  }
-  std::cout << '\n';
+  /* for (int i = 0; i < 8; ++i) { */
+  /*   std::cout << in[i]; */
+  /* } */
+  /* std::cout << '\n'; */
 }

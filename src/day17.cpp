@@ -3,6 +3,7 @@
 #include <cassert>
 #include <iomanip>
 #include <iostream>
+#include <map>
 #include <set>
 #include <string>
 
@@ -223,6 +224,19 @@ std::vector<char> opt_turns(std::vector<char> const& in)
   return ret;
 }
 
+struct program {
+  std::vector<int> A;
+  std::vector<int> B;
+  std::vector<int> C;
+  std::vector<int> M;
+};
+
+program compress(std::vector<int> const& in)
+{
+  auto ret = program {};
+  return ret;
+}
+
 int main()
 {
   std::string line;
@@ -233,15 +247,6 @@ int main()
 
   rob.dump();
 
-  auto path = opt_turns(rob.explore());
-  for (auto m : path) {
-    std::cout << m << ' ';
-  }
-  std::cout << '\n';
-
-  auto moves = opt_moves(path);
-  for (auto m : moves) {
-    std::cout << m << ' ';
-  }
-  std::cout << '\n';
+  auto path = opt_moves(opt_turns(rob.explore()));
+  auto prog = compress(path);
 }

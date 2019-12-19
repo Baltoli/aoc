@@ -181,9 +181,9 @@ std::vector<char> robot::explore() const
   return ret;
 }
 
-std::vector<char> opt_moves(std::vector<char> const& in)
+std::vector<int> opt_moves(std::vector<char> const& in)
 {
-  auto ret = std::vector<char> {};
+  auto ret = std::vector<int> {};
 
   auto ones = 0;
   for (auto c : in) {
@@ -191,10 +191,7 @@ std::vector<char> opt_moves(std::vector<char> const& in)
       ++ones;
     } else {
       if (ones > 0) {
-        auto str = std::to_string(ones);
-        for (auto d : str) {
-          ret.push_back(d);
-        }
+        ret.push_back(ones);
         ones = 0;
       }
       ret.push_back(c);
@@ -218,6 +215,7 @@ std::vector<char> opt_turns(std::vector<char> const& in)
       } else if (rs == 3) {
         ret.push_back('L');
       }
+      rs = 0;
       ret.push_back(c);
     }
   }
@@ -235,20 +233,14 @@ int main()
 
   rob.dump();
 
-  auto path = rob.explore();
+  auto path = opt_turns(rob.explore());
   for (auto m : path) {
     std::cout << m << ' ';
   }
   std::cout << '\n';
 
-  path = opt_moves(path);
-  for (auto m : path) {
-    std::cout << m << ' ';
-  }
-  std::cout << '\n';
-
-  path = opt_turns(path);
-  for (auto m : path) {
+  auto moves = opt_moves(path);
+  for (auto m : moves) {
     std::cout << m << ' ';
   }
   std::cout << '\n';

@@ -69,17 +69,6 @@ void fft_phase(std::vector<int>& data)
 
     data[digit] = ones(sum);
   }
-
-  /* for (int i = 0; i < data.size(); ++i) { */
-  /*   auto const& pat = lut[i]; */
-  /*   auto        sum = 0; */
-
-  /*   for (int j = 0; j < data.size(); ++j) { */
-  /*     sum += ret[j] * pat[j]; */
-  /*   } */
-
-  /*   ret[i] = ones(sum); */
-  /* } */
 }
 
 void part_1(std::string const& line)

@@ -181,6 +181,50 @@ std::vector<char> robot::explore() const
   return ret;
 }
 
+std::vector<char> opt_moves(std::vector<char> const& in)
+{
+  auto ret = std::vector<char> {};
+
+  auto ones = 0;
+  for (auto c : in) {
+    if (c == '1') {
+      ++ones;
+    } else {
+      if (ones > 0) {
+        auto str = std::to_string(ones);
+        for (auto d : str) {
+          ret.push_back(d);
+        }
+        ones = 0;
+      }
+      ret.push_back(c);
+    }
+  }
+
+  return ret;
+}
+
+std::vector<char> opt_turns(std::vector<char> const& in)
+{
+  auto ret = std::vector<char> {};
+
+  auto rs = 0;
+  for (auto c : in) {
+    if (c == 'R') {
+      ++rs;
+    } else {
+      if (rs == 1) {
+        ret.push_back('R');
+      } else if (rs == 3) {
+        ret.push_back('L');
+      }
+      ret.push_back(c);
+    }
+  }
+
+  return ret;
+}
+
 int main()
 {
   std::string line;
@@ -195,4 +239,17 @@ int main()
   for (auto m : path) {
     std::cout << m << ' ';
   }
+  std::cout << '\n';
+
+  path = opt_moves(path);
+  for (auto m : path) {
+    std::cout << m << ' ';
+  }
+  std::cout << '\n';
+
+  path = opt_turns(path);
+  for (auto m : path) {
+    std::cout << m << ' ';
+  }
+  std::cout << '\n';
 }

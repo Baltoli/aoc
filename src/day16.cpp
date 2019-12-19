@@ -6,16 +6,15 @@
 
 using lookup_table = std::vector<std::vector<int>>;
 
-std::vector<int> read_input()
+std::vector<int> read_input(std::string const& line, int times)
 {
-  std::string line;
-  std::getline(std::cin, line);
-
   auto ret = std::vector<int> {};
 
-  std::transform(line.begin(), line.end(), std::back_inserter(ret), [](auto c) {
-    return c - '0';
-  });
+  for (int i = 0; i < times; ++i) {
+    std::transform(
+        line.begin(), line.end(), std::back_inserter(ret),
+        [](auto c) { return c - '0'; });
+  }
 
   return ret;
 }
@@ -46,37 +45,65 @@ lookup_table patterns(int max_len)
   return ret;
 }
 
-std::vector<int>
-fft_phase(std::vector<int> const& data, lookup_table const& lut)
+std::vector<int> fft_phase(std::vector<int> data)
 {
-  assert(data.size() == lut.size() && "Lookup is the wrong size");
-  auto ret = std::vector<int>(data);
+  auto ret = data;
 
-  for (int i = 0; i < data.size(); ++i) {
-    auto const& pat = lut[i];
-    auto        sum = 0;
+  /* for (int i = 0; i < data.size(); ++i) { */
+  /*   auto const& pat = lut[i]; */
+  /*   auto        sum = 0; */
 
-    for (int j = 0; j < data.size(); ++j) {
-      sum += ret[j] * pat[j];
-    }
+  /*   for (int j = 0; j < data.size(); ++j) { */
+  /*     sum += ret[j] * pat[j]; */
+  /*   } */
 
-    ret[i] = ones(sum);
-  }
+  /*   ret[i] = ones(sum); */
+  /* } */
 
   return ret;
 }
 
+void part_1(std::string const& line)
+{
+  auto in = read_input(line, 1);
+
+  for (int i = 0; i < 100; ++i) {
+    in = fft_phase(in);
+  }
+
+  for (int i = 0; i < 8; ++i) {
+    std::cout << in[i];
+  }
+  std::cout << '\n';
+}
+
+int get_offset(std::vector<int> const& m)
+{
+  return m[0] * 1000000 + m[1] * 100000 + m[2] * 10000 + m[3] * 1000
+         + m[4] * 100 + m[5] * 10 + m[6];
+}
+
+void part_2(std::string const& line)
+{
+  auto in = read_input(line, 10000);
+
+  for (int i = 0; i < 100; ++i) {
+    in = fft_phase(in);
+  }
+
+  auto off = get_offset(in);
+
+  for (int i = off; i < off + 8; ++i) {
+    std::cout << in[i];
+  }
+  std::cout << '\n';
+}
+
 int main()
 {
-  /* auto in   = read_input(); */
-  /* auto pats = patterns(in.size()); */
+  std::string line;
+  std::getline(std::cin, line);
 
-  /* for (int i = 0; i < 100; ++i) { */
-  /*   in = fft_phase(in, pats); */
-  /* } */
-
-  /* for (int i = 0; i < 8; ++i) { */
-  /*   std::cout << in[i]; */
-  /* } */
-  /* std::cout << '\n'; */
+  part_1(line);
+  part_2(line);
 }

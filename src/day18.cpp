@@ -14,6 +14,8 @@ public:
 
   char const& at(int x, int y) const;
   char&       at(int x, int y);
+  char const& at(std::pair<int, int> p) const;
+  char&       at(std::pair<int, int> p);
 
   void dump() const;
 
@@ -28,6 +30,11 @@ int         maze::width() const { return map_[0].size(); }
 int         maze::height() const { return map_.size(); }
 char&       maze::at(int x, int y) { return map_[y][x]; }
 char const& maze::at(int x, int y) const { return map_[y][x]; }
+char const& maze::at(std::pair<int, int> p) const
+{
+  return at(p.first, p.second);
+}
+char& maze::at(std::pair<int, int> p) { return at(p.first, p.second); }
 
 void maze::dump() const
 {

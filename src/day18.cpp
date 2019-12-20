@@ -1,5 +1,7 @@
 #include <iostream>
 #include <map>
+#include <queue>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -7,7 +9,13 @@ class maze {
 public:
   maze();
 
-  char& at(int x, int y);
+  int width() const;
+  int height() const;
+
+  char const& at(int x, int y) const;
+  char&       at(int x, int y);
+
+  void dump() const;
 
 private:
   std::map<char, std::pair<int, int>> keys_;
@@ -15,7 +23,20 @@ private:
   std::vector<std::vector<char>>      map_;
 };
 
-char& maze::at(int x, int y) { return map_[y][x]; }
+int         maze::width() const { return map_[0].size(); }
+int         maze::height() const { return map_.size(); }
+char&       maze::at(int x, int y) { return map_[y][x]; }
+char const& maze::at(int x, int y) const { return map_[y][x]; }
+
+void maze::dump() const
+{
+  for (int y = 0; y < height(); ++y) {
+    for (int x = 0; x < width(); ++x) {
+      std::cout << at(x, y);
+    }
+    std::cout << '\n';
+  }
+}
 
 maze::maze()
     : map_ {}
@@ -35,4 +56,8 @@ maze::maze()
   }
 }
 
-int main() { auto m = maze(); }
+int main()
+{
+  auto m = maze();
+  m.dump();
+}

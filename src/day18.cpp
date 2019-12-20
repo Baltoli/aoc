@@ -20,6 +20,11 @@ public:
   char const& at(std::pair<int, int> p) const;
   char&       at(std::pair<int, int> p);
 
+  bool floor(char c) const { return c == '.'; }
+  bool wall(char c) const { return c == '#'; }
+  bool door(char c) const { return std::isupper(c); }
+  bool key(char c) const { return std::islower(c); }
+
   void dump() const;
 
   auto portal() const { return portal_; }
@@ -69,6 +74,12 @@ maze::maze()
       }
     }
   }
+}
+
+std::vector<std::pair<int, int>>
+maze::path(std::pair<int, int> from, std::pair<int, int> to) const
+{
+  return {};
 }
 
 int main()

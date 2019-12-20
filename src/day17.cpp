@@ -26,6 +26,12 @@ public:
 
   void dump() const;
 
+  void enable() { computer_[0] = 2; }
+
+  long
+  run(std::string const& m, std::string const& a, std::string const& b,
+      std::string const& c, std::string const& e);
+
 private:
   int width_  = 0;
   int height_ = 0;
@@ -199,6 +205,10 @@ std::vector<int> opt_moves(std::vector<char> const& in)
     }
   }
 
+  if (ones > 0) {
+    ret.push_back(ones);
+  }
+
   return ret;
 }
 
@@ -224,29 +234,69 @@ std::vector<char> opt_turns(std::vector<char> const& in)
   return ret;
 }
 
-struct program {
-  std::vector<int> A;
-  std::vector<int> B;
-  std::vector<int> C;
-  std::vector<int> M;
-};
-
-program compress(std::vector<int> const& in)
+long robot::run(
+    std::string const& m, std::string const& a, std::string const& b,
+    std::string const& c, std::string const& e)
 {
-  auto ret = program {};
-  return ret;
+  for (auto c : m) {
+    computer_.input(c);
+  }
+  computer_.input('\n');
+
+  for (auto c : a) {
+    computer_.input(c);
+  }
+  computer_.input('\n');
+
+  for (auto c : b) {
+    computer_.input(c);
+  }
+  computer_.input('\n');
+
+  for (auto c : c) {
+    computer_.input(c);
+  }
+  computer_.input('\n');
+
+  for (auto c : e) {
+    computer_.input(c);
+  }
+  computer_.input('\n');
+
+  long out = 0;
+  while (true) {
+    out = computer_.run();
+
+    if (out > 255) {
+      std::cout << out << '\n';
+    }
+
+    if (computer_.halted()) {
+      break;
+    }
+  }
+  return out;
 }
 
 int main()
 {
+  using namespace std::literals::string_literals;
+
   std::string line;
   std::getline(std::cin, line);
 
   auto rob = robot(line);
   std::cout << rob.alignment() << '\n';
-
-  rob.dump();
-
   auto path = opt_moves(opt_turns(rob.explore()));
-  auto prog = compress(path);
+
+  auto a = "R,4,R,10,R,8,R,4"s;
+  auto b = "R,10,R,6,R,4"s;
+  auto c = "R,4,L,12,R,6,L,12"s;
+  auto m = "A,B,A,B,C,B,C,A,B,C"s;
+  auto e = "n"s;
+
+  auto r2 = robot(line);
+  r2.enable();
+
+  r2.run(m, a, b, c, e);
 }

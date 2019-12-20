@@ -79,7 +79,58 @@ maze::maze()
 std::vector<std::pair<int, int>>
 maze::path(std::pair<int, int> from, std::pair<int, int> to) const
 {
-  return {};
+  assert(!wall(at(from)) && !wall(at(to)) && "Can't pathfind into wall");
+
+  auto ret   = std::vector<std::pair<int, int>> {};
+  auto queue = std::queue<std::pair<int, int>> {{from}};
+  auto costs = std::map<std::pair<int, int>, int> {{from, 0}};
+
+  auto found = [&] { return costs.find(to) != costs.end(); };
+
+  while (!found()) {
+    assert(!queue.empty() && "No path possible");
+
+    auto work = queue.front();
+    queue.pop();
+
+    for (int dx : {-1, 0, 1}) {
+      for (int dy : {-1, 0, 1}) {
+        if (dx == dy) {
+          continue;
+        }
+
+        auto [fx, fy] = work;
+        auto new_loc  = std::pair {fx + dx, fy + dy};
+        if (!wall(at(new_loc))) {
+          if (costs.find(new_loc) == costs.end()) {
+            costs[new_loc] = costs[work] + 1;
+            queue.push(new_loc);
+          }
+        }
+      }
+    }
+  }
+
+  auto ptr = to;
+  while (ptr != from) {
+    ret.push_back(ptr);
+    for (int dx : {-1, 0, 1}) {
+      for (int dy : {-1, 0, 1}) {
+        if (dx == dy) {
+          continue;
+        }
+
+        auto [fx, fy] = ptr;
+        auto new_loc  = std::pair {fx + dx, fy + dy};
+        if (costs.find(new_loc) != costs.end() && costs[new_loc] < costs[ptr]) {
+          ptr = new_loc;
+        }
+      }
+    }
+  }
+
+  std::reverse(ret.begin(), ret.end());
+  return ret;
 }
 
 int main()

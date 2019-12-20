@@ -7,11 +7,15 @@ class maze {
 public:
   maze();
 
+  char& at(int x, int y);
+
 private:
   std::map<char, std::pair<int, int>> keys_;
   std::map<char, std::pair<int, int>> doors_;
   std::vector<std::vector<char>>      map_;
 };
+
+char& maze::at(int x, int y) { return map_[y][x]; }
 
 maze::maze()
     : map_ {}
@@ -22,10 +26,10 @@ maze::maze()
 
   for (int y = 0; y < map_.size(); ++y) {
     for (int x = 0; x < map_[y].size(); ++x) {
-      if (std::islower(map_[y][x])) {
-        keys_[map_[y][x]] = {x, y};
-      } else if (std::isupper(map_[y][x])) {
-        doors_[std::tolower(map_[y][x])] = {x, y};
+      if (std::islower(at(x, y))) {
+        keys_[at(x, y)] = {x, y};
+      } else if (std::isupper(at(x, y))) {
+        doors_[std::tolower(at(x, y))] = {x, y};
       }
     }
   }

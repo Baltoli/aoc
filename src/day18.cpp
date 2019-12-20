@@ -9,6 +9,9 @@ class maze {
 public:
   maze();
 
+  std::vector<std::pair<int, int>>
+  path(std::pair<int, int> from, std::pair<int, int> to) const;
+
   int width() const;
   int height() const;
 
@@ -18,6 +21,8 @@ public:
   char&       at(std::pair<int, int> p);
 
   void dump() const;
+
+  auto portal() const { return portal_; }
 
 private:
   std::pair<int, int>                 portal_;
@@ -64,6 +69,12 @@ maze::maze()
       }
     }
   }
+}
+
+std::vector<std::pair<int, int>>
+maze::path(std::pair<int, int> from, std::pair<int, int> to) const
+{
+  return {};
 }
 
 int main()

@@ -18,6 +18,7 @@ public:
   void dump() const;
 
 private:
+  std::pair<int, int>                 portal_;
   std::map<char, std::pair<int, int>> keys_;
   std::map<char, std::pair<int, int>> doors_;
   std::vector<std::vector<char>>      map_;
@@ -51,6 +52,8 @@ maze::maze()
         keys_[at(x, y)] = {x, y};
       } else if (std::isupper(at(x, y))) {
         doors_[std::tolower(at(x, y))] = {x, y};
+      } else if (at(x, y) == '@') {
+        portal_ = {x, y};
       }
     }
   }

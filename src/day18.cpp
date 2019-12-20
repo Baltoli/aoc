@@ -71,12 +71,6 @@ maze::maze()
   }
 }
 
-std::vector<std::pair<int, int>>
-maze::path(std::pair<int, int> from, std::pair<int, int> to) const
-{
-  return {};
-}
-
 int main()
 {
   auto m = maze();

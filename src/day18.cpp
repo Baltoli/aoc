@@ -12,6 +12,8 @@ public:
   std::vector<std::pair<int, int>>
   path(std::pair<int, int> from, std::pair<int, int> to) const;
 
+  int all_keys_cost() const;
+
   int width() const;
   int height() const;
 
@@ -133,8 +135,73 @@ maze::path(std::pair<int, int> from, std::pair<int, int> to) const
   return ret;
 }
 
+int maze::all_keys_cost() const
+{
+  auto key_costs = std::map<char, int> {{}};
+  auto all_found = [&] { return key_costs.size() == keys_.size(); };
+
+  auto costs = std::map<std::pair<int, int>, int> {{portal(), 0}};
+  auto queue = std::queue<std::pair<int, int>> {{portal()}};
+
+  /* while (!all_found()) { */
+  while (!queue.empty()) {
+    auto work = queue.front();
+    queue.pop();
+
+    for (auto dx : {-1, 0, 1}) {
+      for (auto dy : {-1, 0, 1}) {
+        if (dx == dy) {
+          continue;
+        }
+
+        auto [fx, fy] = work;
+        auto new_loc  = std::pair {fx + dx, fy + dy};
+
+        if (costs.find(new_loc) != costs.end()) {
+          continue;
+        }
+
+        if (door(at(new_loc))) {
+          auto key = std::tolower(at(new_loc));
+          if (key_costs.find(key) == key_costs.end()) {
+            // If we don't have the key for this door, then just ignore it for
+            // now until we have the key.
+            queue.push(work);
+          } else {
+            // If we have the key, then set the cost of the door to the distance
+            // from the key to the door.
+            auto key_to_door = path(keys_.at(key), new_loc);
+            costs[new_loc]   = key_costs[key] + key_to_door.size();
+            queue.push(new_loc);
+          }
+        } else if (key(at(new_loc))) {
+          auto key       = std::tolower(at(new_loc));
+          key_costs[key] = costs[work] + 1;
+          costs[new_loc] = costs[work] + 1;
+
+          queue.push(new_loc);
+        } else if (floor(at(new_loc))) {
+          costs[new_loc] = costs[work] + 1;
+
+          queue.push(new_loc);
+        }
+      }
+    }
+  }
+
+  for (auto [k, v] : key_costs) {
+    std::cout << k << ' ' << v << '\n';
+  }
+
+  return std::max_element(
+             key_costs.begin(), key_costs.end(),
+             [](auto p, auto q) { return p.second < q.second; })
+      ->second;
+}
+
 int main()
 {
   auto m = maze();
   m.dump();
+  std::cout << m.all_keys_cost() << '\n';
 }

@@ -26,12 +26,8 @@ int beam::test(int x, int y) const
   return new_c.run();
 }
 
-int main()
+void part_1(beam& b)
 {
-  std::string line;
-  std::getline(std::cin, line);
-  auto b = beam(line);
-
   auto total = 0;
   for (int x = 0; x < 50; ++x) {
     for (int y = 0; y < 50; ++y) {
@@ -39,4 +35,13 @@ int main()
     }
   }
   std::cout << total << '\n';
+}
+
+int main()
+{
+  std::string line;
+  std::getline(std::cin, line);
+  auto b = beam(line);
+
+  part_1(b);
 }

@@ -1,7 +1,9 @@
 #include <array>
 #include <cassert>
 #include <iostream>
+#include <limits>
 #include <map>
+#include <queue>
 #include <string>
 #include <vector>
 
@@ -17,10 +19,15 @@ class maze {
 public:
   maze();
 
+  std::vector<loc> path(loc from, loc to) const;
+
   int width() const;
   int height() const;
 
   char at(int x, int y) const;
+
+  auto start() const { return start_; }
+  auto end() const { return end_; }
 
   void dump() const;
 
@@ -89,6 +96,26 @@ int maze::height() const { return map_.size(); }
 
 char maze::at(int x, int y) const { return map_[y][x]; }
 
+std::vector<loc> maze::path(loc from, loc to) const
+{
+  auto costs    = std::map<loc, int> {};
+  auto get_cost = [&](auto l) {
+    if (costs.find(l) == costs.end()) {
+      return std::numeric_limits<int>::max();
+    } else {
+      return costs[l];
+    }
+  };
+
+  auto queue = std::queue<loc> {{from}};
+  while (!queue.empty()) {
+    auto work = queue.front();
+    queue.pop();
+  }
+
+  return {};
+}
+
 void maze::dump() const
 {
   for (auto const& row : map_) {
@@ -103,4 +130,7 @@ int main()
 {
   auto m = maze();
   m.dump();
+
+  auto path = m.path(m.start(), m.end());
+  std::cout << path.size() << '\n';
 }

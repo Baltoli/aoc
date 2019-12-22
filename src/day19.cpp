@@ -37,6 +37,12 @@ void part_1(beam& b)
   std::cout << total << '\n';
 }
 
+void part_2(beam& b)
+{
+  ;
+  ;
+}
+
 int main()
 {
   std::string line;
@@ -44,4 +50,5 @@ int main()
   auto b = beam(line);
 
   part_1(b);
+  part_2(b);
 }

@@ -20,6 +20,7 @@ public:
   maze();
 
   std::vector<loc> path(loc from, loc to) const;
+  std::vector<loc> neighbours(loc l) const;
 
   int width() const;
   int height() const;
@@ -91,14 +92,50 @@ maze::maze()
   }
 }
 
+void maze::dump() const
+{
+  for (auto const& row : map_) {
+    for (auto c : row) {
+      std::cout << c;
+    }
+    std::cout << '\n';
+  }
+}
+
 int maze::width() const { return map_[0].size(); }
 int maze::height() const { return map_.size(); }
 
 char maze::at(int x, int y) const { return map_[y][x]; }
 
+std::vector<loc> maze::neighbours(loc l) const
+{
+  auto ret = std::vector<loc> {};
+
+  for (int dx : {-1, 0, 1}) {
+    for (int dy : {-1, 0, 1}) {
+      if (std::abs(dx) == std::abs(dy)) {
+        continue;
+      }
+
+      auto [lx, ly] = l;
+      if (at(lx + dx, ly + dy) == '.') {
+        ret.emplace_back(lx + dx, ly + dy);
+      }
+    }
+  }
+
+  if (portals_.find(l) != portals_.end()) {
+    ret.push_back(portals_.at(l));
+  }
+
+  return ret;
+}
+
 std::vector<loc> maze::path(loc from, loc to) const
 {
-  auto costs    = std::map<loc, int> {};
+  auto ret = std::vector<loc> {};
+
+  auto costs    = std::map<loc, int> {{from, 0}};
   auto get_cost = [&](auto l) {
     if (costs.find(l) == costs.end()) {
       return std::numeric_limits<int>::max();
@@ -111,25 +148,34 @@ std::vector<loc> maze::path(loc from, loc to) const
   while (!queue.empty()) {
     auto work = queue.front();
     queue.pop();
-  }
 
-  return {};
-}
-
-void maze::dump() const
-{
-  for (auto const& row : map_) {
-    for (auto c : row) {
-      std::cout << c;
+    for (auto n : neighbours(work)) {
+      auto current_cost = get_cost(work);
+      if (current_cost + 1 < get_cost(n)) {
+        costs[n] = current_cost + 1;
+        queue.push(n);
+      }
     }
-    std::cout << '\n';
   }
+
+  auto ptr = to;
+  while (ptr != from) {
+    ret.push_back(ptr);
+
+    for (auto n : neighbours(ptr)) {
+      if (costs.find(n) != costs.end() && costs[n] < costs[ptr]) {
+        ptr = n;
+      }
+    }
+  }
+
+  std::reverse(ret.begin(), ret.end());
+  return ret;
 }
 
 int main()
 {
   auto m = maze();
-  m.dump();
 
   auto path = m.path(m.start(), m.end());
   std::cout << path.size() << '\n';

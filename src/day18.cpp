@@ -118,7 +118,7 @@ maze::path(std::pair<int, int> from, std::pair<int, int> to) const
     ret.push_back(ptr);
     for (int dx : {-1, 0, 1}) {
       for (int dy : {-1, 0, 1}) {
-        if (dx == dy) {
+        if (std::abs(dx) == std::abs(dy)) {
           continue;
         }
 

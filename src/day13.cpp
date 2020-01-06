@@ -1,6 +1,7 @@
 #include <intcode.h>
 
 #include <array>
+#include <cassert>
 #include <cstdlib>
 #include <iostream>
 #include <map>

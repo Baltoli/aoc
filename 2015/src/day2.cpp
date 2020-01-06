@@ -1,27 +1,63 @@
+#include <utils/utils.h>
+
+#include <algorithm>
 #include <cassert>
+#include <functional>
 #include <iostream>
+#include <numeric>
 #include <string>
 
 class parcel {
 public:
   parcel(std::string const&);
 
+  int area_req() const;
+
+  int volume() const;
+  int ribbon_req() const;
+
 private:
-  int length_ = -1;
-  int width_  = -1;
-  int height_ = -1;
+  std::vector<int> sides_;
 };
 
 parcel::parcel(std::string const& spec)
+    : sides_ {}
 {
-  assert(length_ > 0 && "Parse error");
-  assert(width_ > 0 && "Parse error");
-  assert(height_ > 0 && "Parse error");
+  for (auto s : utils::split(spec, "x")) {
+    sides_.push_back(std::stoi(s));
+  }
+
+  std::sort(sides_.begin(), sides_.end());
+}
+
+int parcel::area_req() const
+{
+  return (3 * sides_[0] * sides_[1]) + (2 * sides_[0] * sides_[2])
+         + (2 * sides_[1] * sides_[2]);
+}
+
+int parcel::volume() const
+{
+  return std::accumulate(sides_.begin(), sides_.end(), 1, std::multiplies {});
+}
+
+int parcel::ribbon_req() const
+{
+  return (2 * sides_[0]) + (2 * sides_[1]) + volume();
 }
 
 int main()
 {
+  auto area_sum = 0;
+  auto rib_sum  = 0;
+
   for (std::string line; std::getline(std::cin, line);) {
     auto p = parcel(line);
+
+    area_sum += p.area_req();
+    rib_sum += p.ribbon_req();
   }
+
+  std::cout << area_sum << '\n';
+  std::cout << rib_sum << '\n';
 }

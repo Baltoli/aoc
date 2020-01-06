@@ -18,4 +18,6 @@ void for_each_line(Func&& f)
   }
 }
 
+std::string md5_sum(std::string const& input);
+
 }

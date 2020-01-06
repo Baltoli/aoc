@@ -3,7 +3,6 @@
 #include <algorithm>
 #include <cassert>
 #include <functional>
-#include <iostream>
 #include <numeric>
 #include <string>
 
@@ -51,12 +50,12 @@ int main()
   auto area_sum = 0;
   auto rib_sum  = 0;
 
-  for (std::string line; std::getline(std::cin, line);) {
+  utils::for_each_line([&](auto line) {
     auto p = parcel(line);
 
     area_sum += p.area_req();
     rib_sum += p.ribbon_req();
-  }
+  });
 
   std::cout << area_sum << '\n';
   std::cout << rib_sum << '\n';

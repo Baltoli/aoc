@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <map>
+#include <numeric>
 
 enum class mode { on, off, toggle };
 
@@ -26,11 +27,13 @@ public:
   display(std::vector<instruction> const&);
 
   int lit_count() const;
+  int total_brightness() const;
 
 private:
   void execute(instruction);
 
   std::map<loc, bool> lights_;
+  std::map<loc, int>  brightness_;
 };
 
 instruction::instruction(std::string const& line)
@@ -52,9 +55,7 @@ instruction::instruction(std::string const& line)
 display::display(std::vector<instruction> const& insts)
     : lights_{}
 {
-  int x = 0;
   for (auto i : insts) {
-    std::cout << (++x) << '\n';
     execute(i);
   }
 }
@@ -63,6 +64,13 @@ int display::lit_count() const
 {
   return std::count_if(
       lights_.begin(), lights_.end(), [](auto p) { return p.second; });
+}
+
+int display::total_brightness() const
+{
+  return std::accumulate(
+      brightness_.begin(), brightness_.end(), 0,
+      [](auto acc, auto p) { return acc + p.second; });
 }
 
 void display::execute(instruction i)
@@ -74,16 +82,20 @@ void display::execute(instruction i)
 
   for (int x = min_x; x <= max_x; ++x) {
     for (int y = min_y; y <= max_y; ++y) {
+      brightness_.try_emplace({x, y}, 0);
       switch (i.mode_) {
       case mode::on:
         lights_[{x, y}] = true;
+        brightness_[{x, y}]++;
         break;
       case mode::off:
-        lights_[{x, y}] = false;
+        lights_[{x, y}]     = false;
+        brightness_[{x, y}] = std::max(0, brightness_[{x, y}] - 1);
         break;
       case mode::toggle:
         lights_.try_emplace({x, y}, false);
         lights_[{x, y}] = !lights_[{x, y}];
+        brightness_[{x, y}] += 2;
         break;
       }
     }
@@ -97,4 +109,5 @@ int main()
 
   auto disp = display(instrs);
   std::cout << disp.lit_count() << '\n';
+  std::cout << disp.total_brightness() << '\n';
 }

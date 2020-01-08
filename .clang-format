@@ -14,6 +14,7 @@ AllowShortLoopsOnASingleLine: 'false'
 AlwaysBreakTemplateDeclarations: 'true'
 ColumnLimit: '80'
 Cpp11BracedListStyle: 'true'
+FixNamespaceComments: true
 IndentWidth: '2'
 Language: Cpp
 NamespaceIndentation: None

@@ -20,4 +20,12 @@ void for_each_line(Func&& f)
 
 std::string md5_sum(std::string const& input);
 
-}
+template <class... Ts>
+struct overload : Ts... {
+  using Ts::operator()...;
+};
+
+template <class... Ts>
+overload(Ts...)->overload<Ts...>;
+
+} // namespace utils

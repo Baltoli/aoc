@@ -38,7 +38,12 @@ struct not_ {
   std::string to;
 };
 
-using instruction = std::variant<input, and_, or_, lshift, rshift, not_>;
+struct pass {
+  std::string wire;
+  std::string to;
+};
+
+using instruction = std::variant<input, and_, or_, lshift, rshift, not_, pass>;
 
 class circuit {
 public:
@@ -52,6 +57,7 @@ public:
   void operator()(lshift i);
   void operator()(rshift i);
   void operator()(not_ i);
+  void operator()(pass i);
 
 private:
   void step();
@@ -62,7 +68,7 @@ private:
 };
 
 circuit::circuit(std::vector<instruction> is)
-    : signals_{}
+    : signals_ {{"1", 1}}
     , instrs_(is)
 {
 }
@@ -109,6 +115,13 @@ void circuit::operator()(not_ i)
   }
 }
 
+void circuit::operator()(pass i)
+{
+  if (is_set(i.wire)) {
+    signals_[i.to] = signals_[i.wire];
+  }
+}
+
 uint16_t circuit::run(std::string w)
 {
   while (signals_.find(w) == signals_.end()) {
@@ -127,15 +140,51 @@ void circuit::step()
 
 std::vector<instruction> get_input()
 {
-  auto ret = std::vector<instruction>{};
+  auto ret = std::vector<instruction> {};
 
-  utils::for_each_line([&](auto line) {});
+  utils::for_each_line([&](auto line) {
+    auto cs = utils::split(line, " ");
+
+    if (cs[0] == "NOT") {
+      ret.emplace_back(not_ {cs[1], cs[3]});
+    } else if (cs.size() == 3) {
+      if (std::isdigit(cs[0][0])) {
+        ret.emplace_back(
+            input {static_cast<uint16_t>(std::stoi(cs[0])), cs[2]});
+      } else {
+        ret.emplace_back(pass {cs[0], cs[2]});
+      }
+    } else if (cs[1] == "AND") {
+      ret.emplace_back(and_ {cs[0], cs[2], cs[4]});
+    } else if (cs[1] == "OR") {
+      ret.emplace_back(or_ {cs[0], cs[2], cs[4]});
+    } else if (cs[1] == "LSHIFT") {
+      ret.emplace_back(
+          lshift {cs[0], static_cast<uint16_t>(std::stoi(cs[2])), cs[4]});
+    } else if (cs[1] == "RSHIFT") {
+      ret.emplace_back(
+          rshift {cs[0], static_cast<uint16_t>(std::stoi(cs[2])), cs[4]});
+    } else {
+      assert(false && "Invalid instruction");
+    }
+  });
 
   return ret;
 }
 
 int main()
 {
-  auto circ = circuit(get_input());
-  std::cout << circ.run("a") << '\n';
+  auto ins = get_input();
+
+  auto circ  = circuit(ins);
+  auto out_1 = circ.run("a");
+  std::cout << out_1 << '\n';
+
+  for (auto& var : ins) {
+    if (std::holds_alternative<input>(var)) {
+      std::get<input>(var).val = out_1;
+    }
+  }
+  auto circ_2 = circuit(ins);
+  std::cout << circ_2.run("a") << '\n';
 }

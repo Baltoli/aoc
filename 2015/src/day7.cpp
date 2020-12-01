@@ -1,5 +1,6 @@
 #include <utils/utils.h>
 
+#include <cassert>
 #include <iostream>
 #include <map>
 #include <variant>

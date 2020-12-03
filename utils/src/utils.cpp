@@ -9,6 +9,13 @@
 
 namespace utils {
 
+std::vector<std::string> get_lines()
+{
+  auto ret = std::vector<std::string> {};
+  for_each_line([&ret](auto line) { ret.emplace_back(line); });
+  return ret;
+}
+
 std::vector<std::string> split(std::string const& str, std::string const& delim)
 {
   auto ret = std::vector<std::string> {};
@@ -54,4 +61,4 @@ std::string md5_sum(std::string const& input)
   return ss.str();
 }
 
-}
+} // namespace utils

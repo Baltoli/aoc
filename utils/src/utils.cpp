@@ -3,6 +3,7 @@
 #include <utils/utils.h>
 
 #include <array>
+#include <charconv>
 #include <iomanip>
 #include <iostream>
 #include <sstream>
@@ -59,6 +60,13 @@ std::string md5_sum(std::string const& input)
   }
 
   return ss.str();
+}
+
+int svtoi(std::string_view sv)
+{
+  int result;
+  std::from_chars(sv.data(), sv.data() + sv.size(), result);
+  return result;
 }
 
 } // namespace utils

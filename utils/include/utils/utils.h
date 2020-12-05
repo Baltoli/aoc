@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -29,5 +30,7 @@ struct overload : Ts... {
 
 template <class... Ts>
 overload(Ts...) -> overload<Ts...>;
+
+int svtoi(std::string_view);
 
 } // namespace utils

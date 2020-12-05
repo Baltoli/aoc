@@ -44,6 +44,38 @@ int score(std::vector<std::string> const& perm, adj_t const& adj)
   return s;
 }
 
+int best_score(std::vector<std::string> perm, adj_t const& adj)
+{
+  auto max_score = std::numeric_limits<int>::min();
+  while (std::next_permutation(perm.begin(), perm.end())) {
+    auto new_score = score(perm, adj);
+    if (new_score > max_score) {
+      max_score = new_score;
+    }
+  }
+  return max_score;
+}
+
+int part_1(std::vector<std::string> perm, adj_t adj)
+{
+  return best_score(perm, adj);
+}
+
+int part_2(std::vector<std::string> perm, adj_t adj)
+{
+  auto extra = "extra";
+
+  for (auto const& name : perm) {
+    adj.insert({{name, extra}, 0});
+    adj.insert({{extra, name}, 0});
+  }
+
+  perm.push_back(extra);
+  std::sort(perm.begin(), perm.end());
+
+  return best_score(perm, adj);
+}
+
 int main()
 {
   constexpr auto line_pattern
@@ -59,14 +91,7 @@ int main()
     names.insert(in.to_);
   });
 
-  auto max_score = std::numeric_limits<int>::min();
-  auto perm      = std::vector<std::string>(names.begin(), names.end());
-  while (std::next_permutation(perm.begin(), perm.end())) {
-    auto new_score = score(perm, adj);
-    if (new_score > max_score) {
-      max_score = new_score;
-    }
-  }
-
-  std::cout << max_score << '\n';
+  auto perm = std::vector<std::string>(names.begin(), names.end());
+  std::cout << part_1(perm, adj) << '\n';
+  std::cout << part_2(perm, adj) << '\n';
 }

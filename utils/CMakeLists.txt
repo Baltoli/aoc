@@ -1,4 +1,5 @@
 add_library(utils
+  src/regex.cpp
   src/utils.cpp
   src/md5.c)
 

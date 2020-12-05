@@ -29,6 +29,11 @@ struct seat {
 
   int seat_id() const { return row * 8 + column; }
 
+  bool operator<(seat const& other) const
+  {
+    return seat_id() < other.seat_id();
+  }
+
   int row;
   int column;
 };
@@ -39,14 +44,13 @@ int main()
 
   utils::for_each_line([&](auto const& line) { seats.emplace_back(line); });
 
-  std::sort(seats.begin(), seats.end(), [](auto const& a, auto const& b) {
-    return a.seat_id() < b.seat_id();
-  });
+  std::sort(seats.begin(), seats.end());
 
   std::cout << seats.rbegin()->seat_id() << '\n';
 
   for (auto i = 0; i < seats.size() - 1; ++i) {
-    if (seats[i].seat_id() != seats[i + 1].seat_id() - 1) {
+    auto gap = seats[i + 1].seat_id() - seats[i].seat_id();
+    if (gap != 1) {
       std::cout << (seats[i].seat_id() + 1) << '\n';
     }
   }

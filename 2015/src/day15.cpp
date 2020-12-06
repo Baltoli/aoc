@@ -42,7 +42,7 @@ struct recipe {
     auto dur = std::accumulate(
         spoons.begin(), spoons.end(), 0,
         [this](auto const& acc, auto const& p) {
-          return acc + (coefs.at(p.first).capacity * p.second);
+          return acc + (coefs.at(p.first).durability * p.second);
         });
 
     auto fla = std::accumulate(

@@ -4,10 +4,16 @@
 #include <algorithm>
 #include <map>
 #include <numeric>
+#include <set>
 #include <string>
 #include <vector>
 
 struct ingredient {
+  template <typename Match>
+  ingredient(Match const& m)
+  {
+  }
+
   int capacity;
   int durability;
   int flavour;
@@ -25,6 +31,37 @@ struct recipe {
         [](auto const& acc, auto const& p) { return acc + p.second; });
   }
 
+  int score() const
+  {
+    auto cap = std::accumulate(
+        spoons.begin(), spoons.end(), 0,
+        [this](auto const& acc, auto const& p) {
+          return acc + (coefs.at(p.first).capacity * p.second);
+        });
+
+    auto dur = std::accumulate(
+        spoons.begin(), spoons.end(), 0,
+        [this](auto const& acc, auto const& p) {
+          return acc + (coefs.at(p.first).capacity * p.second);
+        });
+
+    auto fla = std::accumulate(
+        spoons.begin(), spoons.end(), 0,
+        [this](auto const& acc, auto const& p) {
+          return acc + (coefs.at(p.first).flavour * p.second);
+        });
+
+    auto tex = std::accumulate(
+        spoons.begin(), spoons.end(), 0,
+        [this](auto const& acc, auto const& p) {
+          return acc + (coefs.at(p.first).texture * p.second);
+        });
+
+    return (cap > 0 ? cap : 0) * (dur > 0 ? dur : 0) * (fla > 0 ? fla : 0)
+           * (tex > 0 ? tex : 0);
+  }
+
+  std::set<std::string>             names;
   std::map<std::string, ingredient> coefs;
   std::map<std::string, int>        spoons;
 };

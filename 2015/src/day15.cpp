@@ -33,6 +33,8 @@ struct recipe {
 
   int score() const
   {
+    constexpr auto clamp = [](auto i) { return i > 0 ? i : 0; };
+
     auto cap = std::accumulate(
         spoons.begin(), spoons.end(), 0,
         [this](auto const& acc, auto const& p) {
@@ -57,8 +59,7 @@ struct recipe {
           return acc + (coefs.at(p.first).texture * p.second);
         });
 
-    return (cap > 0 ? cap : 0) * (dur > 0 ? dur : 0) * (fla > 0 ? fla : 0)
-           * (tex > 0 ? tex : 0);
+    return clamp(cap) * clamp(dur) * clamp(fla) * clamp(tex);
   }
 
   std::set<std::string>             names;

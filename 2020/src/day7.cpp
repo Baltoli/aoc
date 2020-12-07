@@ -86,10 +86,15 @@ int unique_can_reach(std::string const& key, adj_t const& adj)
   return count - 1;
 }
 
-int contained(std::string const& key, adj_t const& adj)
+int contained(std::string const& key, adj_t const& adj, int scale = 1)
 {
-  // TODO?
-  return 0;
+  auto count = 0;
+
+  for (auto const& [con, n] : adj.at(key)) {
+    count += (n * scale) + contained(con, adj, n * scale);
+  }
+
+  return count;
 }
 
 int main()

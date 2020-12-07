@@ -3,6 +3,8 @@
 
 #include <iostream>
 #include <map>
+#include <queue>
+#include <set>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -31,8 +33,6 @@ adj_t read_adjacencies()
     auto line_rest = std::string_view(m.template get<rest_>());
     auto col       = m.template get<colour_>().str();
 
-    ret.try_emplace(col);
-
     auto rest = line_rest;
     while (auto rm = rest_pattern.match(rest)) {
       rest = rm.template get<rest_>();
@@ -44,11 +44,44 @@ adj_t read_adjacencies()
       auto to_col = rm.template get<colour_>().str();
       auto num    = rm.template get<num_>().str();
 
-      ret.at(col).try_emplace(to_col, utils::svtoi(num));
+      ret.try_emplace(col);
+      ret.try_emplace(to_col);
+      ret.at(to_col).emplace(col, utils::svtoi(num));
     }
   });
 
   return ret;
 }
 
-int main() { auto adj = read_adjacencies(); }
+int unique_can_reach(std::string const& key, adj_t const& adj)
+{
+  auto visited = std::set<std::string> {};
+  auto queue   = std::queue<std::string> {};
+  auto count   = 0;
+
+  queue.push(key);
+
+  while (!queue.empty()) {
+    auto node = queue.front();
+    queue.pop();
+
+    if (visited.find(node) != visited.end()) {
+      continue;
+    }
+
+    for (auto const& [container, n] : adj.at(node)) {
+      queue.push(container);
+    }
+
+    ++count;
+    visited.insert(node);
+  }
+
+  return count - 1;
+}
+
+int main()
+{
+  auto adj = read_adjacencies();
+  std::cout << unique_can_reach("shiny gold", adj) << '\n';
+}

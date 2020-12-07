@@ -61,14 +61,11 @@ best_scoring(std::vector<std::vector<int>> const& ingreds, bool cals)
   for (auto m1 = 0; m1 < 100; ++m1) {
     for (auto m2 = 0; m2 < m1; ++m2) {
       for (auto m3 = 0; m3 < m2; ++m3) {
-        auto c1 = m3;
-        auto c2 = m2 - m3;
-        auto c3 = m1 - m2;
-        auto c4 = 100 - m1;
+        auto v    = std::vector {m3, m2 - m3, m1 - m2, 100 - m1};
+        auto test = score(v, ingreds, cals);
 
-        auto test = score({c1, c2, c3, c4}, ingreds, cals);
         if (test > max_score) {
-          best      = {c1, c2, c3, c4};
+          best      = v;
           max_score = test;
         }
       }

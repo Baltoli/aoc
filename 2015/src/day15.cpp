@@ -85,9 +85,8 @@ int main()
 
   assert(ingreds.size() == 4);
 
-  auto best = best_scoring(ingreds, false);
-  std::cout << score(best, ingreds, false) << '\n';
-
-  best = best_scoring(ingreds, true);
-  std::cout << score(best, ingreds, true) << '\n';
+  for (auto b : {false, true}) {
+    auto best = best_scoring(ingreds, b);
+    std::cout << score(best, ingreds, b) << '\n';
+  }
 }

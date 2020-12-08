@@ -64,6 +64,10 @@ std::string md5_sum(std::string const& input)
 
 int svtoi(std::string_view sv)
 {
+  if (!sv.empty() && sv[0] == '+') {
+    sv = sv.substr(1);
+  }
+
   int result;
   std::from_chars(sv.data(), sv.data() + sv.size(), result);
   return result;

@@ -19,7 +19,7 @@ struct instruction {
 };
 
 struct computer {
-  computer(std::vector<instruction> const& p)
+  computer(std::vector<instruction>& p)
       : program(p)
       , executed(p.size(), false)
       , accumulator(0)
@@ -48,22 +48,65 @@ struct computer {
     }
   }
 
-  void run_until_loop()
+  bool run()
   {
     while (true) {
       if (executed.at(pc)) {
-        return;
+        return false;
       }
 
       executed.at(pc) = true;
       step();
+
+      if (pc == program.size()) {
+        return true;
+      }
     }
   }
 
-  std::vector<instruction> const& program;
-  std::vector<bool>               executed;
-  int                             accumulator;
-  int                             pc;
+  bool toggle(int i)
+  {
+    auto& inst = program.at(i);
+
+    if (inst.opcode == "nop") {
+      inst.opcode = "jmp";
+      return true;
+    }
+
+    if (inst.opcode == "jmp") {
+      inst.opcode = "nop";
+      return true;
+    }
+
+    return false;
+  }
+
+  void run_until_repaired()
+  {
+    for (auto i = 0; i < program.size(); ++i) {
+      reset();
+
+      if (toggle(i)) {
+        if (run()) {
+          return;
+        }
+
+        toggle(i);
+      }
+    }
+  }
+
+  void reset()
+  {
+    pc          = 0;
+    accumulator = 0;
+    std::fill(executed.begin(), executed.end(), false);
+  }
+
+  std::vector<instruction>& program;
+  std::vector<bool>         executed;
+  int                       accumulator;
+  int                       pc;
 };
 
 int main()
@@ -74,6 +117,9 @@ int main()
   });
 
   auto comp = computer(instrs);
-  comp.run_until_loop();
+  assert(comp.run() == false);
+  std::cout << comp.accumulator << '\n';
+
+  comp.run_until_repaired();
   std::cout << comp.accumulator << '\n';
 }

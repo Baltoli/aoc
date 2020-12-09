@@ -73,4 +73,6 @@ int svtoi(std::string_view sv)
   return result;
 }
 
+long stol(std::string const& s) { return std::stol(s); }
+
 } // namespace utils

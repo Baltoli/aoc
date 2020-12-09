@@ -4,10 +4,7 @@
 #include <set>
 #include <vector>
 
-std::vector<long> get_input()
-{
-  return utils::map_lines([](auto const& line) { return std::stol(line); });
-}
+std::vector<long> get_input() { return utils::map_lines(utils::stol); }
 
 long first_non_sum(int window, std::vector<long> const& nums)
 {

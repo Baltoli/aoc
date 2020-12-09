@@ -44,6 +44,7 @@ struct overload : Ts... {
 template <class... Ts>
 overload(Ts...) -> overload<Ts...>;
 
-int svtoi(std::string_view);
+int  svtoi(std::string_view);
+long stol(std::string const&);
 
 } // namespace utils

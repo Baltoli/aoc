@@ -46,3 +46,6 @@ target_link_libraries(2015-day16 utils)
 
 add_executable(2015-day17 src/day17.cpp)
 target_link_libraries(2015-day17 utils)
+
+add_executable(2015-day18 src/day18.cpp)
+target_link_libraries(2015-day18 utils)

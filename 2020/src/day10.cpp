@@ -23,6 +23,17 @@ int part_1(std::vector<int> in)
   return ones * threes;
 }
 
+int part_2(std::vector<int> in)
+{
+  /*
+   * Flip the arrows and walk the graph backwards - paths(N) = sum_(s in suc(N))
+   * paths(s)
+   *
+   * Memoize a table to avoid recursive blowup
+   */
+  return 0;
+}
+
 int main()
 {
   auto in = get_input();

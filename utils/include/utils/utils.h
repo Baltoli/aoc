@@ -46,5 +46,6 @@ overload(Ts...) -> overload<Ts...>;
 
 int  svtoi(std::string_view);
 long stol(std::string const&);
+int  stoi(std::string const&);
 
 } // namespace utils

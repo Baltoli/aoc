@@ -74,6 +74,34 @@ struct ship {
     }
   }
 
+  void way_step(instruction i)
+  {
+    switch (i.op) {
+    case mode::north:
+      way_y += i.arg;
+      break;
+    case mode::south:
+      way_y -= i.arg;
+      break;
+    case mode::east:
+      way_x += i.arg;
+      break;
+    case mode::west:
+      way_x -= i.arg;
+      break;
+    case mode::right:
+      rotate_right(i.arg);
+      break;
+    case mode::left:
+      rotate_left(i.arg);
+      break;
+    case mode::forward:
+      x += (way_x * i.arg);
+      y += (way_y * i.arg);
+      break;
+    }
+  }
+
   instruction from_heading(int arg)
   {
     if (heading >= 360) {
@@ -98,22 +126,55 @@ struct ship {
     }
   }
 
+  void rotate_right(int arg)
+  {
+    assert(arg >= 0 && arg < 360);
+
+    for (auto i = 0; i < arg; i += 90) {
+      auto old_x = way_x;
+      auto old_y = way_y;
+
+      way_x = old_y;
+      way_y = -old_x;
+    }
+  }
+
+  void rotate_left(int arg)
+  {
+    assert(arg >= 0 && arg < 360);
+
+    for (auto i = 0; i < arg; i += 90) {
+      auto old_x = way_x;
+      auto old_y = way_y;
+
+      way_x = -old_y;
+      way_y = old_x;
+    }
+  }
+
   int manhattan() const { return std::abs(x) + std::abs(y); }
 
   int x       = 0;
   int y       = 0;
+  int way_x   = 10;
+  int way_y   = 1;
   int heading = 90;
 };
 
 int main()
 {
-  auto s = ship();
   auto instrs
       = utils::map_lines([](auto const& line) { return instruction(line); });
 
+  auto s = ship();
   for (auto i : instrs) {
     s.step(i);
   }
-
   std::cout << s.manhattan() << '\n';
+
+  auto s2 = ship();
+  for (auto i : instrs) {
+    s2.way_step(i);
+  }
+  std::cout << s2.manhattan() << '\n';
 }

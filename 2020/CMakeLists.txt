@@ -33,3 +33,6 @@ target_link_libraries(2020-day11 utils)
 
 add_executable(2020-day12 src/day12.cpp)
 target_link_libraries(2020-day12 utils)
+
+add_executable(2020-day13 src/day13.cpp)
+target_link_libraries(2020-day13 utils)

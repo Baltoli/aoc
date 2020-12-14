@@ -91,7 +91,7 @@ long part_2(std::vector<long> const& ids)
   auto Ns = std::vector<long> {};
   auto Ms = std::vector<long> {};
   for (auto i = 0; i < mods.size(); ++i) {
-    auto prod = 1;
+    auto prod = 1L;
     for (auto j = 0; j < mods.size(); ++j) {
       if (i != j) {
         prod *= mods[j];
@@ -106,13 +106,10 @@ long part_2(std::vector<long> const& ids)
   auto sum  = 0L;
   auto prod = 1L;
   for (auto i = 0; i < mods.size(); ++i) {
-    std::cout << as[i] << " * " << Ns[i] << " * " << Ms[i] << " -> "
-              << (as[i] * Ns[i] * Ms[i]) << '\n';
     sum += as[i] * Ns[i] * Ms[i];
     prod *= mods[i];
   }
 
-  std::cout << sum << ' ' << prod << '\n';
   auto scale = sum / prod;
   return sum - ((scale - (sum < 0 ? 1 : 0)) * prod);
 }
@@ -123,6 +120,5 @@ int main()
   auto ids = read_ids();
 
   std::cout << part_1(t, ids) << '\n';
-  std::cout << part_2({17, 0, 13, 19}) << '\n';
   std::cout << part_2(ids) << '\n';
 }

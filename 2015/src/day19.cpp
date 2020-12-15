@@ -2,6 +2,8 @@
 #include <utils/utils.h>
 
 #include <iostream>
+#include <queue>
+#include <random>
 #include <string>
 #include <unordered_set>
 #include <vector>
@@ -21,7 +23,7 @@ struct replacement {
     to     = m.template get<to_>();
   }
 
-  std::unordered_set<std::string> apply_all(std::string s)
+  std::unordered_set<std::string> apply_all(std::string s) const
   {
     auto ret = std::unordered_set<std::string> {};
     auto pos = 0;
@@ -40,6 +42,13 @@ struct replacement {
     }
 
     return ret;
+  }
+
+  std::unordered_set<std::string> rev_apply_all(std::string s) const
+  {
+    auto rs = *this;
+    std::swap(rs.from, rs.to);
+    return rs.apply_all(s);
   }
 
   std::string from;
@@ -69,7 +78,7 @@ int part_1(std::vector<replacement> const& reps, std::string const& start)
 {
   auto all = std::unordered_set<std::string> {};
 
-  for (auto r : reps) {
+  for (auto const& r : reps) {
     for (auto new_str : r.apply_all(start)) {
       all.insert(new_str);
     }
@@ -78,8 +87,45 @@ int part_1(std::vector<replacement> const& reps, std::string const& start)
   return all.size();
 }
 
+int part_2(
+    std::vector<replacement> reps, std::string start, std::string const& target)
+{
+  auto current = start;
+  auto prev    = std::string {};
+  auto steps   = 0;
+
+  std::random_device rd;
+  std::mt19937       g(rd());
+
+  while (current != target) {
+    if (current == prev) {
+      current = start;
+      steps   = 0;
+    }
+
+    prev = current;
+    std::shuffle(reps.begin(), reps.end(), g);
+    for (auto const& r : reps) {
+      auto next = std::string::npos;
+      while (true) {
+        auto pos = current.rfind(r.to, next);
+        if (pos == std::string::npos) {
+          break;
+        }
+        next = pos - 1;
+
+        current.replace(pos, r.to.size(), r.from);
+        ++steps;
+      }
+    }
+  }
+
+  return steps;
+}
+
 int main()
 {
   auto [reps, start] = get_input();
   std::cout << part_1(reps, start) << '\n';
+  std::cout << part_2(reps, start, "e") << '\n';
 }

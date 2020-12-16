@@ -18,6 +18,8 @@ struct range {
     high   = utils::svtoi(m.template get<2>());
   }
 
+  bool contains(int i) const { return i >= low && i <= high; }
+
   int low;
   int high;
 };
@@ -31,6 +33,11 @@ struct field {
     name   = m.template get<1>().str();
     first  = range(m.template get<2>());
     second = range(m.template get<3>());
+  }
+
+  bool valid_data(int i) const
+  {
+    return first.contains(i) || second.contains(i);
   }
 
   std::string name;
@@ -98,8 +105,27 @@ input get_input()
   return {fields, mine, others};
 }
 
+int part_1(input const& in)
+{
+  auto sum = 0;
+
+  for (auto const& t : in.others) {
+    for (auto val : t.values) {
+      auto none = std::none_of(
+          in.fields.begin(), in.fields.end(),
+          [val](auto const& f) { return f.valid_data(val); });
+
+      if (none) {
+        sum += val;
+      }
+    }
+  }
+
+  return sum;
+}
+
 int main()
 {
   auto in = get_input();
-  ;
+  std::cout << part_1(in) << '\n';
 }

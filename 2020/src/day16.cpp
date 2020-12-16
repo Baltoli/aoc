@@ -2,6 +2,7 @@
 #include <utils/utils.h>
 
 #include <iostream>
+#include <unordered_set>
 #include <vector>
 
 using namespace ctre::literals;
@@ -66,6 +67,28 @@ struct input {
   std::vector<field>  fields;
   ticket              my_ticket;
   std::vector<ticket> others;
+
+  input clean() const
+  {
+    auto valid_ts = std::vector<ticket> {};
+    for (auto const& t : others) {
+      auto any_none = false;
+      for (auto val : t.values) {
+        auto none
+            = std::none_of(fields.begin(), fields.end(), [&](auto const& f) {
+                return f.valid_data(val);
+              });
+        if (none) {
+          any_none = true;
+        }
+      }
+
+      if (!any_none) {
+        valid_ts.push_back(t);
+      }
+    }
+    return {fields, my_ticket, valid_ts};
+  }
 };
 
 input get_input()
@@ -124,23 +147,65 @@ int part_1(input const& in)
   return sum;
 }
 
-int part_2(input const& in)
+long part_2(input const& in)
 {
-  // Sketch - start with a vec of sets of names, each initially containing all
-  // the possible field names
-  //
-  // Then, look at each valid ticket in turn against each field - if its value
-  // isn't compatible with a field, remove that name from the set at that
-  // position.
-  //
-  // This might not be a complete solution - look at each set, if only one name
-  // remove that name from all other sets until a unique solution.
-  return 2;
+  auto cand_sets = std::vector<std::unordered_set<std::string>>(
+      in.fields.size(), std::unordered_set<std::string> {});
+
+  for (auto f : in.fields) {
+    for (auto& s : cand_sets) {
+      s.insert(f.name);
+    }
+  }
+
+  auto check = [&](auto const& t) {
+    for (auto i = 0; i < t.values.size(); ++i) {
+      for (auto f : in.fields) {
+        if (!f.valid_data(t.values.at(i))) {
+          cand_sets.at(i).erase(f.name);
+        }
+      }
+    }
+  };
+
+  check(in.my_ticket);
+  for (auto const& t : in.others) {
+    check(t);
+  }
+
+  auto not_done = [&] {
+    return std::any_of(cand_sets.begin(), cand_sets.end(), [](auto const& cs) {
+      return cs.size() != 1;
+    });
+  };
+
+  while (not_done()) {
+    for (auto i = 0; i < cand_sets.size(); ++i) {
+      auto& cs = cand_sets.at(i);
+      if (cs.size() == 1) {
+        auto unique = *cs.begin();
+        for (auto j = 0; j < cand_sets.size(); ++j) {
+          if (i != j) {
+            cand_sets.at(j).erase(unique);
+          }
+        }
+      }
+    }
+  }
+
+  long prod = 1;
+  for (auto i = 0; i < cand_sets.size(); ++i) {
+    if (cand_sets.at(i).begin()->find("departure") == 0) {
+      prod *= in.my_ticket.values.at(i);
+    }
+  }
+
+  return prod;
 }
 
 int main()
 {
   auto in = get_input();
   std::cout << part_1(in) << '\n';
-  std::cout << part_2(in) << '\n';
+  std::cout << part_2(in.clean()) << '\n';
 }

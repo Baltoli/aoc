@@ -124,8 +124,23 @@ int part_1(input const& in)
   return sum;
 }
 
+int part_2(input const& in)
+{
+  // Sketch - start with a vec of sets of names, each initially containing all
+  // the possible field names
+  //
+  // Then, look at each valid ticket in turn against each field - if its value
+  // isn't compatible with a field, remove that name from the set at that
+  // position.
+  //
+  // This might not be a complete solution - look at each set, if only one name
+  // remove that name from all other sets until a unique solution.
+  return 2;
+}
+
 int main()
 {
   auto in = get_input();
   std::cout << part_1(in) << '\n';
+  std::cout << part_2(in) << '\n';
 }

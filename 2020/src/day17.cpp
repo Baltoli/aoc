@@ -7,63 +7,63 @@
 #include <unordered_set>
 #include <vector>
 
-struct coord {
+struct coord_3d {
   int x;
   int y;
   int z;
 
-  bool operator==(coord const& other) const noexcept
+  bool operator==(coord_3d const& other) const noexcept
   {
     return std::tie(x, y, z) == std::tie(other.x, other.y, other.z);
   }
 };
 
-struct coord_hash {
-  std::size_t operator()(coord const& c) const noexcept { return 0; }
+struct coord_4d {
+  int x;
+  int y;
+  int z;
+  int w;
+
+  bool operator==(coord_4d const& other) const noexcept
+  {
+    return std::tie(x, y, z, w) == std::tie(other.x, other.y, other.z, other.w);
+  }
 };
 
+namespace std {
+template <>
+struct hash<coord_3d> {
+  std::size_t operator()(coord_3d const& c) const noexcept
+  {
+    std::size_t seed = 0;
+    utils::hash_combine(seed, c.x, c.y, c.z);
+    return seed;
+  }
+};
+
+template <>
+struct hash<coord_4d> {
+  std::size_t operator()(coord_4d const& c) const noexcept
+  {
+    std::size_t seed = 0;
+    utils::hash_combine(seed, c.x, c.y, c.z, c.w);
+    return seed;
+  }
+};
+} // namespace std
+
+template <typename Coord>
 struct game {
   static constexpr char dead  = '.';
   static constexpr char alive = '#';
 
-  void dump()
-  {
-    auto min = coord {
-        std::numeric_limits<int>::max(), std::numeric_limits<int>::max(),
-        std::numeric_limits<int>::max()};
-
-    auto max = coord {
-        std::numeric_limits<int>::min(), std::numeric_limits<int>::min(),
-        std::numeric_limits<int>::min()};
-
-    for (auto const& [c, val] : data) {
-      min.x = std::min(min.x, c.x);
-      min.y = std::min(min.y, c.y);
-      min.z = std::min(min.z, c.z);
-      max.x = std::max(max.x, c.x);
-      max.y = std::max(max.y, c.y);
-      max.z = std::max(max.z, c.z);
-    }
-
-    for (auto z = min.z; z <= max.z; ++z) {
-      std::cout << "z=" << z << '\n';
-      for (auto y = min.y; y <= max.y; ++y) {
-        for (auto x = min.x; x <= max.x; ++x) {
-          std::cout << get(coord {x, y, z});
-        }
-        std::cout << '\n';
-      }
-      std::cout << '\n';
-    }
-  }
-
-  char& at(coord c)
+  char& at(Coord c)
   {
     data.try_emplace(c);
     return data.at(c);
   }
 
-  char get(coord c)
+  char get(Coord c)
   {
     if (data.find(c) == data.end()) {
       return dead;
@@ -73,20 +73,9 @@ struct game {
   }
 
   template <typename F>
-  void for_each_neighbour(coord c, F&& f)
-  {
-    for (auto dx = -1; dx <= 1; ++dx) {
-      for (auto dy = -1; dy <= 1; ++dy) {
-        for (auto dz = -1; dz <= 1; ++dz) {
-          if (dx != 0 || dy != 0 || dz != 0) {
-            std::forward<F>(f)(coord {c.x + dx, c.y + dy, c.z + dz});
-          }
-        }
-      }
-    }
-  }
+  void for_each_neighbour(Coord c, F&& f);
 
-  int count_neighbours(coord c)
+  int count_neighbours(Coord c)
   {
     int sum = 0;
     for_each_neighbour(
@@ -108,7 +97,7 @@ struct game {
   {
     auto blit = *this;
 
-    auto queue = std::unordered_set<coord, coord_hash> {};
+    auto queue = std::unordered_set<Coord> {};
     for (auto const& [c, val] : data) {
       queue.insert(c);
       for_each_neighbour(c, [&](auto const& nc) { queue.insert(nc); });
@@ -143,20 +132,59 @@ struct game {
     });
   }
 
-  std::unordered_map<coord, char, coord_hash> data {};
+  std::unordered_map<Coord, char> data {};
 };
+
+template <>
+template <typename F>
+void game<coord_3d>::for_each_neighbour(coord_3d c, F&& f)
+{
+  for (auto dx = -1; dx <= 1; ++dx) {
+    for (auto dy = -1; dy <= 1; ++dy) {
+      for (auto dz = -1; dz <= 1; ++dz) {
+        if (dx != 0 || dy != 0 || dz != 0) {
+          std::forward<F>(f)(coord_3d {c.x + dx, c.y + dy, c.z + dz});
+        }
+      }
+    }
+  }
+}
+
+template <>
+template <typename F>
+void game<coord_4d>::for_each_neighbour(coord_4d c, F&& f)
+{
+  for (auto dx = -1; dx <= 1; ++dx) {
+    for (auto dy = -1; dy <= 1; ++dy) {
+      for (auto dz = -1; dz <= 1; ++dz) {
+        for (auto dw = -1; dw <= 1; ++dw) {
+          if (dx != 0 || dy != 0 || dz != 0 || dw != 0) {
+            std::forward<F>(f)(
+                coord_4d {c.x + dx, c.y + dy, c.z + dz, c.w + dw});
+          }
+        }
+      }
+    }
+  }
+}
 
 int main()
 {
-  auto g = game();
+  auto g  = game<coord_3d>();
+  auto g2 = game<coord_4d>();
+
   auto y = 0;
   utils::for_each_line([&](auto const& line) {
     for (auto x = 0; x < line.size(); ++x) {
-      g.at(coord {x, y, 0}) = line.at(x);
+      g.at({x, y, 0})     = line.at(x);
+      g2.at({x, y, 0, 0}) = line.at(x);
     }
     ++y;
   });
 
   g.step(6);
   std::cout << g.count_alive() << '\n';
+
+  g2.step(6);
+  std::cout << g2.count_alive() << '\n';
 }

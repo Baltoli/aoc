@@ -49,7 +49,7 @@ struct game {
       std::cout << "z=" << z << '\n';
       for (auto y = min.y; y <= max.y; ++y) {
         for (auto x = min.x; x <= max.x; ++x) {
-          std::cout << get(x, y, z);
+          std::cout << get(coord {x, y, z});
         }
         std::cout << '\n';
       }
@@ -57,19 +57,19 @@ struct game {
     }
   }
 
-  char& at(int x, int y, int z)
+  char& at(coord c)
   {
-    data.try_emplace({x, y, z}, dead);
-    return data.at({x, y, z});
+    data.try_emplace(c);
+    return data.at(c);
   }
 
-  char get(int x, int y, int z)
+  char get(coord c)
   {
-    if (data.find({x, y, z}) == data.end()) {
+    if (data.find(c) == data.end()) {
       return dead;
     }
 
-    return data.at({x, y, z});
+    return data.at(c);
   }
 
   template <typename F>
@@ -89,9 +89,8 @@ struct game {
   int count_neighbours(coord c)
   {
     int sum = 0;
-    for_each_neighbour(c, [&](auto const& nc) {
-      return sum += (get(nc.x, nc.y, nc.z) == alive);
-    });
+    for_each_neighbour(
+        c, [&](auto const& nc) { return sum += (get(nc) == alive); });
     return sum;
   }
 
@@ -120,9 +119,9 @@ struct game {
       if (count == 2) {
         continue;
       } else if (count == 3) {
-        blit.at(c.x, c.y, c.z) = alive;
+        blit.at(c) = alive;
       } else {
-        blit.at(c.x, c.y, c.z) = dead;
+        blit.at(c) = dead;
       }
     }
 
@@ -153,7 +152,7 @@ int main()
   auto y = 0;
   utils::for_each_line([&](auto const& line) {
     for (auto x = 0; x < line.size(); ++x) {
-      g.at(x, y, 0) = line.at(x);
+      g.at(coord {x, y, 0}) = line.at(x);
     }
     ++y;
   });

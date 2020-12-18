@@ -73,6 +73,17 @@ int svtoi(std::string_view sv)
   return result;
 }
 
+long svtol(std::string_view sv)
+{
+  if (!sv.empty() && sv[0] == '+') {
+    sv = sv.substr(1);
+  }
+
+  long result;
+  std::from_chars(sv.data(), sv.data() + sv.size(), result);
+  return result;
+}
+
 long stol(std::string const& s) { return std::stol(s); }
 
 int stoi(std::string const& s) { return std::stoi(s); }

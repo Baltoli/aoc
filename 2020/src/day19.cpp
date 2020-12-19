@@ -1,9 +1,14 @@
+#include <utils/ctre.h>
 #include <utils/utils.h>
 
 #include <iostream>
 #include <memory>
+#include <sstream>
 #include <string_view>
+#include <unordered_map>
 #include <vector>
+
+using namespace ctre::literals;
 
 struct result {
   bool             success;
@@ -13,8 +18,10 @@ struct result {
 struct node {
   virtual ~node() = default;
 
-  virtual result match(std::string_view) const = 0;
+  virtual result      match(std::string_view) const = 0;
+  virtual std::string str() const                   = 0;
 };
+
 using regex = std::shared_ptr<node>;
 
 struct character final : public node {
@@ -30,6 +37,13 @@ struct character final : public node {
     } else {
       return {false, sv};
     }
+  }
+
+  std::string str() const override
+  {
+    std::stringstream ss;
+    ss << c;
+    return ss.str();
   }
 
   char c;
@@ -53,6 +67,15 @@ struct seq final : public node {
     return ret;
   }
 
+  std::string str() const override
+  {
+    std::stringstream ss;
+    for (auto const& p : parts) {
+      ss << ' ' << p->str() << ' ';
+    }
+    return ss.str();
+  }
+
   std::vector<regex> parts;
 };
 
@@ -73,8 +96,79 @@ struct choice final : public node {
     }
   }
 
+  std::string str() const override
+  {
+    std::stringstream ss;
+    ss << '(' << left->str() << " | " << right->str() << ')';
+    return ss.str();
+  }
+
   regex left;
   regex right;
+};
+
+struct rule_set {
+  void add(std::string_view s)
+  {
+    constexpr auto rule_pattern = "(\\d+): (.*)"_ctre;
+
+    auto m    = rule_pattern.match(s);
+    auto id   = utils::svtoi(m.template get<1>());
+    auto rest = std::string(m.template get<2>());
+
+    sources[id] = rest;
+  }
+
+  regex const& get(int id)
+  {
+    if (compiled.find(id) == compiled.end()) {
+      compiled[id] = compile(id);
+    }
+
+    return compiled.at(id);
+  }
+
+  regex parse_sequence(std::string const& src)
+  {
+    auto lit_pattern = "\"([a-z])\""_ctre;
+    auto ref_pattern = "(\\d+)"_ctre;
+
+    auto components = utils::split(src, " ");
+    auto seq_v      = std::vector<regex> {};
+
+    for (auto const& c : components) {
+      if (auto lm = lit_pattern.match(c)) {
+        auto c = std::make_shared<character>(lm.template get<1>().str()[0]);
+        seq_v.push_back(c);
+      } else if (auto rm = ref_pattern.match(c)) {
+        auto id = utils::svtoi(rm.template get<1>());
+        seq_v.push_back(get(id));
+      } else {
+        assert(false && "Bad seq");
+      }
+    }
+
+    return std::make_shared<seq>(seq_v);
+  }
+
+  regex compile(int id)
+  {
+    constexpr auto choice_pattern = "(.*) \\| (.*)"_ctre;
+
+    auto const& src = sources.at(id);
+    if (auto cm = choice_pattern.match(src)) {
+      auto lhs = parse_sequence(std::string(cm.template get<1>()));
+      auto rhs = parse_sequence(std::string(cm.template get<2>()));
+      return std::make_shared<choice>(lhs, rhs);
+    } else {
+      return parse_sequence(src);
+    }
+  }
+
+  regex const& root() { return get(0); }
+
+  std::unordered_map<int, std::string> sources  = {};
+  std::unordered_map<int, regex>       compiled = {};
 };
 
 void tests()
@@ -120,6 +214,31 @@ void tests()
 int main()
 {
   tests();
+
+  auto sum   = 0;
+  auto rules = rule_set {};
+
+  auto state = 0;
+  utils::for_each_line([&](auto const& line) {
+    if (line.empty()) {
+      ++state;
+      return;
+    }
+
+    if (state == 0) {
+      rules.add(line);
+    } else {
+      auto const& root = rules.root();
+      std::cout << root->str() << '\n';
+      auto [suc, rest] = root->match(line);
+      if (suc && rest.empty()) {
+        ++sum;
+      }
+    }
+  });
+
+  std::cout << sum << '\n';
+
   // Parsing - first pass collects all the regex sources into a map by ID. Then,
   // go through and parse them one by one - if one makes a reference to
   // something not already in the "compiled" map then compile it recursively and

@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <memory>
+#include <numeric>
 #include <sstream>
 #include <string_view>
 #include <unordered_map>
@@ -20,6 +21,7 @@ struct node {
 
   virtual result      match(std::string_view) const = 0;
   virtual std::string str() const                   = 0;
+  virtual int         min_length() const            = 0;
 };
 
 using regex = std::shared_ptr<node>;
@@ -46,6 +48,8 @@ struct character final : public node {
     return ss.str();
   }
 
+  int min_length() const override { return 1; }
+
   char c;
 };
 
@@ -71,9 +75,16 @@ struct seq final : public node {
   {
     std::stringstream ss;
     for (auto const& p : parts) {
-      ss << ' ' << p->str() << ' ';
+      ss << p->str();
     }
     return ss.str();
+  }
+
+  int min_length() const override
+  {
+    return std::accumulate(
+        parts.begin(), parts.end(), 0,
+        [](auto acc, auto const& p) { return acc + p->min_length(); });
   }
 
   std::vector<regex> parts;
@@ -103,6 +114,11 @@ struct choice final : public node {
     return ss.str();
   }
 
+  int min_length() const override
+  {
+    return std::min(left->min_length(), right->min_length());
+  }
+
   regex left;
   regex right;
 };
@@ -117,6 +133,38 @@ struct rule_set {
     auto rest = std::string(m.template get<2>());
 
     sources[id] = rest;
+  }
+
+  regex new_root()
+  {
+    constexpr auto reps    = 13;
+    constexpr auto max_len = 100;
+
+    regex ret = nullptr;
+
+    for (auto n_8 = 1; n_8 < reps; ++n_8) {
+      for (auto n_11 = 1; n_11 < reps; ++n_11) {
+        if (n_8 * 8 + n_11 * 16 < max_len) {
+          auto parts = std::vector<regex> {};
+
+          for (auto i = 0; i < n_8 + n_11; ++i) {
+            parts.push_back(get(42));
+          }
+
+          for (auto i = 0; i < n_11; ++i) {
+            parts.push_back(get(31));
+          }
+
+          if (!ret) {
+            ret = std::make_shared<seq>(parts);
+          } else {
+            ret = std::make_shared<choice>(ret, std::make_shared<seq>(parts));
+          }
+        }
+      }
+    }
+
+    return ret;
   }
 
   regex const& get(int id)
@@ -171,51 +219,10 @@ struct rule_set {
   std::unordered_map<int, regex>       compiled = {};
 };
 
-void tests()
-{
-  auto p1     = character('a');
-  auto [s, r] = p1.match("abacus");
-  assert(s && r == "bacus");
-
-  auto p2       = character('f');
-  auto [s2, r2] = p2.match("efrk");
-  assert(!s2 && r2 == "efrk");
-
-  auto seq1 = seq(
-      {std::make_shared<character>('a'), std::make_shared<character>('b'),
-       std::make_shared<character>('c')});
-  auto [s3, r3] = seq1.match("abcdefg");
-  assert(s3 && r3 == "defg");
-
-  auto seq2 = seq(
-      {std::make_shared<character>('b'),
-       std::make_shared<seq>(
-           std::vector<regex> {std::make_shared<character>('c')})});
-  auto [s4, r4] = seq2.match("bdef");
-  assert(!s4 && r4 == "bdef");
-
-  auto or1 = choice(
-      std::make_shared<character>('a'), std::make_shared<character>('b'));
-  auto [s5, r5] = or1.match("aihu");
-  auto [s6, r6] = or1.match("biho");
-  assert(s5 && s6 && r5 == "ihu" && r6 == "iho");
-
-  auto or2 = choice(
-      std::make_shared<character>('c'),
-      std::make_shared<seq>(std::vector<regex> {
-          std::make_shared<character>('a'), std::make_shared<character>('b')}));
-  auto [s7, r7] = or2.match("cfij");
-  auto [s8, r8] = or2.match("abprl");
-  auto [s9, r9] = or2.match("jjj");
-  assert(s7 && s8 && r7 == "fij" && r8 == "prl");
-  assert(!s9 && r9 == "jjj");
-}
-
 int main()
 {
-  tests();
-
   auto sum   = 0;
+  auto sum_2 = 0;
   auto rules = rule_set {};
 
   auto state = 0;
@@ -233,15 +240,15 @@ int main()
       if (suc && rest.empty()) {
         ++sum;
       }
+
+      auto const& root_2 = rules.new_root();
+      auto [suc2, rest2] = root_2->match(line);
+      if (suc2 && rest2.empty()) {
+        ++sum_2;
+      }
     }
   });
 
   std::cout << sum << '\n';
-
-  // Parsing - first pass collects all the regex sources into a map by ID. Then,
-  // go through and parse them one by one - if one makes a reference to
-  // something not already in the "compiled" map then compile it recursively and
-  // do so.
-  // Memoizing like this means that we compile each regex exactly once, and
-  // sharing pointers to safe structures means no exponential allocation.
+  std::cout << sum_2 << '\n';
 }

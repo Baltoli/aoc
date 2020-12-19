@@ -17,11 +17,8 @@ struct result {
 };
 
 struct node {
-  virtual ~node() = default;
-
-  virtual result      match(std::string_view) const = 0;
-  virtual std::string str() const                   = 0;
-  virtual int         min_length() const            = 0;
+  virtual ~node()                              = default;
+  virtual result match(std::string_view) const = 0;
 };
 
 using regex = std::shared_ptr<node>;
@@ -40,15 +37,6 @@ struct character final : public node {
       return {false, sv};
     }
   }
-
-  std::string str() const override
-  {
-    std::stringstream ss;
-    ss << c;
-    return ss.str();
-  }
-
-  int min_length() const override { return 1; }
 
   char c;
 };
@@ -71,22 +59,6 @@ struct seq final : public node {
     return ret;
   }
 
-  std::string str() const override
-  {
-    std::stringstream ss;
-    for (auto const& p : parts) {
-      ss << p->str();
-    }
-    return ss.str();
-  }
-
-  int min_length() const override
-  {
-    return std::accumulate(
-        parts.begin(), parts.end(), 0,
-        [](auto acc, auto const& p) { return acc + p->min_length(); });
-  }
-
   std::vector<regex> parts;
 };
 
@@ -105,18 +77,6 @@ struct choice final : public node {
     } else {
       return right->match(sv);
     }
-  }
-
-  std::string str() const override
-  {
-    std::stringstream ss;
-    ss << '(' << left->str() << " | " << right->str() << ')';
-    return ss.str();
-  }
-
-  int min_length() const override
-  {
-    return std::min(left->min_length(), right->min_length());
   }
 
   regex left;

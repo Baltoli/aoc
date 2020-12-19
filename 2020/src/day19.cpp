@@ -229,7 +229,6 @@ int main()
       rules.add(line);
     } else {
       auto const& root = rules.root();
-      std::cout << root->str() << '\n';
       auto [suc, rest] = root->match(line);
       if (suc && rest.empty()) {
         ++sum;

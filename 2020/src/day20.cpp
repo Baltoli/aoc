@@ -11,7 +11,8 @@
 
 using namespace ctre::literals;
 
-constexpr size_t tile_size = 10;
+constexpr size_t tile_size  = 10;
+constexpr auto   image_size = tile_size - 2;
 
 bool on(char c)
 {
@@ -60,6 +61,13 @@ struct tile {
       std::swap(ret.top()[i], ret.top()[tile_size - i - 1]);
       std::swap(ret.bottom()[i], ret.bottom()[tile_size - i - 1]);
     }
+
+    for (auto row = 0; row < image_size; ++row) {
+      for (auto col = 0; col < image_size / 2; ++col) {
+        std::swap(
+            ret.image_at(row, col), ret.image_at(row, image_size - col - 1));
+      }
+    }
     return ret;
   }
 
@@ -70,6 +78,13 @@ struct tile {
     for (auto i = 0; i < tile_size / 2; ++i) {
       std::swap(ret.left()[i], ret.left()[tile_size - i - 1]);
       std::swap(ret.right()[i], ret.right()[tile_size - i - 1]);
+    }
+
+    for (auto row = 0; row < image_size / 2; ++row) {
+      for (auto col = 0; col < image_size; ++col) {
+        std::swap(
+            ret.image_at(row, col), ret.image_at(image_size - row - 1, col));
+      }
     }
     return ret;
   }
@@ -83,6 +98,17 @@ struct tile {
         std::swap(ret.left()[i], ret.left()[tile_size - i - 1]);
         std::swap(ret.right()[i], ret.right()[tile_size - i - 1]);
       }
+
+      auto new_img = ret.image;
+      for (auto row = 0; row < image_size; ++row) {
+        for (auto col = 0; col < image_size; ++col) {
+          auto new_row = image_size - col - 1;
+          auto new_col = row;
+
+          new_img.at(new_row * image_size + new_col) = ret.image_at(row, col);
+        }
+      }
+      std::swap(new_img, ret.image);
     }
     return ret;
   }
@@ -282,6 +308,26 @@ struct solution {
     return true;
   }
 
+  std::vector<std::vector<char>> to_image()
+  {
+    auto ret = std::vector<std::vector<char>>(
+        dim * image_size, std::vector<char>(dim * image_size, '?'));
+
+    for (auto t_row = 0; t_row < dim; ++t_row) {
+      for (auto t_col = 0; t_col < dim; ++t_col) {
+        for (auto img_row = 0; img_row < image_size; ++img_row) {
+          for (auto img_col = 0; img_col < image_size; ++img_col) {
+            ret.at(t_row * image_size + img_row)
+                .at(t_col * image_size + img_col)
+                = arrangement.at(t_row).at(t_col).image_at(img_row, img_col);
+          }
+        }
+      }
+    }
+
+    return ret;
+  }
+
   void dump()
   {
     for (auto const& row : arrangement) {
@@ -302,6 +348,15 @@ long part_2(tile_set const& ts)
 {
   auto soln = solution(ts);
   soln.dump();
+
+  auto img = soln.to_image();
+  for (auto const& row : img) {
+    for (auto const& col : row) {
+      std::cout << col;
+    }
+    std::cout << '\n';
+  }
+
   return 0;
 }
 

@@ -3,6 +3,7 @@
 
 #include <array>
 #include <bitset>
+#include <iomanip>
 #include <iostream>
 #include <string>
 #include <unordered_map>
@@ -19,12 +20,16 @@ bool on(char c)
 }
 
 struct tile {
+  tile()
+      : id(0)
+      , edges {0, 0, 0, 0}
+  {
+  }
+
   tile(long i, std::vector<std::string> const& v)
       : id(i)
       , edges {0, 0, 0, 0}
   {
-    assert(v.size() == tile_size && "Bad size for lines vector");
-
     for (auto row = 0; row < tile_size; ++row) {
       auto chars = v[row];
 
@@ -39,9 +44,15 @@ struct tile {
       left()[row]  = on(chars[0]);
       right()[row] = on(chars[tile_size - 1]);
     }
+
+    for (auto row = 1; row < tile_size - 1; ++row) {
+      for (auto col = 1; col < tile_size - 1; ++col) {
+        image_at(row - 1, col - 1) = v[row][col];
+      }
+    }
   }
 
-  tile h_flip()
+  tile h_flip() const
   {
     auto ret = *this;
     std::swap(ret.left(), ret.right());
@@ -52,7 +63,7 @@ struct tile {
     return ret;
   }
 
-  tile v_flip()
+  tile v_flip() const
   {
     auto ret = *this;
     std::swap(ret.top(), ret.bottom());
@@ -63,21 +74,46 @@ struct tile {
     return ret;
   }
 
+  tile rotated(int times) const
+  {
+    auto ret = *this;
+    for (auto i = 0; i < times; ++i) {
+      std::rotate(ret.edges.begin(), ret.edges.begin() + 1, ret.edges.end());
+      for (auto i = 0; i < tile_size / 2; ++i) {
+        std::swap(ret.left()[i], ret.left()[tile_size - i - 1]);
+        std::swap(ret.right()[i], ret.right()[tile_size - i - 1]);
+      }
+    }
+    return ret;
+  }
+
   bool operator==(tile const& other) const
   {
     return std::tie(id, edges) == std::tie(other.id, other.edges);
   }
 
-  std::bitset<tile_size>& top() { return edges[0]; }
-  std::bitset<tile_size>& right() { return edges[1]; }
-  std::bitset<tile_size>& bottom() { return edges[2]; }
-  std::bitset<tile_size>& left() { return edges[3]; }
+  char& image_at(int row, int col)
+  {
+    return image[row * (tile_size - 2) + col];
+  }
+
+  std::array<char, (tile_size - 2) * (tile_size - 2)> image;
+
+  std::bitset<tile_size>&       top() { return edges[0]; }
+  std::bitset<tile_size>&       right() { return edges[1]; }
+  std::bitset<tile_size>&       bottom() { return edges[2]; }
+  std::bitset<tile_size>&       left() { return edges[3]; }
+  std::bitset<tile_size> const& top() const { return edges[0]; }
+  std::bitset<tile_size> const& right() const { return edges[1]; }
+  std::bitset<tile_size> const& bottom() const { return edges[2]; }
+  std::bitset<tile_size> const& left() const { return edges[3]; }
 
   long id;
 
   // 0 - top, 1 - right, 2 - bottom, 3 - left
   std::array<std::bitset<tile_size>, 4> edges;
 };
+using tile_set = std::unordered_set<tile>;
 
 namespace std {
 template <>
@@ -93,8 +129,6 @@ struct hash<tile> {
   }
 };
 } // namespace std
-
-using tile_set = std::unordered_set<tile>;
 
 tile_set get_input()
 {
@@ -167,14 +201,113 @@ std::unordered_set<long> unique_ids(tile_set const& ts)
   return ret;
 }
 
-int main()
+long part_1(tile_set const& ts)
 {
-  auto ts      = get_input();
   auto corners = find_corners(ts);
 
   auto prod = 1L;
   for (auto c : unique_ids(corners)) {
     prod *= c;
   }
-  std::cout << prod << '\n';
+
+  return prod;
+}
+
+struct solution {
+  solution(tile_set ts)
+      : tiles(ts)
+      , dim(std::sqrt(tiles.size() / 4))
+      , arrangement(dim, std::vector<tile>(dim, tile()))
+  {
+    auto count   = edge_counts(tiles);
+    auto corners = find_corners(tiles);
+
+    for (auto const& corner : corners) {
+      auto top  = corner.top().to_ulong();
+      auto left = corner.left().to_ulong();
+
+      if (count.at(top) == 2 && count.at(left) == 2) {
+        place(0, 0, corner);
+      }
+    }
+
+    for (auto i = 1; i < dim; ++i) {
+      for (auto const& t : tiles) {
+        if (placed.find(t.id) == placed.end()) {
+          for (auto rot = 0; rot < 4; ++rot) {
+            auto rot_t = t.rotated(rot);
+            if (rot_t.left() == arrangement[0][i - 1].right()
+                && count.at(rot_t.top().to_ulong()) == 2) {
+              place(0, i, rot_t);
+            }
+
+            if (rot_t.top() == arrangement[i - 1][0].bottom()
+                && count.at(rot_t.left().to_ulong()) == 2) {
+              place(i, 0, rot_t);
+            }
+          }
+        }
+      }
+    }
+
+    for (auto row = 1; row < dim; ++row) {
+      for (auto col = 1; col < dim; ++col) {
+        for (auto const& t : tiles) {
+          if (placed.find(t.id) == placed.end()) {
+            for (auto rot = 0; rot < 4; ++rot) {
+              auto rot_t = t.rotated(rot);
+              if (rot_t.left() == arrangement[row][col - 1].right()
+                  && rot_t.top() == arrangement[row - 1][col].bottom()) {
+                place(row, col, rot_t);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  bool place(int row, int col, tile t)
+  {
+    if (placed.find(t.id) != placed.end()) {
+      return false;
+    }
+
+    if (arrangement[row][col].id > 0) {
+      return false;
+    }
+
+    placed.insert(t.id);
+    arrangement[row][col] = t;
+    return true;
+  }
+
+  void dump()
+  {
+    for (auto const& row : arrangement) {
+      for (auto const& t : row) {
+        std::cout << std::setw(4) << t.id << ' ';
+      }
+      std::cout << '\n';
+    }
+  }
+
+  tile_set                       tiles;
+  int                            dim;
+  std::unordered_set<long>       placed;
+  std::vector<std::vector<tile>> arrangement;
+};
+
+long part_2(tile_set const& ts)
+{
+  auto soln = solution(ts);
+  soln.dump();
+  return 0;
+}
+
+int main()
+{
+  auto ts = get_input();
+  std::cout << part_1(ts) << '\n';
+  std::cout << part_2(ts) << '\n';
 }

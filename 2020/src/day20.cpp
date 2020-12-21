@@ -5,6 +5,7 @@
 #include <bitset>
 #include <iomanip>
 #include <iostream>
+#include <numeric>
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
@@ -140,6 +141,7 @@ struct tile {
   std::array<std::bitset<tile_size>, 4> edges;
 };
 using tile_set = std::unordered_set<tile>;
+using image    = std::vector<std::vector<char>>;
 
 namespace std {
 template <>
@@ -308,10 +310,10 @@ struct solution {
     return true;
   }
 
-  std::vector<std::vector<char>> to_image()
+  image to_image()
   {
-    auto ret = std::vector<std::vector<char>>(
-        dim * image_size, std::vector<char>(dim * image_size, '?'));
+    auto ret
+        = image(dim * image_size, std::vector<char>(dim * image_size, '?'));
 
     for (auto t_row = 0; t_row < dim; ++t_row) {
       for (auto t_col = 0; t_col < dim; ++t_col) {
@@ -344,17 +346,128 @@ struct solution {
   std::vector<std::vector<tile>> arrangement;
 };
 
+image h_flip(image in)
+{
+  auto out = in;
+  for (auto row = 0; row < in.size(); ++row) {
+    for (auto col = 0; col < in[0].size() / 2; ++col) {
+      std::swap(out.at(row).at(col), out.at(row).at(in[0].size() - col - 1));
+    }
+  }
+  return out;
+}
+
+image v_flip(image in)
+{
+  auto out = in;
+  for (auto row = 0; row < in.size() / 2; ++row) {
+    for (auto col = 0; col < in[0].size(); ++col) {
+      std::swap(out.at(row).at(col), out.at(in.size() - row - 1).at(col));
+    }
+  }
+  return out;
+}
+
+image rotated(image in, int times)
+{
+  auto out = in;
+
+  for (auto i = 0; i < times; ++i) {
+    for (auto row = 0; row < in.size(); ++row) {
+      for (auto col = 0; col < in[0].size(); ++col) {
+        auto new_row = in[0].size() - col - 1;
+        auto new_col = row;
+
+        out.at(new_row).at(new_col) = in.at(row).at(col);
+      }
+    }
+    in = out;
+  }
+  return out;
+}
+
+std::vector<std::string> monster()
+{
+  return {
+      "                  # ", "#    ##    ##    ###", " #  #  #  #  #  #   "};
+}
+
+bool monster_at(image const& in, int row, int col)
+{
+  auto m  = monster();
+  auto mw = m[0].size();
+  auto mh = m.size();
+  auto iw = in[0].size();
+  auto ih = in.size();
+
+  if (row + mh >= ih || col + mw >= iw) {
+    return false;
+  }
+
+  bool all = true;
+  for (auto dx = 0; dx < mw; ++dx) {
+    for (auto dy = 0; dy < mh; ++dy) {
+      if (m.at(dy).at(dx) == '#') {
+        all = all && (in.at(row + dy).at(col + dx) == '#');
+      }
+    }
+  }
+
+  return all;
+}
+
+void demonster(image& var)
+{
+  auto m  = monster();
+  auto mw = m[0].size();
+  auto mh = m.size();
+  auto iw = var[0].size();
+  auto ih = var.size();
+
+  for (auto row = 0; row < var[0].size(); ++row) {
+    for (auto col = 0; col < var.size(); ++col) {
+      if (monster_at(var, row, col)) {
+        for (auto dx = 0; dx < mw; ++dx) {
+          for (auto dy = 0; dy < mh; ++dy) {
+            if (m.at(dy).at(dx) == '#') {
+              var.at(row + dy).at(col + dx) = '@';
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+long count_rough(image const& in)
+{
+  return std::accumulate(
+      in.begin(), in.end(), 0, [](auto acc, auto const& row) {
+        return acc + std::count(row.begin(), row.end(), '#');
+      });
+}
+
 long part_2(tile_set const& ts)
 {
   auto soln = solution(ts);
-  soln.dump();
 
-  auto img = soln.to_image();
-  for (auto const& row : img) {
-    for (auto const& col : row) {
-      std::cout << col;
+  auto img        = soln.to_image();
+  auto flips      = std::vector {img, h_flip(img), v_flip(img)};
+  auto all_images = std::vector<image> {};
+
+  for (auto f : flips) {
+    for (auto i = 0; i < 4; ++i) {
+      all_images.push_back(rotated(f, i));
     }
-    std::cout << '\n';
+  }
+
+  for (auto& var : all_images) {
+    auto pre = count_rough(var);
+    demonster(var);
+    auto post = count_rough(var);
+    if (post < pre) {
+      return post;
+    }
   }
 
   return 0;

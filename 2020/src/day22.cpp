@@ -100,6 +100,7 @@ struct game {
       }
 
       auto rec = game({rec_p1, rec_p2});
+      rec.shortcut();
       while (!rec.complete()) {
         rec.recursive_step();
       }
@@ -148,6 +149,23 @@ struct game {
       return players.at(winner).score();
     } else {
       return 0;
+    }
+  }
+
+  void shortcut()
+  {
+    auto max_card = std::numeric_limits<int>::min();
+    for (auto const& p : players) {
+      for (auto const& c : p.cards) {
+        if (c > max_card) {
+          max_card = c;
+        }
+      }
+    }
+
+    if (std::find(players[0].cards.begin(), players[0].cards.end(), max_card)
+        != players[0].cards.end()) {
+      winner = 0;
     }
   }
 

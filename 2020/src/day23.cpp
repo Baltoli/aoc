@@ -3,6 +3,7 @@
 #include <iostream>
 #include <list>
 #include <sstream>
+#include <unordered_map>
 #include <vector>
 
 template <typename It>
@@ -64,6 +65,11 @@ void step(std::list<long>& xs, long n)
   auto max = *std::max_element(xs.begin(), xs.end());
   auto min = *std::min_element(xs.begin(), xs.end());
 
+  auto cache = std::unordered_map<long, std::list<long>::iterator> {};
+  for (auto it = xs.begin(); it != xs.end(); ++it) {
+    cache[*it] = it;
+  }
+
   for (auto i = 0; i < n; ++i) {
     auto current = *ptr;
     auto dest    = *ptr - 1;
@@ -77,8 +83,14 @@ void step(std::list<long>& xs, long n)
     }
 
     if (any) {
+      std::cout << i << '\n';
       std::rotate(xs.begin(), ptr, xs.end());
       ptr = xs.begin();
+
+      cache.clear();
+      for (auto it = xs.begin(); it != xs.end(); ++it) {
+        cache[*it] = it;
+      }
     }
 
     auto cut_begin = std::next(ptr);
@@ -91,16 +103,17 @@ void step(std::list<long>& xs, long n)
       }
     }
 
-    auto dest_it = std::next(std::find(xs.begin(), xs.end(), dest));
+    auto dest_it = cache.at(dest);
+    assert(*dest_it == dest);
 
-    for (auto cut_it = cut_begin; cut_it != cut_end; ++cut_it) {
-      auto v = *cut_it;
-      xs.insert(dest_it, v);
+    for (auto cut_it = std::prev(cut_end); cut_it != std::prev(cut_begin);
+         --cut_it) {
+      auto v   = *cut_it;
+      auto ip  = xs.insert(std::next(dest_it), v);
+      cache[v] = ip;
     }
 
-    for (auto cut_it = cut_begin; cut_it != cut_end; ++cut_it) {
-      xs.erase(cut_it);
-    }
+    xs.erase(cut_begin, cut_end);
 
     if (std::next(ptr) == xs.end()) {
       ptr = xs.begin();

@@ -4,6 +4,7 @@
 #include <iostream>
 #include <string_view>
 #include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 using namespace ctre::literals;
@@ -113,9 +114,57 @@ std::vector<move> parse_line(std::string_view line)
   return ret;
 }
 
+std::vector<point> neighbours(point const& p)
+{
+  auto ret = std::vector<point> {};
+  for (auto m : {move::E, move::SE, move::SW, move::W, move::NW, move::NE}) {
+    ret.push_back(p + m);
+  }
+  return ret;
+}
+
+int count_neighbours(std::unordered_set<point> const& floor, point const& p)
+{
+  int ret = 0;
+  for (auto np : neighbours(p)) {
+    if (floor.find(np) != floor.end()) {
+      ++ret;
+    }
+  }
+  return ret;
+}
+
+void step(std::unordered_set<point>& floor)
+{
+  auto queue     = std::unordered_set<point> {};
+  auto new_floor = std::unordered_set<point> {};
+
+  for (auto p : floor) {
+    queue.insert(p);
+    for (auto n : neighbours(p)) {
+      queue.insert(n);
+    }
+  }
+
+  for (auto p : queue) {
+    auto nc = count_neighbours(floor, p);
+    if (floor.find(p) != floor.end()) {
+      if (nc == 1 || nc == 2) {
+        new_floor.insert(p);
+      }
+    } else {
+      if (nc == 2) {
+        new_floor.insert(p);
+      }
+    }
+  }
+
+  floor = new_floor;
+}
+
 int main()
 {
-  auto floor = std::unordered_map<point, bool> {};
+  auto floor = std::unordered_set<point> {};
 
   utils::for_each_line([&](auto const& line) {
     auto moves = parse_line(line);
@@ -124,11 +173,18 @@ int main()
       p += m;
     }
 
-    floor.try_emplace(p, false);
-    floor.at(p) = !floor.at(p);
+    if (floor.find(p) != floor.end()) {
+      floor.erase(p);
+    } else {
+      floor.insert(p);
+    }
   });
 
-  std::cout << std::count_if(floor.begin(), floor.end(), [](auto const& p) {
-    return p.second;
-  }) << '\n';
+  std::cout << floor.size() << '\n';
+
+  for (auto i = 0; i < 100; ++i) {
+    step(floor);
+  }
+
+  std::cout << floor.size() << '\n';
 }

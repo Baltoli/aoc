@@ -83,7 +83,6 @@ void step(std::list<long>& xs, long n)
     }
 
     if (any) {
-      std::cout << i << '\n';
       std::rotate(xs.begin(), ptr, xs.end());
       ptr = xs.begin();
 

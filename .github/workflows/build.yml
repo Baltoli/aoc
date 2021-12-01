@@ -3,6 +3,11 @@ name: Build
 on: [push]
 
 jobs:
+  apt-install:
+    runs-on: ubuntu-latest
+    steps:
+    - run: sudo apt install gcc-11 g++-11
+
   build:
     strategy:
       matrix:

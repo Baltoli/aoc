@@ -1,6 +1,7 @@
 #include <utils/ctre.h>
 #include <utils/utils.h>
 
+#include <cassert>
 #include <iostream>
 #include <memory>
 #include <string_view>

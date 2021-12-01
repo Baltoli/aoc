@@ -1,5 +1,6 @@
 #include <utils/utils.h>
 
+#include <cassert>
 #include <cmath>
 #include <iostream>
 #include <numeric>

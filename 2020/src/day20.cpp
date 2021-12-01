@@ -3,6 +3,8 @@
 
 #include <array>
 #include <bitset>
+#include <cassert>
+#include <cmath>
 #include <iomanip>
 #include <iostream>
 #include <numeric>
@@ -14,6 +16,14 @@ using namespace ctre::literals;
 
 constexpr size_t tile_size  = 10;
 constexpr auto   image_size = tile_size - 2;
+
+template <typename T>
+void bit_swap(T l, T r)
+{
+  auto tmp = static_cast<bool>(l);
+  r        = static_cast<bool>(r);
+  l        = static_cast<bool>(tmp);
+}
 
 bool on(char c)
 {
@@ -59,13 +69,13 @@ struct tile {
     auto ret = *this;
     std::swap(ret.left(), ret.right());
     for (auto i = 0; i < tile_size / 2; ++i) {
-      std::swap(ret.top()[i], ret.top()[tile_size - i - 1]);
-      std::swap(ret.bottom()[i], ret.bottom()[tile_size - i - 1]);
+      bit_swap(ret.top()[i], ret.top()[tile_size - i - 1]);
+      bit_swap(ret.bottom()[i], ret.bottom()[tile_size - i - 1]);
     }
 
     for (auto row = 0; row < image_size; ++row) {
       for (auto col = 0; col < image_size / 2; ++col) {
-        std::swap(
+        bit_swap(
             ret.image_at(row, col), ret.image_at(row, image_size - col - 1));
       }
     }
@@ -77,13 +87,13 @@ struct tile {
     auto ret = *this;
     std::swap(ret.top(), ret.bottom());
     for (auto i = 0; i < tile_size / 2; ++i) {
-      std::swap(ret.left()[i], ret.left()[tile_size - i - 1]);
-      std::swap(ret.right()[i], ret.right()[tile_size - i - 1]);
+      bit_swap(ret.left()[i], ret.left()[tile_size - i - 1]);
+      bit_swap(ret.right()[i], ret.right()[tile_size - i - 1]);
     }
 
     for (auto row = 0; row < image_size / 2; ++row) {
       for (auto col = 0; col < image_size; ++col) {
-        std::swap(
+        bit_swap(
             ret.image_at(row, col), ret.image_at(image_size - row - 1, col));
       }
     }
@@ -96,8 +106,8 @@ struct tile {
     for (auto i = 0; i < times; ++i) {
       std::rotate(ret.edges.begin(), ret.edges.begin() + 1, ret.edges.end());
       for (auto i = 0; i < tile_size / 2; ++i) {
-        std::swap(ret.left()[i], ret.left()[tile_size - i - 1]);
-        std::swap(ret.right()[i], ret.right()[tile_size - i - 1]);
+        bit_swap(ret.left()[i], ret.left()[tile_size - i - 1]);
+        bit_swap(ret.right()[i], ret.right()[tile_size - i - 1]);
       }
 
       auto new_img = ret.image;

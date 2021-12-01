@@ -1,5 +1,6 @@
 #include <utils/utils.h>
 
+#include <cassert>
 #include <iostream>
 
 enum class mode { north, south, east, west, left, right, forward };

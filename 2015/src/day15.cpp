@@ -9,10 +9,10 @@
 #include <string>
 #include <vector>
 
-using namespace ctre::literals;
-
 std::vector<int> coefs(std::string_view line)
 {
+  using namespace ctre::literals;
+
   constexpr auto pattern
       = "\\w+: \\w+ (-?\\d+), \\w+ (-?\\d+), \\w+ (-?\\d+), \\w+ (-?\\d+), \\w+ (\\d+)"_ctre;
   auto m = pattern.match(line);

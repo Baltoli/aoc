@@ -7,8 +7,6 @@
 #include <unordered_map>
 #include <vector>
 
-using namespace ctre::literals;
-
 constexpr ctll::fixed_string name_  = "name";
 constexpr ctll::fixed_string speed_ = "speed";
 constexpr ctll::fixed_string time_  = "time";
@@ -78,6 +76,8 @@ int part_2(std::vector<reindeer> const& rs)
 
 int main()
 {
+  using namespace ctre::literals;
+
   constexpr auto line_pattern
       = "(?<name>[A-Z][a-z]+) can fly (?<speed>\\d+) km/s for (?<time>\\d+) seconds, but then must rest for (?<rest>\\d+) seconds."_ctre;
 

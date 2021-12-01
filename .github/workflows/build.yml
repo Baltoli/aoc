@@ -3,22 +3,33 @@ name: Build
 on: [push]
 
 jobs:
-  apt-install:
+  ubuntu:
     runs-on: ubuntu-latest
     steps:
-    - run: sudo apt install gcc-11 g++-11
+    - name: Install dependencies
+      run: sudo apt install gcc-11 g++-11
 
-  build:
-    strategy:
-      matrix:
-        os: [ubuntu-latest, macos-latest]
-    runs-on: ${{ matrix.os }}
-    steps:
-    - uses: actions/checkout@v2.3.4
+    - name: Check out code
+      uses: actions/checkout@v2.3.4
 
     - name: Build solutions
       run: |
         mkdir build
         cd build
-        cmake ..
+        cmake \
+          -DCMAKE_C_COMPILER=gcc-11 \
+          -DCMAKE_CXX_COMPILER=g++11 \
+          ..
         make -j `nproc`
+
+  # macos:
+  #   runs-on: macos-latest
+  #   steps:
+  #   - uses: actions/checkout@v2.3.4
+
+  #   - name: Build solutions
+  #     run: |
+  #       mkdir build
+  #       cd build
+  #       cmake ..
+  #       make -j `nproc`

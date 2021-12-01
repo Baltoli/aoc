@@ -18,18 +18,18 @@ jobs:
         cd build
         cmake \
           -DCMAKE_C_COMPILER=gcc-11 \
-          -DCMAKE_CXX_COMPILER=g++11 \
+          -DCMAKE_CXX_COMPILER=g++-11 \
           ..
         make -j `nproc`
 
-  # macos:
-  #   runs-on: macos-latest
-  #   steps:
-  #   - uses: actions/checkout@v2.3.4
+  macos:
+    runs-on: macos-latest
+    - name: Check out code
+      uses: actions/checkout@v2.3.4
 
-  #   - name: Build solutions
-  #     run: |
-  #       mkdir build
-  #       cd build
-  #       cmake ..
-  #       make -j `nproc`
+    - name: Build solutions
+      run: |
+        mkdir build
+        cd build
+        cmake ..
+        make -j `nproc`

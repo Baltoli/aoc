@@ -1,0 +1,19 @@
+name: Build
+
+on: [push]
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+    - uses: actions/checkout@v2.3.4
+
+    - name: Build solutions
+      run: |
+        mkdir build
+        cd build
+        cmake ..
+        make -j `nproc`

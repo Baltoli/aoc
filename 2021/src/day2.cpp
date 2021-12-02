@@ -57,7 +57,7 @@ int main()
 {
   constexpr auto pattern = R"(([a-z]+) (\d+))"_ctre;
 
-  auto input = utils::map_lines([](auto const& line) {
+  auto input = utils::map_lines([&](auto const& line) {
     auto m = pattern.match(line);
     return instruction {
         std::string(m.template get<1>()), utils::svtol(m.template get<2>())};

@@ -8,4 +8,4 @@
 | 2018 | ![](https://img.shields.io/badge/stars%20⭐-4-yellow?2018) |
 | 2019 | ![](https://img.shields.io/badge/stars%20⭐-4-yellow?2019) |
 | 2020 | ![](https://img.shields.io/badge/stars%20⭐-4-yellow?2020) |
-| 2021 | ![](https://img.shields.io/badge/stars%20⭐-50-yellow?2021) |
+| 2021 | ![](https://img.shields.io/badge/stars%20⭐-4) |

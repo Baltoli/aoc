@@ -12,42 +12,49 @@ jobs:
           
       - uses: joblo2213/aoc-badges-action@v3
         with:
+          year: 2015
           userid: 27727                          
           session: ${{ secrets.AOC_SESSION }}    
           starsRegex: '(?<=https:\/\/img\.shields\.io\/badge\/stars%20⭐-)[0-9]+(?=-yellow)(?=.*2015)'
 
       - uses: joblo2213/aoc-badges-action@v3
         with:
+          year: 2016
           userid: 27727                          
           session: ${{ secrets.AOC_SESSION }}    
           starsRegex: '(?<=https:\/\/img\.shields\.io\/badge\/stars%20⭐-)[0-9]+(?=-yellow)(?=.*2016)'
 
       - uses: joblo2213/aoc-badges-action@v3
         with:
+          year: 2017
           userid: 27727                          
           session: ${{ secrets.AOC_SESSION }}    
           starsRegex: '(?<=https:\/\/img\.shields\.io\/badge\/stars%20⭐-)[0-9]+(?=-yellow)(?=.*2017)'
 
       - uses: joblo2213/aoc-badges-action@v3
         with:
+          year: 2018
           userid: 27727                          
           session: ${{ secrets.AOC_SESSION }}    
           starsRegex: '(?<=https:\/\/img\.shields\.io\/badge\/stars%20⭐-)[0-9]+(?=-yellow)(?=.*2018)'
 
       - uses: joblo2213/aoc-badges-action@v3
         with:
+          year: 2019
           userid: 27727                          
           session: ${{ secrets.AOC_SESSION }}    
           starsRegex: '(?<=https:\/\/img\.shields\.io\/badge\/stars%20⭐-)[0-9]+(?=-yellow)(?=.*2019)'
 
       - uses: joblo2213/aoc-badges-action@v3
         with:
+          year: 2020
           userid: 27727                          
           session: ${{ secrets.AOC_SESSION }}    
           starsRegex: '(?<=https:\/\/img\.shields\.io\/badge\/stars%20⭐-)[0-9]+(?=-yellow)(?=.*2020)'
 
       - uses: joblo2213/aoc-badges-action@v3
         with:
+          year: 2021
           userid: 27727                          
           session: ${{ secrets.AOC_SESSION }}    
           starsRegex: '(?<=https:\/\/img\.shields\.io\/badge\/stars%20⭐-)[0-9]+(?=-yellow)(?=.*2021)'

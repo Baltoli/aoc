@@ -4,6 +4,7 @@
 #include <cassert>
 #include <iostream>
 #include <numeric>
+#include <set>
 #include <unordered_map>
 #include <unordered_set>
 
@@ -73,9 +74,12 @@ int shuffled_decode(
   return decode(pattern);
 }
 
-int part_2(std::vector<example> const& input)
+int part_2_worker(example const& ex)
 {
-  auto possible = std::unordered_map<char, std::unordered_set<char>> {};
+  auto possible = std::unordered_map<char, std::set<char>> {};
+  for (auto c = 'a'; c <= 'g'; ++c) {
+    possible[c] = {'a', 'b', 'c', 'd', 'e', 'f', 'g'};
+  }
 
   auto resolved = [&possible] {
     return std::all_of(possible.begin(), possible.end(), [](auto const& cs) {
@@ -83,7 +87,86 @@ int part_2(std::vector<example> const& input)
     });
   };
 
+  auto five_shared = std::set<char> {'a', 'b', 'c', 'd', 'e', 'f', 'g'};
+
+  for (auto const& in : ex.inputs) {
+    if (in.size() == 2) {
+      for (auto c : in) {
+        possible[c] = {'c', 'f'};
+      }
+    }
+
+    if (in.size() == 3) {
+      for (auto c : in) {
+        possible[c] = {'a', 'c', 'f'};
+      }
+    }
+
+    if (in.size() == 4) {
+      for (auto c : in) {
+        possible[c] = {'b', 'c', 'd', 'f'};
+      }
+    }
+
+    if (in.size() == 5) {
+      auto set    = std::set<char>(in.begin(), in.end());
+      auto result = std::set<char> {};
+
+      std::set_intersection(
+          five_shared.begin(), five_shared.end(), set.begin(), set.end(),
+          std::inserter(result, result.begin()));
+
+      five_shared = result;
+    }
+  }
+
+  for (auto& [k, cs] : possible) {
+    if (cs.size() != 2) {
+      cs.erase('c');
+      cs.erase('f');
+    }
+  }
+
+  for (auto& [k, cs] : possible) {
+    if (cs.size() != 2) {
+      cs.erase('b');
+      cs.erase('d');
+    }
+  }
+
+  for (auto& [k, cs] : possible) {
+    if (cs.size() != 1) {
+      cs.erase('a');
+    }
+  }
+
+  auto adg = std::set<char> {'a', 'd', 'g'};
+  for (auto c : five_shared) {
+    auto result = std::set<char> {};
+
+    std::set_intersection(
+        possible[c].begin(), possible[c].end(), adg.begin(), adg.end(),
+        std::inserter(result, result.begin()));
+
+    possible[c] = result;
+  }
+
+  for (auto e : possible) {
+    std::cout << e.first << " -> ";
+    for (auto c : e.second) {
+      std::cout << c << " ";
+    }
+    std::cout << '\n';
+  }
+
   return 0;
+}
+
+int part_2(std::vector<example> const& input)
+{
+  return std::accumulate(
+      input.begin(), input.end(), 0,
+      [](auto acc, auto const& ex) { return acc + part_2_worker(ex); });
 }
 
 int main()
@@ -91,5 +174,9 @@ int main()
   auto in = get_input();
 
   std::cout << part_1(in) << '\n';
-  std::cout << part_2(in) << '\n';
+  /* std::cout << part_2(in) << '\n'; */
+
+  auto dummy = example("acedgfb cdfbe gcdfa fbcad dab cefabd cdfgeb eafb "
+                       "cagedb ab | cdfeb fcadb cdfeb cdbaf");
+  std::cout << part_2({dummy}) << '\n';
 }

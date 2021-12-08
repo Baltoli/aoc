@@ -63,8 +63,7 @@ int decode(std::string pattern)
 }
 
 int shuffled_decode(
-    std::string                                               pattern,
-    std::unordered_map<char, std::unordered_set<char>> const& map)
+    std::string pattern, std::unordered_map<char, std::set<char>> const& map)
 {
   for (auto& c : pattern) {
     assert(map.at(c).size() == 1 && "Ambiguous pattern");
@@ -72,6 +71,24 @@ int shuffled_decode(
   }
 
   return decode(pattern);
+}
+
+template <typename Set>
+Set intersect(Set const& a, Set const& b)
+{
+  auto result = Set {};
+  std::set_intersection(
+      a.begin(), a.end(), b.begin(), b.end(),
+      std::inserter(result, result.begin()));
+  return result;
+}
+
+char invert(char c, std::unordered_map<char, std::set<char>> const& map)
+{
+  return std::find_if(
+             map.begin(), map.end(),
+             [c](auto const& e) { return e.second.contains(c); })
+      ->first;
 }
 
 int part_2_worker(example const& ex)
@@ -92,19 +109,19 @@ int part_2_worker(example const& ex)
   for (auto const& in : ex.inputs) {
     if (in.size() == 2) {
       for (auto c : in) {
-        possible[c] = {'c', 'f'};
+        possible[c] = intersect(possible[c], std::set {'c', 'f'});
       }
     }
 
     if (in.size() == 3) {
       for (auto c : in) {
-        possible[c] = {'a', 'c', 'f'};
+        possible[c] = intersect(possible[c], std::set {'a', 'c', 'f'});
       }
     }
 
     if (in.size() == 4) {
       for (auto c : in) {
-        possible[c] = {'b', 'c', 'd', 'f'};
+        possible[c] = intersect(possible[c], std::set {'b', 'c', 'd', 'f'});
       }
     }
 
@@ -151,15 +168,45 @@ int part_2_worker(example const& ex)
     possible[c] = result;
   }
 
-  for (auto e : possible) {
-    std::cout << e.first << " -> ";
-    for (auto c : e.second) {
-      std::cout << c << " ";
+  for (auto c = 'a'; c <= 'g'; ++c) {
+    if (possible.at(c).size() == 1) {
+      auto ec = *possible.at(c).begin();
+      for (auto& e : possible) {
+        if (e.second.size() != 1) {
+          e.second.erase(ec);
+        }
+      }
     }
-    std::cout << '\n';
   }
 
-  return 0;
+  auto inverted_five = std::set {
+      invert('a', possible), invert('b', possible), invert('d', possible),
+      invert('g', possible)};
+  for (auto const& in : ex.inputs) {
+    auto set    = std::set(in.begin(), in.end());
+    auto result = std::set<char> {};
+
+    std::set_difference(
+        set.begin(), set.end(), inverted_five.begin(), inverted_five.end(),
+        std::inserter(result, result.begin()));
+
+    if (result.size() == 1) {
+      possible[*result.begin()] = {'f'};
+
+      for (auto& e : possible) {
+        if (e.second.size() != 1) {
+          e.second.erase('f');
+        }
+      }
+    }
+  }
+
+  auto output = 0;
+  for (auto& out : ex.outputs) {
+    output *= 10;
+    output += shuffled_decode(out, possible);
+  }
+  return output;
 }
 
 int part_2(std::vector<example> const& input)
@@ -174,9 +221,5 @@ int main()
   auto in = get_input();
 
   std::cout << part_1(in) << '\n';
-  /* std::cout << part_2(in) << '\n'; */
-
-  auto dummy = example("acedgfb cdfbe gcdfa fbcad dab cefabd cdfgeb eafb "
-                       "cagedb ab | cdfeb fcadb cdfeb cdbaf");
-  std::cout << part_2({dummy}) << '\n';
+  std::cout << part_2(in) << '\n';
 }

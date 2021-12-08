@@ -39,9 +39,9 @@ int part_1(std::vector<example> const& input)
 
 int decode(std::string pattern)
 {
-  auto map = std::unordered_map<std::string, int> {};
-
+  static auto map  = std::unordered_map<std::string, int> {};
   static bool once = false;
+
   if (!once) {
     map["abcefg"]  = 0;
     map["cf"]      = 1;

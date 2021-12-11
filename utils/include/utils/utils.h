@@ -50,6 +50,11 @@ long svtol(std::string_view);
 long stol(std::string const&);
 int  stoi(std::string const&);
 
+int  ctoi(char);
+long ctol(char);
+char itoc(int);
+char ltoc(long);
+
 inline void hash_combine(std::size_t& seed) { }
 
 template <typename T, typename... Rest>

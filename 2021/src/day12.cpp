@@ -23,9 +23,10 @@ public:
     return ret;
   }
 
+  template <typename F>
   int paths(
       std::string const& start, std::string const& end,
-      std::map<std::string, int> visited) const
+      std::map<std::string, int> visited, F&& get_max) const
   {
     if (start == end) {
       return 1;
@@ -39,38 +40,9 @@ public:
     auto total = 0;
 
     for (auto const& next : adj_.at(start)) {
-      if (visited.find(next) == visited.end() || visited.at(next) < 1) {
-        total += paths(next, end, visited);
-      }
-    }
-
-    return total;
-  }
-
-  int paths_2(
-      std::string const& start, std::string const& end,
-      std::map<std::string, int> visited) const
-  {
-    if (start == end) {
-      return 1;
-    }
-
-    if (std::islower(start[0])) {
-      visited.try_emplace(start, 0);
-      visited.at(start)++;
-    }
-
-    auto total = 0;
-
-    for (auto const& next : adj_.at(start)) {
-      auto max = std::all_of(
-                     visited.begin(), visited.end(),
-                     [](auto const& p) { return p.second < 2; })
-                     ? 2
-                     : 1;
-
-      if (visited.find(next) == visited.end() || visited.at(next) < max) {
-        total += paths(next, end, visited);
+      if (visited.find(next) == visited.end()
+          || visited.at(next) < get_max(next, visited)) {
+        total += paths(next, end, visited, std::forward<F>(get_max));
       }
     }
 
@@ -83,8 +55,28 @@ private:
   std::map<std::string, std::set<std::string>> adj_ = {};
 };
 
-int part_1(graph const& g) { return g.paths("start", "end", {}); }
-int part_2(graph const& g) { return g.paths_2("start", "end", {}); }
+int part_1(graph const& g)
+{
+  return g.paths(
+      "start", "end", {}, [](auto const&, auto const&) { return 1; });
+}
+
+int part_2(graph const& g)
+{
+  return g.paths("start", "end", {}, [](auto const& next, auto const& visited) {
+    auto max = std::all_of(
+                   visited.begin(), visited.end(),
+                   [](auto const& p) { return p.second < 2; })
+                   ? 2
+                   : 1;
+
+    if (next == "start" || next == "end") {
+      max = 1;
+    }
+
+    return max;
+  });
+}
 
 int main()
 {

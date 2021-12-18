@@ -182,29 +182,29 @@ void tests()
   assert(get_bit_range("D2FE28", 11, 5) == 0b11110);
   assert(get_bit_range("D2FE28", 16, 5) == 0b00101);
 
-  /* auto [p1, l1] = parse("C200B40A82"); */
-  /* assert(p1.eval() == 3); */
+  auto [p1, l1] = parse("C200B40A82");
+  assert(p1.eval() == 3);
 
-  /* auto [p2, l2] = parse("04005AC33890"); */
-  /* assert(p2.eval() == 54); */
+  auto [p2, l2] = parse("04005AC33890");
+  assert(p2.eval() == 54);
 
-  /* auto [p3, l3] = parse("880086C3E88112"); */
-  /* assert(p3.eval() == 7); */
+  auto [p3, l3] = parse("880086C3E88112");
+  assert(p3.eval() == 7);
 
-  /* auto [p4, l4] = parse("CE00C43D881120"); */
-  /* assert(p4.eval() == 9); */
+  auto [p4, l4] = parse("CE00C43D881120");
+  assert(p4.eval() == 9);
 
-  /* auto [p5, l5] = parse("D8005AC2A8F0"); */
-  /* assert(p5.eval() == 1); */
+  auto [p5, l5] = parse("D8005AC2A8F0");
+  assert(p5.eval() == 1);
 
-  /* auto [p6, l6] = parse("F600BC2D8F"); */
-  /* assert(p6.eval() == 0); */
+  auto [p6, l6] = parse("F600BC2D8F");
+  assert(p6.eval() == 0);
 
-  /* auto [p7, l7] = parse("9C005AC2F8F0"); */
-  /* assert(p7.eval() == 0); */
+  auto [p7, l7] = parse("9C005AC2F8F0");
+  assert(p7.eval() == 0);
 
-  /* auto [p8, l8] = parse("9C0141080250320F1802104A08"); */
-  /* assert(p8.eval() == 1); */
+  auto [p8, l8] = parse("9C0141080250320F1802104A08");
+  assert(p8.eval() == 1);
 }
 
 int main()

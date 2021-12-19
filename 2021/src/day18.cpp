@@ -2,6 +2,7 @@
 
 #include <cassert>
 #include <iostream>
+#include <limits>
 #include <memory>
 #include <queue>
 #include <stack>

@@ -1,6 +1,7 @@
 #include <utils/utils.h>
 
 #include <iostream>
+#include <limits>
 #include <unordered_set>
 
 struct point {
@@ -15,7 +16,7 @@ struct point {
 
 namespace std {
 template <>
-struct std::hash<point> {
+struct hash<point> {
   size_t operator()(point const& p) const
   {
     auto seed = size_t {0};

@@ -2,108 +2,159 @@
 
 #include <iostream>
 #include <limits>
-#include <map>
-#include <set>
-
-int max_risk() { return std::numeric_limits<int>::max() - 100; }
+#include <unordered_map>
+#include <unordered_set>
 
 struct point {
-  point(int r)
-      : risk(r)
-      , distance(max_risk())
-      , visited(false)
+  int x;
+  int y;
+  int risk;
+
+  point(int x, int y, int r)
+      : x(x)
+      , y(y)
+      , risk(r)
   {
   }
 
-  int  risk;
-  int  distance;
-  bool visited;
+  point(int x, int y)
+      : point(x, y, 0)
+  {
+  }
 };
 
-struct map {
-  std::vector<std::vector<int>>        data;
-  std::map<std::pair<int, int>, point> points;
-
-  point& at(int x, int y)
+namespace std {
+template <>
+struct hash<point> {
+  size_t operator()(point const& p) const
   {
-    auto risk = x >= 0 && x < width() && y >= 0 && y < height()
-                    ? data.at(y).at(x)
-                    : max_risk();
+    auto seed = size_t {0};
+    utils::hash_combine(seed, p.x, p.y);
+    return seed;
+  }
+};
+} // namespace std
 
-    points.try_emplace({x, y}, risk);
-    return points.at({x, y});
+bool operator==(point const& a, point const& b)
+{
+  return a.x == b.x && a.y == b.y;
+}
+
+class map {
+public:
+  static map load()
+  {
+    auto ret = map {};
+    utils::for_each_line([&ret](auto const& line) {
+      ret.width_ = line.size();
+      ret.height_ += 1;
+
+      for (auto c : line) {
+        ret.data_.push_back(utils::ctoi(c));
+      }
+    });
+    return ret;
   }
 
-  int width() const { return data[0].size(); }
-  int height() const { return data[1].size(); }
+  std::vector<int> const& data() const { return data_; }
+  virtual int             width() const { return width_; }
+  virtual int             height() const { return height_; }
 
-  int compute_cost_to(int x, int y)
+  virtual int risk_at(int x, int y) const { return data_.at(y * width() + x); }
+  point       at(int x, int y) const { return point(x, y, risk_at(x, y)); }
+
+  int shortest_path()
   {
-    auto cur_x = 0;
-    auto cur_y = 0;
+    auto x = width() - 1;
+    auto y = height() - 1;
 
-    auto& initial    = at(0, 0);
-    initial.distance = 0;
-
-    // heap of unvisited {x, y} pairs
-    // comparator looks up in at() set
-
-    auto heap     = std::vector<std::pair<int, int>> {{x, y}};
-    auto heap_cmp = [this](auto a, auto b) {
-      return at(a.first, a.second).distance > at(b.first, b.second).distance;
+    auto visited   = std::unordered_set<point> {};
+    auto distances = std::unordered_map<point, int> {};
+    auto heap_cmp  = [&distances](auto const& a, auto const& b) {
+      return distances.at(a) > distances.at(b);
     };
 
-    while (cur_x != x || cur_y != y) {
-      /* std::cout << "consider: " << cur_x << ' ' << cur_y << '\n'; */
-      auto& current = at(cur_x, cur_y);
+    auto initial       = point(0, 0, risk_at(0, 0));
+    distances[initial] = 0;
 
-      for (auto dx = -1; dx <= 1; ++dx) {
-        for (auto dy = -1; dy <= 1; ++dy) {
-          auto& next = at(cur_x + dx, cur_y + dy);
-          if ((dx != 0 || dy != 0) && !next.visited) {
-            next.distance
-                = std::min(next.distance, current.distance + next.risk);
-            // push unvisited neighbour nto heap
+    auto queue = std::vector<point> {initial};
+    while (true) {
+      std::pop_heap(queue.begin(), queue.end(), heap_cmp);
+      auto current = queue.back();
+      queue.pop_back();
 
-            heap.push_back({cur_x + dx, cur_y + dy});
-            std::push_heap(heap.begin(), heap.end(), heap_cmp);
+      if (visited.contains(current)) {
+        continue;
+      }
+
+      for (auto dy = -1; dy <= 1; ++dy) {
+        for (auto dx = -1; dx <= 1; ++dx) {
+          auto ny = current.y + dy;
+          auto nx = current.x + dx;
+          if (std::abs(dx) != std::abs(dy) && ny >= 0 && ny < height()
+              && nx >= 0 && nx < width()) {
+            auto np = at(nx, ny);
+            if (!visited.contains(np)) {
+              distances.try_emplace(np, std::numeric_limits<int>::max());
+              distances[np]
+                  = std::min(distances[np], distances[current] + np.risk);
+
+              queue.push_back(np);
+              std::push_heap(queue.begin(), queue.end(), heap_cmp);
+            }
           }
         }
       }
 
-      current.visited = true;
-
-      // get x, y here from front of heap
-      std::pop_heap(heap.begin(), heap.end(), heap_cmp);
-      auto top = heap.back();
-      heap.pop_back();
-
-      cur_x = top.first;
-      cur_y = top.second;
+      visited.insert(current);
+      if (current.x == x && current.y == y) {
+        return distances[current];
+      }
     }
 
-    return at(x, y).distance;
+    return 0;
   }
 
-  static map load()
+protected:
+  std::vector<int> data_   = {};
+  int              width_  = 0;
+  int              height_ = 0;
+};
+
+class big_map : public map {
+public:
+  big_map(map const& m)
+      : map(m)
   {
-    auto m = map {};
-    utils::for_each_line([&](auto const& line) {
-      auto v = std::vector<int> {};
-      for (auto c : line) {
-        v.push_back(utils::ctoi(c));
-      }
-      m.data.push_back(v);
-    });
-    return m;
+    data_   = m.data();
+    width_  = m.width();
+    height_ = m.height();
+  }
+
+  virtual int width() const override { return width_ * 5; }
+  virtual int height() const override { return height_ * 5; }
+
+  virtual int risk_at(int x, int y) const override
+  {
+    int x_scale = x / width_;
+    int y_scale = y / height_;
+
+    auto real_x = x % width_;
+    auto real_y = y % height_;
+
+    auto val = data_.at(real_y * width_ + real_x) + x_scale + y_scale;
+    if (val > 9) {
+      val = val % 9;
+    }
+    return val;
   }
 };
 
-int part_1(map m) { return m.compute_cost_to(m.width() - 1, m.height() - 1); }
-
 int main()
 {
-  auto m = map::load();
+  auto m  = map::load();
+  auto bm = big_map(m);
 
-  std::cout << part_1(m) << '\n';
+  std::cout << m.shortest_path() << '\n';
+  std::cout << bm.shortest_path() << '\n';
 }

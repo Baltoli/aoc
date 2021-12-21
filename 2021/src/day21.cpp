@@ -70,6 +70,8 @@ struct game {
   long play()
   {
     long total_rolls = 0;
+    long player      = 0;
+
     while (true) {
       for (auto i = 0; i < 3; ++i) {
         auto d = dice.roll();
@@ -138,7 +140,6 @@ struct game {
 
   Dice                dice;
   std::vector<player> players;
-  long                player = 0;
 };
 
 struct deterministic {

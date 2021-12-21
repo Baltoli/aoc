@@ -34,6 +34,7 @@ auto map_lines(Func&& f)
 }
 
 std::vector<std::string> get_lines();
+std::string              get_single_line();
 
 std::string md5_sum(std::string const& input);
 

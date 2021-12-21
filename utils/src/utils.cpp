@@ -38,6 +38,8 @@ std::vector<std::string> split(std::string const& str, std::string const& delim)
   return ret;
 }
 
+std::string get_single_line() { return get_lines()[0]; }
+
 std::string md5_sum(std::string const& input)
 {
   constexpr auto buf_size = 64;

@@ -5,6 +5,7 @@ project(AOC C CXX)
 set(CMAKE_CXX_STANDARD 20)
 
 add_subdirectory(utils)
+add_subdirectory(vendor)
 
 add_subdirectory(2015)
 add_subdirectory(2016)

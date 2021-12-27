@@ -70,8 +70,8 @@ target_link_libraries(2021-day23 utils)
 add_executable(2021-day23-2 src/day23-2.cpp)
 target_link_libraries(2021-day23-2 utils)
 
-# add_executable(2021-day24 src/day24.cpp)
-# target_link_libraries(2021-day24 utils)
+add_executable(2021-day24 src/day24.cpp)
+target_link_libraries(2021-day24 utils)
 
 # add_executable(2021-day25 src/day25.cpp)
 # target_link_libraries(2021-day25 utils)

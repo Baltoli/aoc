@@ -33,6 +33,12 @@ auto map_lines(Func&& f)
   return ret;
 }
 
+template <typename T>
+auto construct_lines() -> std::vector<T>
+{
+  return map_lines([](auto const& line) { return T(line); });
+}
+
 std::vector<std::string> get_lines();
 std::string              get_single_line();
 

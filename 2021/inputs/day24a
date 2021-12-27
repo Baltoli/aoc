@@ -1,0 +1,296 @@
+// x irrelevant between subroutines
+// y is irrelevant between also
+// z is validity - only shared state across subroutines
+// w is input every time
+
+inp w 
+mul x 0    // x_0 = 0
+add x z    // x_1 = z_0
+mod x 26   // x_2 = x_1
+div z 1    // z_1 = z_0
+add x 11   // x_3 = x_2 + 11
+eql x w    // x_4 = x_3 == w_0
+eql x 0    // x_5 = x_4 == 0
+mul y 0    // y_0 = 0
+add y 25   // y_0 = 25
+mul y x    // y_1 = y_0 * x_5
+add y 1    // y_2 = y_1 + 1
+mul z y    // z_2 = z_1 * y_2
+mul y 0    // y_3 = 0
+add y w    // y_4 = y_3 + w_0
+add y 14   // y_5 = y_4 + 14
+mul y x    // y_6 = y_5 * x_5
+add z y    // z_3 = N[0] + 14
+=======> PUSH N[0] + 14
+
+inp w      // w_0 = N[1]
+mul x 0    // x_0 = 0
+add x z    // x_1 = z_prev
+mod x 26   // x_2 = x_1 % 26
+div z 1    // z_0 = z_prev
+add x 13   // x_3 = x_2 + 13
+eql x w    // x_4 = x_3 == w_0
+eql x 0    // x_5 = x_4 == 0
+mul y 0    // y_0 = 0
+add y 25   // y_1 = y_0 + 25
+mul y x    // y_2 = y_1 * x_5
+add y 1    // y_3 = y_2 + 1
+mul z y    // z_1 = z_0 * y_3
+mul y 0    // y_4 = 0
+add y w    // y_5 = y_4 + w_0
+add y 8    // y_6 = y_5 + 8
+mul y x    // y_7 = y_6 * x_5
+add z y    // z_2 = ((N[0] + 14) * 26) + ((N[1] + 8))
+=======> PUSH N[1] + 8
+
+inp w 
+mul x 0
+add x z
+mod x 26
+div z 1
+add x 11
+eql x w
+eql x 0
+mul y 0
+add y 25
+mul y x
+add y 1
+mul z y
+mul y 0
+add y w
+add y 4
+mul y x
+add z y    // z = ((N[0] + 14) * 26 * 26) + ((N[1] + 8) * 26) + (N[2] + 4)
+=======> PUSH N[2] + 4
+
+inp w 
+mul x 0
+add x z
+mod x 26
+div z 1
+add x 10
+eql x w
+eql x 0
+mul y 0
+add y 25
+mul y x
+add y 1
+mul z y
+mul y 0
+add y w
+add y 10
+mul y x
+add z y     // z = ((N[0] + 14) * 26 * 26 * 26) + ((N[1] + 8) * 26 * 26) + ((N[2] + 4) * 26) + (N[3] + 10)
+=======> PUSH N[3] + 10
+
+inp w       // w_0 = N[4]
+mul x 0     // x_0 = 0
+add x z     // x_1 = x_0 + z_prev
+mod x 26    // x_2 = x_1 % 26
+div z 26    // z_0 = z_prev / 26
+add x -3    // x_3 = x_2 - 3
+eql x w     // x_4 = x_3 == w_0
+eql x 0     // x_5 = x_4 == 0
+mul y 0     // y_0 = 0
+add y 25    // y_1 = y_0 + 25
+mul y x     // y_2 = y_1 * x_5
+add y 1     // y_3 = y_2 + 1
+mul z y     // z_1 = z_0 * y_3
+mul y 0     // y_4 = 0
+add y w     // y_5 = y_4 + w_0
+add y 14    // y_6 = y_5 + 14
+mul y x     // y_7 = y_6 * x_5
+add z y     // z_2 = (z_0 * ((25 * (((N[3] + 7) == N[4]) == 0)) + 1)) +
+                     ((N[4] + 14) * (((N[3] + 7) == N[4]) == 0))
+
+N[3] + 7 == N[4]:
+=======> POP
+N[3] + 7 != N[4]:
+=======> POP
+=======> PUSH N[4] + 14
+
+inp w 
+mul x 0
+add x z
+mod x 26
+div z 26
+add x -4
+eql x w
+eql x 0
+mul y 0
+add y 25
+mul y x
+add y 1
+mul z y
+mul y 0
+add y w
+add y 10
+mul y x
+add z y
+=======> POP
+=======> PUSH N[5] + 10 if (N[4] + 10 != N[5]) (true)
+
+inp w 
+mul x 0
+add x z
+mod x 26
+div z 1
+add x 12
+eql x w
+eql x 0
+mul y 0
+add y 25
+mul y x
+add y 1
+mul z y
+mul y 0
+add y w
+add y 4
+mul y x
+add z y
+=======> PUSH N[6] + 4
+
+inp w 
+mul x 0
+add x z
+mod x 26
+div z 26
+add x -8
+eql x w
+eql x 0
+mul y 0
+add y 25
+mul y x
+add y 1
+mul z y
+mul y 0
+add y w
+add y 14
+mul y x
+add z y
+=======> POP
+=======> PUSH N[7] + 14 if (N[6] - 4 != N[7]) (true)
+
+inp w 
+mul x 0
+add x z
+mod x 26
+div z 26
+add x -3
+eql x w
+eql x 0
+mul y 0
+add y 25
+mul y x
+add y 1
+mul z y
+mul y 0
+add y w
+add y 1
+mul y x
+add z y
+=======> POP
+=======> PUSH N[8] + 1 if (N[7] + 11 != N[8]) (true)
+
+inp w 
+mul x 0
+add x z
+mod x 26
+div z 26
+add x -12
+eql x w
+eql x 0
+mul y 0
+add y 25
+mul y x
+add y 1
+mul z y
+mul y 0
+add y w
+add y 6
+mul y x
+add z y
+=======> POP
+=======> PUSH N[9] + 6 if (N[8] - 11 != N[9]) (true)
+
+inp w 
+mul x 0
+add x z
+mod x 26
+div z 1
+add x 14
+eql x w
+eql x 0
+mul y 0
+add y 25
+mul y x
+add y 1
+mul z y
+mul y 0
+add y w
+add y 0
+mul y x
+add z y
+=======> PUSH N[10] + 0
+
+inp w 
+mul x 0
+add x z
+mod x 26
+div z 26
+add x -6
+eql x w
+eql x 0
+mul y 0
+add y 25
+mul y x
+add y 1
+mul z y
+mul y 0
+add y w
+add y 9
+mul y x
+add z y
+=======> POP
+=======> PUSH N[11] + 9 if (N[10] - 6 != N[11]) (true)
+
+inp w 
+mul x 0
+add x z
+mod x 26
+div z 1
+add x 11
+eql x w
+eql x 0
+mul y 0
+add y 25
+mul y x
+add y 1
+mul z y
+mul y 0
+add y w
+add y 13
+mul y x
+add z y
+=======> PUSH N[12] + 13
+
+inp w 
+mul x 0
+add x z
+mod x 26
+div z 26
+add x -12
+eql x w
+eql x 0
+mul y 0
+add y 25
+mul y x
+add y 1
+mul z y
+mul y 0
+add y w
+add y 12
+mul y x
+add z y
+=======> POP
+=======> PUSH N[13] + 12 if (N[12] + 1 != N[13]) (true)

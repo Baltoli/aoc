@@ -64,8 +64,11 @@ target_link_libraries(2021-day21 utils)
 add_executable(2021-day22 src/day22.cpp)
 target_link_libraries(2021-day22 utils)
 
-# add_executable(2021-day23 src/day23.cpp)
-# target_link_libraries(2021-day23 utils)
+add_executable(2021-day23 src/day23.cpp)
+target_link_libraries(2021-day23 utils)
+
+add_executable(2021-day23-2 src/day23-2.cpp)
+target_link_libraries(2021-day23-2 utils)
 
 # add_executable(2021-day24 src/day24.cpp)
 # target_link_libraries(2021-day24 utils)

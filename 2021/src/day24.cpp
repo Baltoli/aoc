@@ -5,7 +5,7 @@
 
 #include <unordered_map>
 
-enum op { inp, add, mul, div, mod, eql };
+enum op { inp, add, mul, div_, mod, eql };
 
 struct instruction {
   op          opcode;
@@ -15,8 +15,8 @@ struct instruction {
   instruction(std::string_view in)
   {
     static auto table = std::unordered_map<std::string, op> {
-        {"inp", op::inp}, {"add", op::add}, {"mul", op::mul},
-        {"div", op::div}, {"mod", op::mod}, {"eql", op::eql}};
+        {"inp", op::inp},  {"add", op::add}, {"mul", op::mul},
+        {"div", op::div_}, {"mod", op::mod}, {"eql", op::eql}};
 
     auto m = ctre::match<R"((...) ([xyzw]) (.*)?)">(in);
 
@@ -58,7 +58,7 @@ struct device {
     case op::mul:
       target = target * rhs;
       break;
-    case op::div:
+    case op::div_:
       target = target / rhs;
       break;
     case op::mod:

@@ -27,18 +27,10 @@ std::pair<int, int> compute(std::vector<std::string> const& in)
     auto dist = utils::stoi(m.get<2>().str());
     for (auto i = 0; i < dist; ++i) {
       switch (heading) {
-      case 0:
-        ++y;
-        break;
-      case 1:
-        ++x;
-        break;
-      case 2:
-        --y;
-        break;
-      case 3:
-        --x;
-        break;
+      case 0: ++y; break;
+      case 1: ++x; break;
+      case 2: --y; break;
+      case 3: --x; break;
       }
 
       auto [it, ins] = visited.insert({x, y});

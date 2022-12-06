@@ -80,14 +80,10 @@ long& computer::current_param(int idx)
   auto mode  = param_mode(idx, instr);
 
   switch (mode) {
-  case 0:
-    return program_[program_[pc_ + idx + 1]];
-  case 1:
-    return program_[pc_ + idx + 1];
-  case 2:
-    return program_[program_[pc_ + idx + 1] + rel_base_];
-  default:
-    assert(false && "Invalid mode");
+  case 0: return program_[program_[pc_ + idx + 1]];
+  case 1: return program_[pc_ + idx + 1];
+  case 2: return program_[program_[pc_ + idx + 1] + rel_base_];
+  default: assert(false && "Invalid mode");
   }
 }
 
@@ -163,12 +159,9 @@ long computer::run()
       break;
     }
 
-    case 99:
-      halted_ = true;
-      return 43; // Not a real output
+    case 99: halted_ = true; return 43; // Not a real output
 
-    default:
-      assert(false && "Invalid opcode");
+    default: assert(false && "Invalid opcode");
     }
 
     pc_ += pc_advance(op);
@@ -181,4 +174,4 @@ int computer::backlog() const { return inputs_.size(); }
 
 long& computer::operator[](size_t i) { return program_[i]; }
 long const& computer::operator[](size_t i) const { return program_[i]; }
-}
+} // namespace ic

@@ -26,18 +26,10 @@ santa::santa(T const& insts)
     deliveries_[ptr]++;
 
     switch (c) {
-    case '^':
-      ptr.second++;
-      break;
-    case '>':
-      ptr.first++;
-      break;
-    case 'v':
-      ptr.second--;
-      break;
-    case '<':
-      ptr.first--;
-      break;
+    case '^': ptr.second++; break;
+    case '>': ptr.first++; break;
+    case 'v': ptr.second--; break;
+    case '<': ptr.first--; break;
     }
   }
 }

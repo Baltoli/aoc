@@ -65,20 +65,11 @@ void painter::right() { dir_ = (dir_ + 1) % 4; }
 void painter::step()
 {
   switch (dir_) {
-  case 0:
-    loc_.second--;
-    break;
-  case 1:
-    loc_.first++;
-    break;
-  case 2:
-    loc_.second++;
-    break;
-  case 3:
-    loc_.first--;
-    break;
-  default:
-    assert(false && "Bad step");
+  case 0: loc_.second--; break;
+  case 1: loc_.first++; break;
+  case 2: loc_.second++; break;
+  case 3: loc_.first--; break;
+  default: assert(false && "Bad step");
   }
 }
 

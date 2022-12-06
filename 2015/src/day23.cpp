@@ -66,9 +66,7 @@ struct machine {
       registers[i.reg] += 1;
       ++pc;
       break;
-    case jump:
-      pc += i.offset;
-      break;
+    case jump: pc += i.offset; break;
     case jump_even:
       if (registers[i.reg] % 2 == 0) {
         pc += i.offset;

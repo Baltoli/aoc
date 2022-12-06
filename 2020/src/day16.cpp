@@ -112,17 +112,10 @@ input get_input()
     }
 
     switch (section) {
-    case 0:
-      fields.emplace_back(line);
-      break;
-    case 1:
-      mine = ticket(line);
-      break;
-    case 2:
-      others.emplace_back(line);
-      break;
-    default:
-      assert(false);
+    case 0: fields.emplace_back(line); break;
+    case 1: mine = ticket(line); break;
+    case 2: others.emplace_back(line); break;
+    default: assert(false);
     }
   });
 

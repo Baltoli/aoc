@@ -91,8 +91,7 @@ masks parse_masks(std::string_view sv)
       ones.set(shift, false);
       break;
     }
-    default:
-      __builtin_unreachable();
+    default: __builtin_unreachable();
     }
   }
 

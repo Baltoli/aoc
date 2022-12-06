@@ -36,16 +36,11 @@ struct loc {
 loc move(loc start, int dir)
 {
   switch (dir) {
-  case 1:
-    return {start.x, start.y - 1};
-  case 2:
-    return {start.x, start.y + 1};
-  case 3:
-    return {start.x - 1, start.y};
-  case 4:
-    return {start.x + 1, start.y};
-  default:
-    assert(false && "Bad direction");
+  case 1: return {start.x, start.y - 1};
+  case 2: return {start.x, start.y + 1};
+  case 3: return {start.x - 1, start.y};
+  case 4: return {start.x + 1, start.y};
+  default: assert(false && "Bad direction");
   }
 }
 
@@ -57,14 +52,10 @@ int opposite(int dir)
 char pretty(long at)
 {
   switch (at) {
-  case 0:
-    return '#';
-  case 1:
-    return '.';
-  case 2:
-    return 'O';
-  default:
-    assert(false && "Bad at");
+  case 0: return '#';
+  case 1: return '.';
+  case 2: return 'O';
+  default: assert(false && "Bad at");
   }
 }
 
@@ -156,17 +147,13 @@ long robot::step(long dir)
   map_[next_loc] = status;
 
   switch (status) {
-  case 0:
-    break;
-  case 1:
-    location_ = next_loc;
-    break;
+  case 0: break;
+  case 1: location_ = next_loc; break;
   case 2:
     oxygen_   = next_loc;
     location_ = next_loc;
     break;
-  default:
-    assert(false && "Bad status");
+  default: assert(false && "Bad status");
   }
 
   auto dirs = std::array {1, 2, 3, 4};

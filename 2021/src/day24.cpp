@@ -49,24 +49,12 @@ struct device {
                                            : utils::stoi(inst.rb);
 
     switch (inst.opcode) {
-    case op::inp:
-      target = utils::ctoi(input[next_in++]);
-      break;
-    case op::add:
-      target = target + rhs;
-      break;
-    case op::mul:
-      target = target * rhs;
-      break;
-    case op::div_:
-      target = target / rhs;
-      break;
-    case op::mod:
-      target = target % rhs;
-      break;
-    case op::eql:
-      target = target == rhs ? 1 : 0;
-      break;
+    case op::inp: target = utils::ctoi(input[next_in++]); break;
+    case op::add: target = target + rhs; break;
+    case op::mul: target = target * rhs; break;
+    case op::div_: target = target / rhs; break;
+    case op::mod: target = target % rhs; break;
+    case op::eql: target = target == rhs ? 1 : 0; break;
     }
   }
 };

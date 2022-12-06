@@ -155,16 +155,11 @@ std::vector<char> robot::explore() const
   auto in_front = [&] {
     auto [x, y] = pos;
     switch (dir) {
-    case 1:
-      return std::pair {x, y - 1};
-    case 2:
-      return std::pair {x + 1, y};
-    case 3:
-      return std::pair {x, y + 1};
-    case 4:
-      return std::pair {x - 1, y};
-    default:
-      assert(false);
+    case 1: return std::pair {x, y - 1};
+    case 2: return std::pair {x + 1, y};
+    case 3: return std::pair {x, y + 1};
+    case 4: return std::pair {x - 1, y};
+    default: assert(false);
     }
   };
 

@@ -23,18 +23,10 @@ std::map<std::pair<int, int>, int> read_wire_line(std::string const& line)
       steps++;
 
       switch (std::toupper(dir)) {
-      case 'R':
-        x += 1;
-        break;
-      case 'L':
-        x -= 1;
-        break;
-      case 'U':
-        y += 1;
-        break;
-      case 'D':
-        y -= 1;
-        break;
+      case 'R': x += 1; break;
+      case 'L': x -= 1; break;
+      case 'U': y += 1; break;
+      case 'D': y -= 1; break;
       }
 
       ret.try_emplace({x, y}, steps);

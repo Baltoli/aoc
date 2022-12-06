@@ -45,4 +45,4 @@ private:
   long& current_param(int idx);
 };
 
-}
+} // namespace ic

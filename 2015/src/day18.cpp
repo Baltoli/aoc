@@ -40,14 +40,9 @@ struct display {
         }
 
         switch (neighbours) {
-        case 2:
-          break;
-        case 3:
-          b_at(x, y) = 1;
-          break;
-        default:
-          b_at(x, y) = 0;
-          break;
+        case 2: break;
+        case 3: b_at(x, y) = 1; break;
+        default: b_at(x, y) = 0; break;
         }
       }
     }

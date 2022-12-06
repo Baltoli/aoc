@@ -93,16 +93,11 @@ struct packet {
             auto next = p.eval();
             return next > acc ? next : acc;
           });
-    case 4:
-      return value;
-    case 5:
-      return children[0].eval() > children[1].eval() ? 1 : 0;
-    case 6:
-      return children[0].eval() < children[1].eval() ? 1 : 0;
-    case 7:
-      return children[0].eval() == children[1].eval() ? 1 : 0;
-    default:
-      assert(false && "Bad type ID when eval");
+    case 4: return value;
+    case 5: return children[0].eval() > children[1].eval() ? 1 : 0;
+    case 6: return children[0].eval() < children[1].eval() ? 1 : 0;
+    case 7: return children[0].eval() == children[1].eval() ? 1 : 0;
+    default: assert(false && "Bad type ID when eval");
     }
   }
 };

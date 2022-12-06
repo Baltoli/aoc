@@ -53,7 +53,7 @@ instruction::instruction(std::string const& line)
 }
 
 display::display(std::vector<instruction> const& insts)
-    : lights_{}
+    : lights_ {}
 {
   for (auto i : insts) {
     execute(i);
@@ -104,7 +104,7 @@ void display::execute(instruction i)
 
 int main()
 {
-  auto instrs = std::vector<instruction>{};
+  auto instrs = std::vector<instruction> {};
   utils::for_each_line([&](auto line) { instrs.emplace_back(line); });
 
   auto disp = display(instrs);

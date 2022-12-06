@@ -21,6 +21,17 @@ void for_each_line(Func&& f)
   }
 }
 
+template <typename T, typename Func>
+auto map(std::vector<T> const& vec, Func&& f)
+    -> std::vector<std::invoke_result_t<Func, T const&>>
+{
+  using result = std::invoke_result_t<Func, T const&>;
+
+  auto ret = std::vector<result> {};
+  std::transform(vec.begin(), vec.end(), std::back_inserter(ret), f);
+  return ret;
+}
+
 template <typename Func>
 auto map_lines(Func&& f)
     -> std::vector<std::invoke_result_t<Func, std::string const&>>

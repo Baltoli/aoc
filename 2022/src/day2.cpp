@@ -91,19 +91,19 @@ private:
   char player_;
 };
 
+long total_score(std::vector<game> const& games)
+{
+  return std::accumulate(
+      games.begin(), games.end(), 0L,
+      [](auto acc, auto const& game) { return acc + game.score(); });
+}
+
 int main()
 {
   auto games = utils::construct_lines<game>();
+  auto correct_games
+      = utils::map(games, [](auto const& g) { return g.correct_game(); });
 
-  auto score_1 = std::accumulate(
-      games.begin(), games.end(), 0L,
-      [](auto acc, auto const& game) { return acc + game.score(); });
-
-  auto score_2 = std::accumulate(
-      games.begin(), games.end(), 0L, [](auto acc, auto const& game) {
-        return acc + game.correct_game().score();
-      });
-
-  std::cout << score_1 << '\n';
-  std::cout << score_2 << '\n';
+  std::cout << total_score(games) << '\n';
+  std::cout << total_score(correct_games) << '\n';
 }

@@ -10,14 +10,14 @@ target_link_libraries(2022-day3 utils)
 add_executable(2022-day4 src/day4.cpp)
 target_link_libraries(2022-day4 utils)
 
-# add_executable(2022-day5 src/day5.cpp)
-# target_link_libraries(2022-day5 utils)
+add_executable(2022-day5 src/day5.cpp)
+target_link_libraries(2022-day5 utils)
 
-# add_executable(2022-day6 src/day6.cpp)
-# target_link_libraries(2022-day6 utils)
+add_executable(2022-day6 src/day6.cpp)
+target_link_libraries(2022-day6 utils)
 
-# add_executable(2022-day7 src/day7.cpp)
-# target_link_libraries(2022-day7 utils)
+add_executable(2022-day7 src/day7.cpp)
+target_link_libraries(2022-day7 utils)
 
 # add_executable(2022-day8 src/day8.cpp)
 # target_link_libraries(2022-day8 utils)

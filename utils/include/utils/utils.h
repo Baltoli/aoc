@@ -2,6 +2,7 @@
 
 #include <functional>
 #include <iostream>
+#include <set>
 #include <string>
 #include <string_view>
 #include <type_traits>
@@ -12,6 +13,32 @@ namespace utils {
 
 std::vector<std::string>
 split(std::string const& str, std::string const& delim);
+
+template <typename T>
+std::set<T> intersect(std::set<T> const& a, std::set<T> const& b)
+{
+  auto ret = std::set<T> {};
+  auto it  = ret.begin();
+  std::set_intersection(
+      a.begin(), a.end(), b.begin(), b.end(), std::inserter(ret, it));
+  return ret;
+}
+
+template <typename T>
+std::vector<std::vector<T>> group(std::vector<T> const& xs, size_t n)
+{
+  auto ret = std::vector<std::vector<T>> {};
+
+  for (auto i = 0u; i < xs.size(); i += n) {
+    auto next = std::vector<T> {};
+    for (auto j = 0u; j < n; ++j) {
+      next.push_back(xs[i + j]);
+    }
+    ret.push_back(next);
+  }
+
+  return ret;
+}
 
 template <typename Func>
 void for_each_line(Func&& f)

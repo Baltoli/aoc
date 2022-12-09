@@ -11,16 +11,6 @@
 struct entry {
   long size;
   bool is_dir;
-
-  bool operator<(entry const& other) const
-  {
-    return std::tie(size, is_dir) < std::tie(other.size, other.is_dir);
-  }
-
-  bool operator==(entry const& other) const
-  {
-    return std::tie(size, is_dir) == std::tie(other.size, other.is_dir);
-  }
 };
 
 int main()

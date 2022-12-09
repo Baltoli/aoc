@@ -30,7 +30,7 @@ int main()
       auto path = std::string {};
       for (auto const& dir : stack) {
         path += dir;
-        sizes.try_emplace(path, 0, true);
+        sizes.try_emplace(path, entry {0, true});
         sizes[path].size += size;
       }
 

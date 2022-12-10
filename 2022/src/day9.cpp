@@ -31,14 +31,12 @@ public:
 
   void apply(move m)
   {
-    auto& global_head = links_.at(0);
-
     for (auto i = 0; i < m.dist; ++i) {
       switch (m.dir) {
-      case 'R': global_head.first++; break;
-      case 'L': global_head.first--; break;
-      case 'U': global_head.second++; break;
-      case 'D': global_head.second--; break;
+      case 'R': links_.at(0).first++; break;
+      case 'L': links_.at(0).first--; break;
+      case 'U': links_.at(0).second++; break;
+      case 'D': links_.at(0).second--; break;
       }
 
       for (auto tail_idx = 1U; tail_idx < links_.size(); ++tail_idx) {

@@ -100,6 +100,12 @@ long ctol(char);
 char itoc(int);
 char ltoc(long);
 
+template <typename T>
+int sgn(T val)
+{
+  return (T(0) < val) - (val < T(0));
+}
+
 inline void hash_combine(std::size_t& seed) { }
 
 template <typename T, typename... Rest>

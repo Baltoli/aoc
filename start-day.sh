@@ -50,3 +50,5 @@ fi
   echo "add_executable(${year}-day${day} src/day${day}.cpp)"
   echo "target_link_libraries(${year}-day${day} utils)"
 } >> "$cmake_file"
+
+"$EDITOR" "${src_file}" "${input_file}"

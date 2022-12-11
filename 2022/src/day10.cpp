@@ -4,6 +4,7 @@
 #include <fmt/format.h>
 
 #include <optional>
+#include <sstream>
 
 class cpu {
 public:
@@ -12,6 +13,8 @@ public:
       , x_(1)
       , cycle_(1)
       , important_signal_(0)
+      , crt_ {}
+      , pixel_(0)
   {
   }
 
@@ -20,6 +23,17 @@ public:
     auto cycle = [&] {
       if (is_important_cycle()) {
         important_signal_ += cycle_ * x_;
+      }
+
+      if (std::abs(x_ - pixel_) <= 1) {
+        crt_ << "█";
+      } else {
+        crt_ << " ";
+      }
+
+      if ((++pixel_) % 40 == 0) {
+        pixel_ = 0;
+        crt_ << '\n';
       }
 
       cycle_ += 1;
@@ -41,6 +55,8 @@ public:
     return important_signal_;
   }
 
+  std::string message() const { return crt_.str(); }
+
 private:
   bool is_important_cycle() const { return (cycle_ - 20) % 40 == 0; }
 
@@ -50,6 +66,9 @@ private:
   long cycle_;
 
   long important_signal_;
+
+  std::ostringstream crt_;
+  long               pixel_;
 };
 
 int main()
@@ -57,6 +76,7 @@ int main()
   auto c = cpu(utils::get_lines());
 
   fmt::print("{}\n", c.execute());
+  fmt::print("{}\n", c.message());
 
   /* utils::for_each_line([&](auto const& line) { */
   /*   if (c.accepts()) { */

@@ -77,10 +77,4 @@ int main()
 
   fmt::print("{}\n", c.execute());
   fmt::print("{}\n", c.message());
-
-  /* utils::for_each_line([&](auto const& line) { */
-  /*   if (c.accepts()) { */
-  /*     c.execute(line); */
-  /*   } */
-  /* }); */
 }

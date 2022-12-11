@@ -168,3 +168,5 @@ tags
 # End of https://www.gitignore.io/api/c,c++,vim,osx,cmake,linux,macos
 
 build/
+
+.session-secret

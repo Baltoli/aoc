@@ -15,4 +15,8 @@ shift
 day="$1"
 shift
 
+pushd build
+ninja
+popd
+
 "./build/${year}/${year}-day${day}" < "./${year}/inputs/day${day}"

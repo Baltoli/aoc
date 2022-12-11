@@ -20,25 +20,6 @@ public:
 
   long execute()
   {
-    auto cycle = [&] {
-      if (is_important_cycle()) {
-        important_signal_ += cycle_ * x_;
-      }
-
-      if (std::abs(x_ - pixel_) <= 1) {
-        crt_ << "█";
-      } else {
-        crt_ << " ";
-      }
-
-      if ((++pixel_) % 40 == 0) {
-        pixel_ = 0;
-        crt_ << '\n';
-      }
-
-      cycle_ += 1;
-    };
-
     for (auto const& inst : program_) {
       if (ctre::match<"noop">(inst)) {
         cycle();
@@ -58,6 +39,26 @@ public:
   std::string message() const { return crt_.str(); }
 
 private:
+  void cycle()
+  {
+    if (is_important_cycle()) {
+      important_signal_ += cycle_ * x_;
+    }
+
+    if (std::abs(x_ - pixel_) <= 1) {
+      crt_ << "█";
+    } else {
+      crt_ << " ";
+    }
+
+    if ((++pixel_) % 40 == 0) {
+      pixel_ = 0;
+      crt_ << '\n';
+    }
+
+    cycle_ += 1;
+  }
+
   bool is_important_cycle() const { return (cycle_ - 20) % 40 == 0; }
 
   std::vector<std::string> program_;

@@ -74,7 +74,7 @@ int main()
   auto part_1 = snake(2);
   auto part_2 = snake(10);
 
-  for (auto& s : std::array {part_1, part_2}) {
+  for (auto s : {part_1, part_2}) {
     for (auto m : moves) {
       s.apply(m);
     }

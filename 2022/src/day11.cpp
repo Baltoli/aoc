@@ -11,10 +11,10 @@
 
 namespace {
 
-static int add(int a, int b) { return a + b; }
-static int mul(int a, int b) { return a * b; }
+static long add(long a, long b) { return a + b; }
+static long mul(long a, long b) { return a * b; }
 
-std::function<int(int, int)> get_op(std::string_view os)
+std::function<long(long, long)> get_op(std::string_view os)
 {
   if (os == "+") {
     return add;
@@ -25,12 +25,12 @@ std::function<int(int, int)> get_op(std::string_view os)
   }
 }
 
-std::optional<int> get_operand(std::string_view os)
+std::optional<long> get_operand(std::string_view os)
 {
   if (os == "old") {
     return std::nullopt;
   } else {
-    return utils::svtoi(os);
+    return utils::svtol(os);
   }
 }
 
@@ -48,11 +48,13 @@ public:
 
   void add(monkey m);
 
-  void throw_to(int monkey, int worry);
+  void throw_to(int monkey, long worry);
 
-  void play_rounds(long);
+  void play_rounds(long, bool);
 
   long score() const;
+
+  long field() const { return field_; }
 
 private:
   long                field_;
@@ -102,12 +104,12 @@ public:
     input.erase(input.begin(), input.begin() + 7);
   }
 
-  void receive(int w) { items_.push(w); }
+  void receive(long w) { items_.push(w); }
 
-  void execute()
+  void execute(bool divide)
   {
     while (!items_.empty()) {
-      auto [monkey, worry] = step();
+      auto [monkey, worry] = step(divide);
       game_->throw_to(monkey, worry);
     }
   }
@@ -119,12 +121,12 @@ public:
   void set_game(game& g) { game_ = &g; }
 
 private:
-  int apply(int worry) const
+  long apply(long worry) const
   {
     return op_(lhs_.value_or(worry), rhs_.value_or(worry));
   }
 
-  std::pair<int, int> step()
+  std::pair<int, long> step(bool divide)
   {
     count_++;
 
@@ -132,7 +134,11 @@ private:
     items_.pop();
 
     worry = apply(worry);
-    worry /= 3;
+    if (divide) {
+      worry /= 3;
+    }
+
+    worry = worry % game_->field();
 
     auto monkey = (worry % modulus_ == 0) ? if_t_ : if_f_;
 
@@ -141,13 +147,13 @@ private:
 
   long count_;
 
-  std::queue<int>              items_;
-  std::optional<int>           lhs_;
-  std::optional<int>           rhs_;
-  std::function<int(int, int)> op_;
-  int                          modulus_;
-  int                          if_t_;
-  int                          if_f_;
+  std::queue<long>                items_;
+  std::optional<long>             lhs_;
+  std::optional<long>             rhs_;
+  std::function<long(long, long)> op_;
+  long                            modulus_;
+  int                             if_t_;
+  int                             if_f_;
 
   game* game_;
 };
@@ -159,16 +165,16 @@ void game::add(monkey m)
   field_ *= m.factor();
 }
 
-void game::throw_to(int monkey, int worry)
+void game::throw_to(int monkey, long worry)
 {
   monkeys_.at(monkey).receive(worry);
 }
 
-void game::play_rounds(long n)
+void game::play_rounds(long n, bool divide)
 {
   for (auto i = 0; i < n; ++i) {
     for (auto& m : monkeys_) {
-      m.execute();
+      m.execute(divide);
     }
   }
 }
@@ -190,12 +196,17 @@ int main()
 {
   auto input = utils::get_lines();
   auto g     = game();
+  auto g2    = game();
 
   while (!input.empty()) {
     auto m = monkey(input);
     g.add(m);
+    g2.add(m);
   }
 
-  g.play_rounds(20);
+  g.play_rounds(20, true);
   fmt::print("{}\n", g.score());
+
+  g2.play_rounds(10000, false);
+  fmt::print("{}\n", g2.score());
 }

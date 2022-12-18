@@ -4,7 +4,7 @@ usage() {
   echo "Usage: $0 <year> <day>" 1>&2
 }
 
-if [ "$#" -ne 2 ]; then
+if [ "$#" -lt 2 ]; then
   usage
   exit 1
 fi
@@ -15,8 +15,11 @@ shift
 day="$1"
 shift
 
+suffix="$1"
+shift
+
 pushd build
 ninja
 popd
 
-"./build/${year}/${year}-day${day}" < "./${year}/inputs/day${day}"
+"./build/${year}/${year}-day${day}" < "./${year}/inputs/day${day}${suffix}"

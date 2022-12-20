@@ -25,6 +25,16 @@ std::set<T> intersect(std::set<T> const& a, std::set<T> const& b)
 }
 
 template <typename T>
+std::set<T> set_union(std::set<T> const& a, std::set<T> const& b)
+{
+  auto ret = std::set<T> {};
+  auto it  = ret.begin();
+  std::set_union(
+      a.begin(), a.end(), b.begin(), b.end(), std::inserter(ret, it));
+  return ret;
+}
+
+template <typename T>
 std::vector<std::vector<T>> group(std::vector<T> const& xs, size_t n)
 {
   auto ret = std::vector<std::vector<T>> {};

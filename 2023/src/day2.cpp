@@ -90,17 +90,16 @@ struct game {
 
 long part_1(std::vector<game> const& input)
 {
-  return std::accumulate(
-      input.begin(), input.end(), 0L, [](auto acc, auto const& game) {
-        return acc + (game.possible() ? game.id : 0L);
-      });
+  return utils::sum(input.begin(), input.end(), [](auto const& game) {
+    return game.possible() ? game.id : 0L;
+  });
 }
 
 long part_2(std::vector<game> const& input)
 {
-  return std::accumulate(
-      input.begin(), input.end(), 0L,
-      [](auto acc, auto const& game) { return acc + game.minimum().power(); });
+  return utils::sum(input.begin(), input.end(), [](auto const& game) {
+    return game.minimum().power();
+  });
 }
 
 int main()

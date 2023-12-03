@@ -2,6 +2,7 @@
 
 #include <functional>
 #include <iostream>
+#include <numeric>
 #include <set>
 #include <string>
 #include <string_view>
@@ -48,6 +49,14 @@ std::vector<std::vector<T>> group(std::vector<T> const& xs, size_t n)
   }
 
   return ret;
+}
+
+template <typename It, typename Func>
+long sum(It begin, It end, Func&& f)
+{
+  return std::accumulate(begin, end, 0L, [&](auto acc, auto const& elt) {
+    return acc + std::forward<Func>(f)(elt);
+  });
 }
 
 template <typename Func>

@@ -125,6 +125,15 @@ int sgn(T val)
   return (T(0) < val) - (val < T(0));
 }
 
+constexpr long pow(long x, long n)
+{
+  if (n == 0) {
+    return 1;
+  } else {
+    return x * pow(x, n - 1);
+  }
+}
+
 inline void hash_combine(std::size_t& seed) { }
 
 template <typename T, typename... Rest>

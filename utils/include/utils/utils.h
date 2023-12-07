@@ -2,7 +2,9 @@
 
 #include <functional>
 #include <iostream>
+#include <iterator>
 #include <numeric>
+#include <optional>
 #include <set>
 #include <string>
 #include <string_view>
@@ -49,6 +51,38 @@ std::vector<std::vector<T>> group(std::vector<T> const& xs, size_t n)
   }
 
   return ret;
+}
+
+template <typename It, typename Func, typename Cmp = std::less<>>
+auto minimum(It begin, It end, Func&& f)
+    -> std::optional<typename std::iterator_traits<It>::value_type>
+{
+  if (begin == end) {
+    return std::nullopt;
+  }
+
+  auto min_elt
+      = std::min_element(begin, end, [&f](auto const& a, auto const& b) {
+          return Cmp {}(std::forward<Func>(f)(a), std::forward<Func>(f)(b));
+        });
+
+  return std::forward<Func>(f)(*min_elt);
+}
+
+template <typename It, typename Func, typename Cmp = std::less<>>
+auto maximum(It begin, It end, Func&& f)
+    -> std::optional<typename std::iterator_traits<It>::value_type>
+{
+  if (begin == end) {
+    return std::nullopt;
+  }
+
+  auto max_elt
+      = std::max_element(begin, end, [&f](auto const& a, auto const& b) {
+          return Cmp {}(std::forward<Func>(f)(a), std::forward<Func>(f)(b));
+        });
+
+  return std::forward<Func>(f)(*max_elt);
 }
 
 template <typename It, typename Func>

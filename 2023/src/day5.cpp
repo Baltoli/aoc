@@ -89,13 +89,9 @@ struct input {
 
 long part_1(input const& in)
 {
-  auto score = [&](auto seed) { return chained_lookup(seed, in.maps); };
-
-  auto min_seed = std::min_element(
-      in.seeds.begin(), in.seeds.end(),
-      [&](auto sa, auto sb) { return score(sa) < score(sb); });
-
-  return score(*min_seed);
+  return *utils::minimum(in.seeds.begin(), in.seeds.end(), [&](auto seed) {
+    return chained_lookup(seed, in.maps);
+  });
 }
 
 long part_2(input const& in)

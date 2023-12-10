@@ -15,3 +15,6 @@ target_link_libraries(2023-day6 utils)
 
 add_executable(2023-day5 src/day5.cpp)
 target_link_libraries(2023-day5 utils)
+
+add_executable(2023-day7 src/day7.cpp)
+target_link_libraries(2023-day7 utils)

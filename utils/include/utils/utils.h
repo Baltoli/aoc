@@ -140,6 +140,20 @@ auto zip_transform(Func&& f)
   });
 }
 
+template <std::ranges::range Range>
+bool all_of(Range&& r)
+{
+  return !std::ranges::contains(std::forward<Range>(r), false);
+}
+
+constexpr auto remove_at_index(std::size_t idx)
+{
+  namespace rv = std::ranges::views;
+  return rv::enumerate
+         | rv::filter([idx](auto pair) { return std::get<0>(pair) != idx; })
+         | rv::transform([](auto pair) { return std::get<1>(pair); });
+}
+
 std::vector<std::string> get_lines();
 std::string              get_single_line();
 

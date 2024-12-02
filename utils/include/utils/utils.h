@@ -6,6 +6,7 @@
 #include <iterator>
 #include <numeric>
 #include <optional>
+#include <ranges>
 #include <set>
 #include <string>
 #include <string_view>
@@ -129,6 +130,14 @@ template <typename T>
 auto construct_lines() -> std::vector<T>
 {
   return map_lines([](auto const& line) { return T(line); });
+}
+
+template <typename Func>
+auto zip_transform(Func&& f)
+{
+  return std::ranges::views::transform([&f](auto&& t) {
+    return std::apply(std::forward<Func>(f), std::forward<decltype(t)>(t));
+  });
 }
 
 std::vector<std::string> get_lines();

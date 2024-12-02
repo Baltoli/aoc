@@ -11,17 +11,17 @@
 namespace ranges = std::ranges;
 namespace views  = std::ranges::views;
 
+using namespace ctre::literals;
+
 std::int64_t
 part_1(std::vector<std::int64_t> a_vec, std::vector<std::int64_t> b_vec)
 {
   ranges::sort(a_vec);
   ranges::sort(b_vec);
 
-  auto abs_diff = [](auto t) {
-    return std::apply([](auto a, auto b) { return std::abs(a - b); }, t);
-  };
+  auto abs_diff = [](auto a, auto b) { return std::abs(a - b); };
 
-  auto diffs = views::zip(a_vec, b_vec) | views::transform(abs_diff);
+  auto diffs = views::zip(a_vec, b_vec) | utils::zip_transform(abs_diff);
   return ranges::fold_left(diffs, 0L, std::plus<> {});
 }
 

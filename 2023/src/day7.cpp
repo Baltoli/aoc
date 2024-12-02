@@ -114,7 +114,7 @@ public:
     return mod.type();
   }
 
-  std::strong_ordering operator<=>(hand const& other)
+  std::strong_ordering operator<=>(hand const& other) const
   {
     auto ty   = joker ? joker_type() : type();
     auto o_ty = joker ? other.joker_type() : other.type();

@@ -13,8 +13,8 @@ struct cube;
 
 namespace std {
 template <>
-struct hash<span> {
-  size_t operator()(span const&) const;
+struct hash<::span> {
+  size_t operator()(::span const&) const;
 };
 
 template <>
@@ -215,7 +215,7 @@ int main()
 
 namespace std {
 
-size_t hash<span>::operator()(span const& s) const
+size_t hash<::span>::operator()(::span const& s) const
 {
   auto seed = size_t {0};
   utils::hash_combine(seed, s.min, s.max);

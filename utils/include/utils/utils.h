@@ -167,8 +167,18 @@ struct overload : Ts... {
 template <class... Ts>
 overload(Ts...) -> overload<Ts...>;
 
+constexpr long svtol(std::string_view sv)
+{
+  if (!sv.empty() && sv[0] == '+') {
+    sv = sv.substr(1);
+  }
+
+  long result;
+  std::from_chars(sv.data(), sv.data() + sv.size(), result);
+  return result;
+}
+
 int  svtoi(std::string_view);
-long svtol(std::string_view);
 long stol(std::string const&);
 int  stoi(std::string const&);
 

@@ -4,7 +4,7 @@ on: [push]
 
 jobs:
   ubuntu:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
     - name: Install dependencies
       run: sudo apt install gcc-14 g++-14
@@ -22,7 +22,7 @@ jobs:
         cmake --build build --parallel
 
   macos:
-    runs-on: macos-11
+    runs-on: macos-14
     steps:
     - name: Check out code
       uses: actions/checkout@v2.3.4

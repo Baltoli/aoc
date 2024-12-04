@@ -154,6 +154,14 @@ constexpr auto remove_at_index(std::size_t idx)
          | rv::transform([](auto pair) { return std::get<1>(pair); });
 }
 
+template <typename Range>
+auto count(Range&& r)
+{
+  return std::ranges::fold_left(
+      std::forward<Range>(r), 0L,
+      [](auto acc, auto const&) { return acc + 1; });
+}
+
 std::vector<std::string> get_lines();
 std::string              get_single_line();
 

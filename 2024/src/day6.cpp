@@ -56,23 +56,55 @@ public:
       current = next;
     }
 
-    return visited.size();
+    return visited;
   }
 
-  bool loops_with_obstacle_at(utils::point p) const
+  bool loops_with_obstacle_at(utils::point p)
   {
-    if (p == start_) {
+    if (p == start_ || at(p) == '#') {
       return false;
     }
 
-    return false;
+    auto visited = std::unordered_set<std::pair<utils::point, utils::point>> {};
+
+    auto current   = start_;
+    auto direction = utils::point {0, -1};
+    auto loops     = false;
+
+    at_unchecked(p) = '#';
+
+    while (true) {
+      if (at(current) == exit_pad::value) {
+        break;
+      }
+
+      auto key = std::pair {current, direction};
+      if (visited.contains(key)) {
+        loops = true;
+        break;
+      }
+
+      visited.insert(std::pair {current, direction});
+
+      auto next = current + direction;
+
+      if (at(next) == '#') {
+        direction = direction.right_turn();
+        continue;
+      }
+
+      current = next;
+    }
+
+    at_unchecked(p) = '.';
+    return loops;
   }
 
-  auto part_2() const
+  auto part_2(std::unordered_set<utils::point> const& seeds)
   {
     auto total = 0L;
 
-    for (auto p : coords()) {
+    for (auto p : seeds) {
       if (loops_with_obstacle_at(p)) {
         total += 1;
       }
@@ -88,6 +120,8 @@ private:
 int main()
 {
   auto map = map_grid(utils::lines());
-  fmt::print("{}\n", map.part_1());
-  fmt::print("{}\n", map.part_2());
+
+  auto seeds = map.part_1();
+  fmt::print("{}\n", seeds.size());
+  fmt::print("{}\n", map.part_2(seeds));
 }

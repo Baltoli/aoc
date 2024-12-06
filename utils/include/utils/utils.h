@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <functional>
+#include <generator>
 #include <iostream>
 #include <iterator>
 #include <numeric>
@@ -95,10 +96,12 @@ long sum(It begin, It end, Func&& f)
   });
 }
 
+std::generator<std::string> lines();
+
 template <typename Func>
 void for_each_line(Func&& f)
 {
-  for (std::string line; std::getline(std::cin, line);) {
+  for (auto line : lines()) {
     std::forward<Func>(f)(line);
   }
 }

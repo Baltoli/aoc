@@ -17,10 +17,10 @@ public:
     auto in            = input {};
     auto reading_rules = true;
 
-    utils::for_each_line([&](auto const& line) {
+    for (auto line : utils::lines()) {
       if (line.empty()) {
         reading_rules = false;
-        return;
+        continue;
       }
 
       if (reading_rules) {
@@ -35,7 +35,7 @@ public:
         auto update = utils::map(utils::split(line, ","), utils::stol);
         in.updates_.push_back(update);
       }
-    });
+    }
 
     return in;
   }

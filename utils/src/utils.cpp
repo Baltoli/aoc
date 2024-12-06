@@ -40,6 +40,13 @@ std::vector<std::string> split(std::string const& str, std::string const& delim)
 
 std::string get_single_line() { return get_lines()[0]; }
 
+std::generator<std::string> lines()
+{
+  for (std::string line; std::getline(std::cin, line);) {
+    co_yield line;
+  }
+}
+
 std::string md5_sum(std::string const& input)
 {
   constexpr auto buf_size = 64;

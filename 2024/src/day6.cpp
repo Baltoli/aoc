@@ -14,8 +14,7 @@ struct hash<std::pair<utils::point, utils::point>> {
   size_t operator()(std::pair<utils::point, utils::point> const& p) const
   {
     auto seed = std::size_t {0};
-    utils::hash_combine(seed, p.first);
-    utils::hash_combine(seed, p.second);
+    std::apply(utils::hash_combine_curry(seed), p);
     return seed;
   }
 };

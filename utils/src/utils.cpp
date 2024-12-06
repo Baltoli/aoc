@@ -1,5 +1,6 @@
 #include "md5.h"
 
+#include <utils/grid.h>
 #include <utils/utils.h>
 
 #include <array>
@@ -92,3 +93,11 @@ char itoc(int i) { return i + '0'; }
 char ltoc(long l) { return l + '0'; }
 
 } // namespace utils
+
+size_t std::hash<::utils::point>::operator()(::utils::point const& p) const
+{
+  auto seed = size_t {0};
+  utils::hash_combine(seed, p.x);
+  utils::hash_combine(seed, p.y);
+  return seed;
+}

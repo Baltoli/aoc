@@ -12,8 +12,10 @@ namespace utils {
 
 struct no_pad { };
 
-template <char>
-struct fill_pad { };
+template <char C>
+struct fill_pad {
+  constexpr static char value = C;
+};
 
 template <typename Pad>
 struct is_pad_policy {
@@ -36,16 +38,48 @@ constexpr bool is_pad_policy_v = is_pad_policy<Pad>::value;
 struct point {
   std::int64_t x;
   std::int64_t y;
+
+  constexpr std::int64_t magnitude() noexcept { return (x * x) + (y * y); }
+
+  constexpr point right_turn() noexcept;
 };
 
-point operator+(point const& a, point const& b)
+constexpr bool operator==(point const& a, point const& b) noexcept
+{
+  return std::tie(a.x, a.y) == std::tie(b.x, b.y);
+}
+
+constexpr point operator+(point const& a, point const& b) noexcept
 {
   return point {a.x + b.x, a.y + b.y};
 }
 
-point operator*(point const& p, std::int64_t s)
+constexpr point operator*(point const& p, std::int64_t s) noexcept
 {
   return point {p.x * s, p.y * s};
+}
+
+constexpr point point::right_turn() noexcept
+{
+  assert(magnitude() == 1);
+
+  if (*this == point {-1, 0}) {
+    return point {0, -1};
+  }
+
+  if (*this == point {0, -1}) {
+    return point {1, 0};
+  }
+
+  if (*this == point {1, 0}) {
+    return point {0, 1};
+  }
+
+  if (*this == point {0, 1}) {
+    return point {-1, 0};
+  }
+
+  assert(false);
 }
 
 template <typename Pad = no_pad>
@@ -62,12 +96,12 @@ template <typename Pad>
 class grid {
 public:
   template <typename Range>
-  grid(Range const& lines)
+  grid(Range&& lines)
       : data_ {}
       , width_ {0}
       , height_ {0}
   {
-    for (auto const& line : lines) {
+    for (auto&& line : std::forward<Range>(lines)) {
       assert(width_ == 0 || width_ == line.size());
       width_ = line.size();
 
@@ -104,8 +138,12 @@ public:
   template <typename T>
   friend struct getter;
 
-private:
-  char at_unchecked(point p) const { return data_[p.y * width_ + p.x]; }
+protected:
+  template <typename Self>
+  auto&& at_unchecked(this Self&& self, point p)
+  {
+    return self.data_[p.y * self.width_ + p.x];
+  }
 
   bool in_bounds(point p) const
   {
@@ -142,3 +180,10 @@ struct getter<fill_pad<C>> {
 };
 
 } // namespace utils
+
+namespace std {
+template <>
+struct hash<::utils::point> {
+  size_t operator()(::utils::point const&) const;
+};
+} // namespace std

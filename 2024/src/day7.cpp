@@ -61,7 +61,7 @@ constexpr bool valid(
 
 class equation {
 public:
-  constexpr equation(std::string_view line) noexcept
+  equation(std::string_view line) noexcept
   {
     auto [_, target, rest] = line_pattern.match(line);
 
@@ -70,12 +70,12 @@ public:
         utils::split(rest.str(), " "), utils::to_int<std::int64_t>);
   }
 
-  constexpr bool valid(bool concat) const noexcept
+  bool valid(bool concat) const noexcept
   {
     return ::valid(target_, std::span(components_), concat);
   }
 
-  constexpr auto target() const noexcept { return target_; }
+  auto target() const noexcept { return target_; }
 
 private:
   std::int64_t              target_;

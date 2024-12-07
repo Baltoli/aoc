@@ -178,16 +178,20 @@ struct overload : Ts... {
 template <class... Ts>
 overload(Ts...) -> overload<Ts...>;
 
-constexpr long svtol(std::string_view sv)
+template <typename Int>
+  requires(std::is_integral_v<Int>)
+constexpr Int to_int(std::string_view sv)
 {
   if (!sv.empty() && sv[0] == '+') {
     sv = sv.substr(1);
   }
 
-  long result;
+  Int result;
   std::from_chars(sv.data(), sv.data() + sv.size(), result);
   return result;
 }
+
+constexpr long svtol(std::string_view sv) { return to_int<long>(sv); }
 
 int  svtoi(std::string_view);
 long stol(std::string const&);

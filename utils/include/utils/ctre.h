@@ -590,8 +590,8 @@ constexpr auto pop_and_get_front(list<Head, As...>, T = T()) noexcept
   return {};
 }
 template <typename T = _nothing>
-constexpr auto pop_and_get_front(empty_list, T = T()) noexcept
-    -> list_pop_pair<T, empty_list>
+constexpr auto
+pop_and_get_front(empty_list, T = T()) noexcept -> list_pop_pair<T, empty_list>
 {
   return {};
 }
@@ -794,8 +794,9 @@ struct augment_grammar : public Grammar {
   // if the type on stack (range, set, neg_set, anything) is constructible from
   // the terminal => pop_input
   template <typename Expected, auto V>
-  static constexpr auto rule(Expected, term<V>) -> std::enable_if_t<
-      std::is_constructible_v<Expected, term<V>>, ctll::pop_input>;
+  static constexpr auto rule(Expected, term<V>)
+      -> std::enable_if_t<
+          std::is_constructible_v<Expected, term<V>>, ctll::pop_input>;
 
   // empty stack and empty input means we are accepting
   static constexpr auto rule(empty_stack_symbol, epsilon) -> ctll::accept;
@@ -1262,10 +1263,12 @@ struct pcre {
       -> ctll::push<ctll::anything, backslash, repeat, string2, content2>;
   static constexpr auto rule(s, ctll::term<'['>)
       -> ctll::push<ctll::anything, c, repeat, string2, content2>;
-  static constexpr auto rule(s, ctll::term<'\x28'>) -> ctll::push<
-      ctll::anything, prepare_capture, block, repeat, string2, content2>;
-  static constexpr auto rule(s, ctll::term<'^'>) -> ctll::push<
-      ctll::anything, push_assert_begin, repeat, string2, content2>;
+  static constexpr auto rule(s, ctll::term<'\x28'>)
+      -> ctll::push<
+          ctll::anything, prepare_capture, block, repeat, string2, content2>;
+  static constexpr auto rule(s, ctll::term<'^'>)
+      -> ctll::push<
+          ctll::anything, push_assert_begin, repeat, string2, content2>;
   static constexpr auto rule(s, ctll::term<'$'>)
       -> ctll::push<ctll::anything, push_assert_end, repeat, string2, content2>;
   static constexpr auto rule(
@@ -1279,27 +1282,33 @@ struct pcre {
       -> ctll::push<ctll::anything, push_character, repeat, string2, content2>;
   static constexpr auto rule(s, _others)
       -> ctll::push<ctll::anything, push_character, repeat, string2, content2>;
-  static constexpr auto rule(s, ctll::term<'.'>) -> ctll::push<
-      ctll::anything, push_character_anything, repeat, string2, content2>;
+  static constexpr auto rule(s, ctll::term<'.'>)
+      -> ctll::push<
+          ctll::anything, push_character_anything, repeat, string2, content2>;
   static constexpr auto rule(s, ctll::term<'|'>)
       -> ctll::push<ctll::anything, push_empty, content, make_alternate>;
   static constexpr auto rule(s, ctll::epsilon) -> ctll::push<push_empty>;
   static constexpr auto
       rule(s, ctll::set<'\x29', '*', '+', '?', '\x7B', '\x7D'>) -> ctll::reject;
 
-  static constexpr auto rule(a, ctll::term<'\\'>) -> ctll::push<
-      ctll::anything, backslash, repeat, string2, content2, make_alternate>;
-  static constexpr auto rule(a, ctll::term<'['>) -> ctll::push<
-      ctll::anything, c, repeat, string2, content2, make_alternate>;
-  static constexpr auto rule(a, ctll::term<'\x28'>) -> ctll::push<
-      ctll::anything, prepare_capture, block, repeat, string2, content2,
-      make_alternate>;
-  static constexpr auto rule(a, ctll::term<'^'>) -> ctll::push<
-      ctll::anything, push_assert_begin, repeat, string2, content2,
-      make_alternate>;
-  static constexpr auto rule(a, ctll::term<'$'>) -> ctll::push<
-      ctll::anything, push_assert_end, repeat, string2, content2,
-      make_alternate>;
+  static constexpr auto rule(a, ctll::term<'\\'>)
+      -> ctll::push<
+          ctll::anything, backslash, repeat, string2, content2, make_alternate>;
+  static constexpr auto rule(a, ctll::term<'['>)
+      -> ctll::push<
+          ctll::anything, c, repeat, string2, content2, make_alternate>;
+  static constexpr auto rule(a, ctll::term<'\x28'>)
+      -> ctll::push<
+          ctll::anything, prepare_capture, block, repeat, string2, content2,
+          make_alternate>;
+  static constexpr auto
+      rule(a, ctll::term<'^'>) -> ctll::push<
+                                   ctll::anything, push_assert_begin, repeat,
+                                   string2, content2, make_alternate>;
+  static constexpr auto
+      rule(a, ctll::term<'$'>) -> ctll::push<
+                                   ctll::anything, push_assert_end, repeat,
+                                   string2, content2, make_alternate>;
   static constexpr auto rule(
       a, ctll::set<
              '!', ',', '-', ':', '<', '=', '>', 'A', 'B', 'C', 'D', 'E', 'F',
@@ -1311,23 +1320,25 @@ struct pcre {
       -> ctll::push<
           ctll::anything, push_character, repeat, string2, content2,
           make_alternate>;
-  static constexpr auto rule(a, _others) -> ctll::push<
-      ctll::anything, push_character, repeat, string2, content2,
-      make_alternate>;
-  static constexpr auto rule(a, ctll::term<'.'>) -> ctll::push<
-      ctll::anything, push_character_anything, repeat, string2, content2,
-      make_alternate>;
-  static constexpr auto rule(a, ctll::term<'\x29'>)
-      -> ctll::push<push_empty, make_alternate>;
-  static constexpr auto rule(a, ctll::epsilon)
-      -> ctll::push<push_empty, make_alternate>;
-  static constexpr auto rule(a, ctll::set<'*', '+', '?', '\x7B', '|', '\x7D'>)
-      -> ctll::reject;
+  static constexpr auto
+      rule(a, _others) -> ctll::push<
+                           ctll::anything, push_character, repeat, string2,
+                           content2, make_alternate>;
+  static constexpr auto
+      rule(a, ctll::term<'.'>) -> ctll::push<
+                                   ctll::anything, push_character_anything,
+                                   repeat, string2, content2, make_alternate>;
+  static constexpr auto
+      rule(a, ctll::term<'\x29'>) -> ctll::push<push_empty, make_alternate>;
+  static constexpr auto
+      rule(a, ctll::epsilon) -> ctll::push<push_empty, make_alternate>;
+  static constexpr auto
+      rule(a, ctll::set<'*', '+', '?', '\x7B', '|', '\x7D'>) -> ctll::reject;
 
-  static constexpr auto rule(b, ctll::term<','>)
-      -> ctll::push<ctll::anything, n>;
-  static constexpr auto rule(b, ctll::term<'\x7D'>)
-      -> ctll::push<repeat_exactly, ctll::anything>;
+  static constexpr auto
+      rule(b, ctll::term<','>) -> ctll::push<ctll::anything, n>;
+  static constexpr auto
+      rule(b, ctll::term<'\x7D'>) -> ctll::push<repeat_exactly, ctll::anything>;
 
   static constexpr auto rule(backslash, ctll::term<'d'>)
       -> ctll::push<ctll::anything, class_digit>;
@@ -1356,16 +1367,18 @@ struct pcre {
           -> ctll::push<ctll::anything, create_number, make_back_reference>;
   static constexpr auto rule(backslash, ctll::term<'g'>)
       -> ctll::push<ctll::anything, ctll::term<'\x7B'>, m>;
-  static constexpr auto rule(backslash, ctll::term<'p'>) -> ctll::push<
-      ctll::anything, ctll::term<'\x7B'>, property_name, ctll::term<'\x7D'>,
-      make_property>;
-  static constexpr auto rule(backslash, ctll::term<'P'>) -> ctll::push<
-      ctll::anything, ctll::term<'\x7B'>, property_name, ctll::term<'\x7D'>,
-      make_property_negative>;
-  static constexpr auto rule(backslash, ctll::term<'u'>)
-      -> ctll::push<ctll::anything, k>;
-  static constexpr auto rule(backslash, ctll::term<'x'>)
-      -> ctll::push<ctll::anything, l>;
+  static constexpr auto rule(backslash, ctll::term<'p'>)
+      -> ctll::push<
+          ctll::anything, ctll::term<'\x7B'>, property_name, ctll::term<'\x7D'>,
+          make_property>;
+  static constexpr auto rule(backslash, ctll::term<'P'>)
+      -> ctll::push<
+          ctll::anything, ctll::term<'\x7B'>, property_name, ctll::term<'\x7D'>,
+          make_property_negative>;
+  static constexpr auto
+      rule(backslash, ctll::term<'u'>) -> ctll::push<ctll::anything, k>;
+  static constexpr auto
+      rule(backslash, ctll::term<'x'>) -> ctll::push<ctll::anything, l>;
   static constexpr auto rule(backslash, ctll::term<'A'>)
       -> ctll::push<ctll::anything, push_assert_subject_begin>;
   static constexpr auto rule(backslash, ctll::term<'z'>)
@@ -1373,10 +1386,10 @@ struct pcre {
   static constexpr auto rule(backslash, ctll::term<'Z'>)
       -> ctll::push<ctll::anything, push_assert_subject_end_with_lineend>;
   static constexpr auto rule(
-      backslash, ctll::set<
-                     '$', '\x28', '\x29', '*', '+', '-', '.', '?', '[', '\\',
-                     ']', '^', '\x7B', '|', '\x7D'>)
-      -> ctll::push<ctll::anything, push_character>;
+      backslash,
+      ctll::set<
+          '$', '\x28', '\x29', '*', '+', '-', '.', '?', '[', '\\', ']', '^',
+          '\x7B', '|', '\x7D'>) -> ctll::push<ctll::anything, push_character>;
   static constexpr auto rule(backslash, ctll::term<'a'>)
       -> ctll::push<ctll::anything, push_character_alarm>;
   static constexpr auto rule(backslash, ctll::term<'e'>)
@@ -1396,10 +1409,10 @@ struct pcre {
   static constexpr auto rule(backslash, ctll::term<'b'>)
       -> ctll::push<ctll::anything, push_word_boundary>;
 
-  static constexpr auto rule(backslash_range, ctll::term<'u'>)
-      -> ctll::push<ctll::anything, k>;
-  static constexpr auto rule(backslash_range, ctll::term<'x'>)
-      -> ctll::push<ctll::anything, l>;
+  static constexpr auto
+      rule(backslash_range, ctll::term<'u'>) -> ctll::push<ctll::anything, k>;
+  static constexpr auto
+      rule(backslash_range, ctll::term<'x'>) -> ctll::push<ctll::anything, l>;
   static constexpr auto rule(backslash_range, ctll::term<'-'>)
       -> ctll::push<ctll::anything, push_character>;
   static constexpr auto rule(backslash_range, ctll::term<'a'>)
@@ -1417,23 +1430,28 @@ struct pcre {
   static constexpr auto rule(backslash_range, ctll::term<'t'>)
       -> ctll::push<ctll::anything, push_character_tab>;
 
-  static constexpr auto rule(block, ctll::term<'\\'>) -> ctll::push<
-      ctll::anything, backslash, repeat, string2, content2, make_capture,
-      ctll::term<'\x29'>>;
-  static constexpr auto rule(block, ctll::term<'['>) -> ctll::push<
-      ctll::anything, c, repeat, string2, content2, make_capture,
-      ctll::term<'\x29'>>;
-  static constexpr auto rule(block, ctll::term<'?'>)
-      -> ctll::push<ctll::anything, d>;
-  static constexpr auto rule(block, ctll::term<'\x28'>) -> ctll::push<
-      ctll::anything, prepare_capture, block, repeat, string2, content2,
-      make_capture, ctll::term<'\x29'>>;
-  static constexpr auto rule(block, ctll::term<'^'>) -> ctll::push<
-      ctll::anything, push_assert_begin, repeat, string2, content2,
-      make_capture, ctll::term<'\x29'>>;
-  static constexpr auto rule(block, ctll::term<'$'>) -> ctll::push<
-      ctll::anything, push_assert_end, repeat, string2, content2, make_capture,
-      ctll::term<'\x29'>>;
+  static constexpr auto rule(block, ctll::term<'\\'>)
+      -> ctll::push<
+          ctll::anything, backslash, repeat, string2, content2, make_capture,
+          ctll::term<'\x29'>>;
+  static constexpr auto rule(block, ctll::term<'['>)
+      -> ctll::push<
+          ctll::anything, c, repeat, string2, content2, make_capture,
+          ctll::term<'\x29'>>;
+  static constexpr auto
+      rule(block, ctll::term<'?'>) -> ctll::push<ctll::anything, d>;
+  static constexpr auto rule(block, ctll::term<'\x28'>)
+      -> ctll::push<
+          ctll::anything, prepare_capture, block, repeat, string2, content2,
+          make_capture, ctll::term<'\x29'>>;
+  static constexpr auto rule(block, ctll::term<'^'>)
+      -> ctll::push<
+          ctll::anything, push_assert_begin, repeat, string2, content2,
+          make_capture, ctll::term<'\x29'>>;
+  static constexpr auto rule(block, ctll::term<'$'>)
+      -> ctll::push<
+          ctll::anything, push_assert_end, repeat, string2, content2,
+          make_capture, ctll::term<'\x29'>>;
   static constexpr auto rule(
       block, ctll::set<
                  '!', ',', '-', ':', '<', '=', '>', 'A', 'B', 'C', 'D', 'E',
@@ -1445,22 +1463,25 @@ struct pcre {
       -> ctll::push<
           ctll::anything, push_character, repeat, string2, content2,
           make_capture, ctll::term<'\x29'>>;
-  static constexpr auto rule(block, _others) -> ctll::push<
-      ctll::anything, push_character, repeat, string2, content2, make_capture,
-      ctll::term<'\x29'>>;
-  static constexpr auto rule(block, ctll::term<'.'>) -> ctll::push<
-      ctll::anything, push_character_anything, repeat, string2, content2,
-      make_capture, ctll::term<'\x29'>>;
-  static constexpr auto rule(block, ctll::term<'|'>) -> ctll::push<
-      ctll::anything, push_empty, content, make_alternate, make_capture,
-      ctll::term<'\x29'>>;
+  static constexpr auto
+      rule(block, _others) -> ctll::push<
+                               ctll::anything, push_character, repeat, string2,
+                               content2, make_capture, ctll::term<'\x29'>>;
+  static constexpr auto rule(block, ctll::term<'.'>)
+      -> ctll::push<
+          ctll::anything, push_character_anything, repeat, string2, content2,
+          make_capture, ctll::term<'\x29'>>;
+  static constexpr auto rule(block, ctll::term<'|'>)
+      -> ctll::push<
+          ctll::anything, push_empty, content, make_alternate, make_capture,
+          ctll::term<'\x29'>>;
   static constexpr auto rule(block, ctll::term<'\x29'>)
       -> ctll::push<push_empty, make_capture, ctll::anything>;
-  static constexpr auto rule(block, ctll::set<'*', '+', '\x7B', '\x7D'>)
-      -> ctll::reject;
+  static constexpr auto
+      rule(block, ctll::set<'*', '+', '\x7B', '\x7D'>) -> ctll::reject;
 
-  static constexpr auto rule(block_name2, ctll::set<'>', '\x7D'>)
-      -> ctll::epsilon;
+  static constexpr auto
+      rule(block_name2, ctll::set<'>', '\x7D'>) -> ctll::epsilon;
   static constexpr auto rule(
       block_name2,
       ctll::set<
@@ -1480,11 +1501,13 @@ struct pcre {
           'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'>)
       -> ctll::push<ctll::anything, push_name, block_name2>;
 
-  static constexpr auto rule(c, ctll::term<'['>) -> ctll::push<
-      ctll::anything, ctll::term<':'>, i, range, set_start, set2b, set_make,
-      ctll::term<']'>>;
-  static constexpr auto rule(c, ctll::term<'\\'>) -> ctll::push<
-      ctll::anything, e, set_start, set2b, set_make, ctll::term<']'>>;
+  static constexpr auto
+      rule(c, ctll::term<'['>) -> ctll::push<
+                                   ctll::anything, ctll::term<':'>, i, range,
+                                   set_start, set2b, set_make, ctll::term<']'>>;
+  static constexpr auto rule(c, ctll::term<'\\'>)
+      -> ctll::push<
+          ctll::anything, e, set_start, set2b, set_make, ctll::term<']'>>;
   static constexpr auto rule(
       c,
       ctll::set<
@@ -1497,58 +1520,70 @@ struct pcre {
       -> ctll::push<
           ctll::anything, push_character, range, set_start, set2b, set_make,
           ctll::term<']'>>;
-  static constexpr auto rule(c, _others) -> ctll::push<
-      ctll::anything, push_character, range, set_start, set2b, set_make,
-      ctll::term<']'>>;
+  static constexpr auto
+      rule(c, _others) -> ctll::push<
+                           ctll::anything, push_character, range, set_start,
+                           set2b, set_make, ctll::term<']'>>;
   static constexpr auto rule(c, ctll::term<'^'>)
       -> ctll::push<ctll::anything, set2a, set_make_negative, ctll::term<']'>>;
   static constexpr auto rule(c, ctll::set<'-', ']', '|'>) -> ctll::reject;
 
-  static constexpr auto rule(class_named_name, ctll::term<'x'>) -> ctll::push<
-      ctll::anything, ctll::term<'d'>, ctll::term<'i'>, ctll::term<'g'>,
-      ctll::term<'i'>, ctll::term<'t'>, class_named_xdigit>;
-  static constexpr auto rule(class_named_name, ctll::term<'d'>) -> ctll::push<
-      ctll::anything, ctll::term<'i'>, ctll::term<'g'>, ctll::term<'i'>,
-      ctll::term<'t'>, class_named_digit>;
-  static constexpr auto rule(class_named_name, ctll::term<'b'>) -> ctll::push<
-      ctll::anything, ctll::term<'l'>, ctll::term<'a'>, ctll::term<'n'>,
-      ctll::term<'k'>, class_named_blank>;
-  static constexpr auto rule(class_named_name, ctll::term<'c'>) -> ctll::push<
-      ctll::anything, ctll::term<'n'>, ctll::term<'t'>, ctll::term<'r'>,
-      ctll::term<'l'>, class_named_cntrl>;
-  static constexpr auto rule(class_named_name, ctll::term<'w'>) -> ctll::push<
-      ctll::anything, ctll::term<'o'>, ctll::term<'r'>, ctll::term<'d'>,
-      class_named_word>;
-  static constexpr auto rule(class_named_name, ctll::term<'l'>) -> ctll::push<
-      ctll::anything, ctll::term<'o'>, ctll::term<'w'>, ctll::term<'e'>,
-      ctll::term<'r'>, class_named_lower>;
-  static constexpr auto rule(class_named_name, ctll::term<'s'>) -> ctll::push<
-      ctll::anything, ctll::term<'p'>, ctll::term<'a'>, ctll::term<'c'>,
-      ctll::term<'e'>, class_named_space>;
-  static constexpr auto rule(class_named_name, ctll::term<'u'>) -> ctll::push<
-      ctll::anything, ctll::term<'p'>, ctll::term<'p'>, ctll::term<'e'>,
-      ctll::term<'r'>, class_named_upper>;
-  static constexpr auto rule(class_named_name, ctll::term<'g'>) -> ctll::push<
-      ctll::anything, ctll::term<'r'>, ctll::term<'a'>, ctll::term<'p'>,
-      ctll::term<'h'>, class_named_graph>;
-  static constexpr auto rule(class_named_name, ctll::term<'a'>)
-      -> ctll::push<ctll::anything, g>;
-  static constexpr auto rule(class_named_name, ctll::term<'p'>)
-      -> ctll::push<ctll::anything, h>;
+  static constexpr auto rule(class_named_name, ctll::term<'x'>)
+      -> ctll::push<
+          ctll::anything, ctll::term<'d'>, ctll::term<'i'>, ctll::term<'g'>,
+          ctll::term<'i'>, ctll::term<'t'>, class_named_xdigit>;
+  static constexpr auto rule(class_named_name, ctll::term<'d'>)
+      -> ctll::push<
+          ctll::anything, ctll::term<'i'>, ctll::term<'g'>, ctll::term<'i'>,
+          ctll::term<'t'>, class_named_digit>;
+  static constexpr auto rule(class_named_name, ctll::term<'b'>)
+      -> ctll::push<
+          ctll::anything, ctll::term<'l'>, ctll::term<'a'>, ctll::term<'n'>,
+          ctll::term<'k'>, class_named_blank>;
+  static constexpr auto rule(class_named_name, ctll::term<'c'>)
+      -> ctll::push<
+          ctll::anything, ctll::term<'n'>, ctll::term<'t'>, ctll::term<'r'>,
+          ctll::term<'l'>, class_named_cntrl>;
+  static constexpr auto rule(class_named_name, ctll::term<'w'>)
+      -> ctll::push<
+          ctll::anything, ctll::term<'o'>, ctll::term<'r'>, ctll::term<'d'>,
+          class_named_word>;
+  static constexpr auto rule(class_named_name, ctll::term<'l'>)
+      -> ctll::push<
+          ctll::anything, ctll::term<'o'>, ctll::term<'w'>, ctll::term<'e'>,
+          ctll::term<'r'>, class_named_lower>;
+  static constexpr auto rule(class_named_name, ctll::term<'s'>)
+      -> ctll::push<
+          ctll::anything, ctll::term<'p'>, ctll::term<'a'>, ctll::term<'c'>,
+          ctll::term<'e'>, class_named_space>;
+  static constexpr auto rule(class_named_name, ctll::term<'u'>)
+      -> ctll::push<
+          ctll::anything, ctll::term<'p'>, ctll::term<'p'>, ctll::term<'e'>,
+          ctll::term<'r'>, class_named_upper>;
+  static constexpr auto rule(class_named_name, ctll::term<'g'>)
+      -> ctll::push<
+          ctll::anything, ctll::term<'r'>, ctll::term<'a'>, ctll::term<'p'>,
+          ctll::term<'h'>, class_named_graph>;
+  static constexpr auto
+      rule(class_named_name, ctll::term<'a'>) -> ctll::push<ctll::anything, g>;
+  static constexpr auto
+      rule(class_named_name, ctll::term<'p'>) -> ctll::push<ctll::anything, h>;
 
   static constexpr auto rule(content2, ctll::term<'\x29'>) -> ctll::epsilon;
   static constexpr auto rule(content2, ctll::epsilon) -> ctll::epsilon;
-  static constexpr auto rule(content2, ctll::term<'|'>)
-      -> ctll::push<ctll::anything, a>;
+  static constexpr auto
+      rule(content2, ctll::term<'|'>) -> ctll::push<ctll::anything, a>;
 
   static constexpr auto rule(content, ctll::term<'\\'>)
       -> ctll::push<ctll::anything, backslash, repeat, string2, content2>;
   static constexpr auto rule(content, ctll::term<'['>)
       -> ctll::push<ctll::anything, c, repeat, string2, content2>;
-  static constexpr auto rule(content, ctll::term<'\x28'>) -> ctll::push<
-      ctll::anything, prepare_capture, block, repeat, string2, content2>;
-  static constexpr auto rule(content, ctll::term<'^'>) -> ctll::push<
-      ctll::anything, push_assert_begin, repeat, string2, content2>;
+  static constexpr auto rule(content, ctll::term<'\x28'>)
+      -> ctll::push<
+          ctll::anything, prepare_capture, block, repeat, string2, content2>;
+  static constexpr auto rule(content, ctll::term<'^'>)
+      -> ctll::push<
+          ctll::anything, push_assert_begin, repeat, string2, content2>;
   static constexpr auto rule(content, ctll::term<'$'>)
       -> ctll::push<ctll::anything, push_assert_end, repeat, string2, content2>;
   static constexpr auto rule(
@@ -1562,11 +1597,12 @@ struct pcre {
       -> ctll::push<ctll::anything, push_character, repeat, string2, content2>;
   static constexpr auto rule(content, _others)
       -> ctll::push<ctll::anything, push_character, repeat, string2, content2>;
-  static constexpr auto rule(content, ctll::term<'.'>) -> ctll::push<
-      ctll::anything, push_character_anything, repeat, string2, content2>;
-  static constexpr auto
-      rule(content, ctll::set<'\x29', '*', '+', '?', '\x7B', '|', '\x7D'>)
-          -> ctll::reject;
+  static constexpr auto rule(content, ctll::term<'.'>)
+      -> ctll::push<
+          ctll::anything, push_character_anything, repeat, string2, content2>;
+  static constexpr auto rule(
+      content,
+      ctll::set<'\x29', '*', '+', '?', '\x7B', '|', '\x7D'>) -> ctll::reject;
 
   static constexpr auto rule(content_in_capture, ctll::term<'\\'>)
       -> ctll::push<ctll::anything, backslash, repeat, string2, content2>;
@@ -1575,8 +1611,9 @@ struct pcre {
   static constexpr auto rule(content_in_capture, ctll::term<'\x28'>)
       -> ctll::push<
           ctll::anything, prepare_capture, block, repeat, string2, content2>;
-  static constexpr auto rule(content_in_capture, ctll::term<'^'>) -> ctll::push<
-      ctll::anything, push_assert_begin, repeat, string2, content2>;
+  static constexpr auto rule(content_in_capture, ctll::term<'^'>)
+      -> ctll::push<
+          ctll::anything, push_assert_begin, repeat, string2, content2>;
   static constexpr auto rule(content_in_capture, ctll::term<'$'>)
       -> ctll::push<ctll::anything, push_assert_end, repeat, string2, content2>;
   static constexpr auto rule(
@@ -1591,68 +1628,77 @@ struct pcre {
       -> ctll::push<ctll::anything, push_character, repeat, string2, content2>;
   static constexpr auto rule(content_in_capture, _others)
       -> ctll::push<ctll::anything, push_character, repeat, string2, content2>;
-  static constexpr auto rule(content_in_capture, ctll::term<'.'>) -> ctll::push<
-      ctll::anything, push_character_anything, repeat, string2, content2>;
+  static constexpr auto rule(content_in_capture, ctll::term<'.'>)
+      -> ctll::push<
+          ctll::anything, push_character_anything, repeat, string2, content2>;
   static constexpr auto rule(content_in_capture, ctll::term<'|'>)
       -> ctll::push<ctll::anything, push_empty, content, make_alternate>;
-  static constexpr auto rule(content_in_capture, ctll::term<'\x29'>)
-      -> ctll::push<push_empty>;
   static constexpr auto
-      rule(content_in_capture, ctll::set<'*', '+', '?', '\x7B', '\x7D'>)
-          -> ctll::reject;
+      rule(content_in_capture, ctll::term<'\x29'>) -> ctll::push<push_empty>;
+  static constexpr auto rule(
+      content_in_capture,
+      ctll::set<'*', '+', '?', '\x7B', '\x7D'>) -> ctll::reject;
 
-  static constexpr auto rule(d, ctll::term<'<'>) -> ctll::push<
-      ctll::anything, block_name, ctll::term<'>'>, content_in_capture,
-      make_capture_with_name, ctll::term<'\x29'>>;
-  static constexpr auto rule(d, ctll::term<':'>) -> ctll::push<
-      reset_capture, ctll::anything, content_in_capture, ctll::term<'\x29'>>;
-  static constexpr auto rule(d, ctll::term<'>'>) -> ctll::push<
-      reset_capture, ctll::anything, start_atomic, content_in_capture,
-      make_atomic, ctll::term<'\x29'>>;
-  static constexpr auto rule(d, ctll::term<'!'>) -> ctll::push<
-      reset_capture, ctll::anything, start_lookahead_negative,
-      content_in_capture, look_finish, ctll::term<'\x29'>>;
-  static constexpr auto rule(d, ctll::term<'='>) -> ctll::push<
-      reset_capture, ctll::anything, start_lookahead_positive,
-      content_in_capture, look_finish, ctll::term<'\x29'>>;
+  static constexpr auto rule(d, ctll::term<'<'>)
+      -> ctll::push<
+          ctll::anything, block_name, ctll::term<'>'>, content_in_capture,
+          make_capture_with_name, ctll::term<'\x29'>>;
+  static constexpr auto
+      rule(d, ctll::term<':'>) -> ctll::push<
+                                   reset_capture, ctll::anything,
+                                   content_in_capture, ctll::term<'\x29'>>;
+  static constexpr auto rule(d, ctll::term<'>'>)
+      -> ctll::push<
+          reset_capture, ctll::anything, start_atomic, content_in_capture,
+          make_atomic, ctll::term<'\x29'>>;
+  static constexpr auto rule(d, ctll::term<'!'>)
+      -> ctll::push<
+          reset_capture, ctll::anything, start_lookahead_negative,
+          content_in_capture, look_finish, ctll::term<'\x29'>>;
+  static constexpr auto rule(d, ctll::term<'='>)
+      -> ctll::push<
+          reset_capture, ctll::anything, start_lookahead_positive,
+          content_in_capture, look_finish, ctll::term<'\x29'>>;
 
-  static constexpr auto rule(e, ctll::term<'d'>)
-      -> ctll::push<ctll::anything, class_digit>;
+  static constexpr auto
+      rule(e, ctll::term<'d'>) -> ctll::push<ctll::anything, class_digit>;
   static constexpr auto rule(e, ctll::term<'h'>)
       -> ctll::push<ctll::anything, class_horizontal_space>;
   static constexpr auto rule(e, ctll::term<'H'>)
       -> ctll::push<ctll::anything, class_non_horizontal_space>;
   static constexpr auto rule(e, ctll::term<'V'>)
       -> ctll::push<ctll::anything, class_non_vertical_space>;
-  static constexpr auto rule(e, ctll::term<'D'>)
-      -> ctll::push<ctll::anything, class_nondigit>;
-  static constexpr auto rule(e, ctll::term<'N'>)
-      -> ctll::push<ctll::anything, class_nonnewline>;
-  static constexpr auto rule(e, ctll::term<'S'>)
-      -> ctll::push<ctll::anything, class_nonspace>;
-  static constexpr auto rule(e, ctll::term<'W'>)
-      -> ctll::push<ctll::anything, class_nonword>;
-  static constexpr auto rule(e, ctll::term<'s'>)
-      -> ctll::push<ctll::anything, class_space>;
+  static constexpr auto
+      rule(e, ctll::term<'D'>) -> ctll::push<ctll::anything, class_nondigit>;
+  static constexpr auto
+      rule(e, ctll::term<'N'>) -> ctll::push<ctll::anything, class_nonnewline>;
+  static constexpr auto
+      rule(e, ctll::term<'S'>) -> ctll::push<ctll::anything, class_nonspace>;
+  static constexpr auto
+      rule(e, ctll::term<'W'>) -> ctll::push<ctll::anything, class_nonword>;
+  static constexpr auto
+      rule(e, ctll::term<'s'>) -> ctll::push<ctll::anything, class_space>;
   static constexpr auto rule(e, ctll::term<'v'>)
       -> ctll::push<ctll::anything, class_vertical_space>;
-  static constexpr auto rule(e, ctll::term<'w'>)
-      -> ctll::push<ctll::anything, class_word>;
+  static constexpr auto
+      rule(e, ctll::term<'w'>) -> ctll::push<ctll::anything, class_word>;
   static constexpr auto
       rule(e, ctll::set<'1', '2', '3', '4', '5', '6', '7', '8', '9'>)
           -> ctll::push<ctll::anything, create_number, make_back_reference>;
-  static constexpr auto rule(e, ctll::term<'p'>) -> ctll::push<
-      ctll::anything, ctll::term<'\x7B'>, property_name, ctll::term<'\x7D'>,
-      make_property>;
-  static constexpr auto rule(e, ctll::term<'P'>) -> ctll::push<
-      ctll::anything, ctll::term<'\x7B'>, property_name, ctll::term<'\x7D'>,
-      make_property_negative>;
-  static constexpr auto rule(e, ctll::term<'u'>)
-      -> ctll::push<ctll::anything, k, range>;
-  static constexpr auto rule(e, ctll::term<'x'>)
-      -> ctll::push<ctll::anything, l, range>;
-  static constexpr auto rule(e, ctll::term<'-'>)
-      -> ctll::push<ctll::anything, p>;
+  static constexpr auto rule(e, ctll::term<'p'>)
+      -> ctll::push<
+          ctll::anything, ctll::term<'\x7B'>, property_name, ctll::term<'\x7D'>,
+          make_property>;
+  static constexpr auto rule(e, ctll::term<'P'>)
+      -> ctll::push<
+          ctll::anything, ctll::term<'\x7B'>, property_name, ctll::term<'\x7D'>,
+          make_property_negative>;
+  static constexpr auto
+      rule(e, ctll::term<'u'>) -> ctll::push<ctll::anything, k, range>;
+  static constexpr auto
+      rule(e, ctll::term<'x'>) -> ctll::push<ctll::anything, l, range>;
+  static constexpr auto
+      rule(e, ctll::term<'-'>) -> ctll::push<ctll::anything, p>;
   static constexpr auto rule(e, ctll::term<'A'>)
       -> ctll::push<ctll::anything, push_assert_subject_begin>;
   static constexpr auto rule(e, ctll::term<'z'>)
@@ -1660,10 +1706,10 @@ struct pcre {
   static constexpr auto rule(e, ctll::term<'Z'>)
       -> ctll::push<ctll::anything, push_assert_subject_end_with_lineend>;
   static constexpr auto rule(
-      e, ctll::set<
-             '$', '\x28', '\x29', '*', '+', '.', '?', '[', '\\', ']', '^',
-             '\x7B', '|', '\x7D'>)
-      -> ctll::push<ctll::anything, push_character>;
+      e,
+      ctll::set<
+          '$', '\x28', '\x29', '*', '+', '.', '?', '[', '\\', ']', '^', '\x7B',
+          '|', '\x7D'>) -> ctll::push<ctll::anything, push_character>;
   static constexpr auto rule(e, ctll::term<'a'>)
       -> ctll::push<ctll::anything, push_character_alarm, range>;
   static constexpr auto rule(e, ctll::term<'e'>)
@@ -1683,41 +1729,43 @@ struct pcre {
   static constexpr auto rule(e, ctll::term<'b'>)
       -> ctll::push<ctll::anything, push_word_boundary>;
 
-  static constexpr auto rule(f, ctll::term<'d'>)
-      -> ctll::push<ctll::anything, class_digit>;
+  static constexpr auto
+      rule(f, ctll::term<'d'>) -> ctll::push<ctll::anything, class_digit>;
   static constexpr auto rule(f, ctll::term<'h'>)
       -> ctll::push<ctll::anything, class_horizontal_space>;
   static constexpr auto rule(f, ctll::term<'H'>)
       -> ctll::push<ctll::anything, class_non_horizontal_space>;
   static constexpr auto rule(f, ctll::term<'V'>)
       -> ctll::push<ctll::anything, class_non_vertical_space>;
-  static constexpr auto rule(f, ctll::term<'D'>)
-      -> ctll::push<ctll::anything, class_nondigit>;
-  static constexpr auto rule(f, ctll::term<'N'>)
-      -> ctll::push<ctll::anything, class_nonnewline>;
-  static constexpr auto rule(f, ctll::term<'S'>)
-      -> ctll::push<ctll::anything, class_nonspace>;
-  static constexpr auto rule(f, ctll::term<'W'>)
-      -> ctll::push<ctll::anything, class_nonword>;
-  static constexpr auto rule(f, ctll::term<'s'>)
-      -> ctll::push<ctll::anything, class_space>;
+  static constexpr auto
+      rule(f, ctll::term<'D'>) -> ctll::push<ctll::anything, class_nondigit>;
+  static constexpr auto
+      rule(f, ctll::term<'N'>) -> ctll::push<ctll::anything, class_nonnewline>;
+  static constexpr auto
+      rule(f, ctll::term<'S'>) -> ctll::push<ctll::anything, class_nonspace>;
+  static constexpr auto
+      rule(f, ctll::term<'W'>) -> ctll::push<ctll::anything, class_nonword>;
+  static constexpr auto
+      rule(f, ctll::term<'s'>) -> ctll::push<ctll::anything, class_space>;
   static constexpr auto rule(f, ctll::term<'v'>)
       -> ctll::push<ctll::anything, class_vertical_space>;
-  static constexpr auto rule(f, ctll::term<'w'>)
-      -> ctll::push<ctll::anything, class_word>;
+  static constexpr auto
+      rule(f, ctll::term<'w'>) -> ctll::push<ctll::anything, class_word>;
   static constexpr auto
       rule(f, ctll::set<'1', '2', '3', '4', '5', '6', '7', '8', '9'>)
           -> ctll::push<ctll::anything, create_number, make_back_reference>;
-  static constexpr auto rule(f, ctll::term<'p'>) -> ctll::push<
-      ctll::anything, ctll::term<'\x7B'>, property_name, ctll::term<'\x7D'>,
-      make_property>;
-  static constexpr auto rule(f, ctll::term<'P'>) -> ctll::push<
-      ctll::anything, ctll::term<'\x7B'>, property_name, ctll::term<'\x7D'>,
-      make_property_negative>;
-  static constexpr auto rule(f, ctll::term<'u'>)
-      -> ctll::push<ctll::anything, k, range>;
-  static constexpr auto rule(f, ctll::term<'x'>)
-      -> ctll::push<ctll::anything, l, range>;
+  static constexpr auto rule(f, ctll::term<'p'>)
+      -> ctll::push<
+          ctll::anything, ctll::term<'\x7B'>, property_name, ctll::term<'\x7D'>,
+          make_property>;
+  static constexpr auto rule(f, ctll::term<'P'>)
+      -> ctll::push<
+          ctll::anything, ctll::term<'\x7B'>, property_name, ctll::term<'\x7D'>,
+          make_property_negative>;
+  static constexpr auto
+      rule(f, ctll::term<'u'>) -> ctll::push<ctll::anything, k, range>;
+  static constexpr auto
+      rule(f, ctll::term<'x'>) -> ctll::push<ctll::anything, l, range>;
   static constexpr auto rule(f, ctll::term<'A'>)
       -> ctll::push<ctll::anything, push_assert_subject_begin>;
   static constexpr auto rule(f, ctll::term<'z'>)
@@ -1725,10 +1773,10 @@ struct pcre {
   static constexpr auto rule(f, ctll::term<'Z'>)
       -> ctll::push<ctll::anything, push_assert_subject_end_with_lineend>;
   static constexpr auto rule(
-      f, ctll::set<
-             '$', '\x28', '\x29', '*', '+', '.', '?', '[', '\\', ']', '^',
-             '\x7B', '|', '\x7D'>)
-      -> ctll::push<ctll::anything, push_character>;
+      f,
+      ctll::set<
+          '$', '\x28', '\x29', '*', '+', '.', '?', '[', '\\', ']', '^', '\x7B',
+          '|', '\x7D'>) -> ctll::push<ctll::anything, push_character>;
   static constexpr auto rule(f, ctll::term<'a'>)
       -> ctll::push<ctll::anything, push_character_alarm, range>;
   static constexpr auto rule(f, ctll::term<'e'>)
@@ -1747,61 +1795,74 @@ struct pcre {
       -> ctll::push<ctll::anything, push_not_word_boundary>;
   static constexpr auto rule(f, ctll::term<'b'>)
       -> ctll::push<ctll::anything, push_word_boundary>;
-  static constexpr auto rule(f, ctll::term<'-'>)
-      -> ctll::push<ctll::anything, q>;
+  static constexpr auto
+      rule(f, ctll::term<'-'>) -> ctll::push<ctll::anything, q>;
 
-  static constexpr auto rule(g, ctll::term<'s'>) -> ctll::push<
-      ctll::anything, ctll::term<'c'>, ctll::term<'i'>, ctll::term<'i'>,
-      class_named_ascii>;
-  static constexpr auto rule(g, ctll::term<'l'>)
-      -> ctll::push<ctll::anything, o>;
+  static constexpr auto rule(g, ctll::term<'s'>)
+      -> ctll::push<
+          ctll::anything, ctll::term<'c'>, ctll::term<'i'>, ctll::term<'i'>,
+          class_named_ascii>;
+  static constexpr auto
+      rule(g, ctll::term<'l'>) -> ctll::push<ctll::anything, o>;
 
-  static constexpr auto rule(h, ctll::term<'r'>) -> ctll::push<
-      ctll::anything, ctll::term<'i'>, ctll::term<'n'>, ctll::term<'t'>,
-      class_named_print>;
-  static constexpr auto rule(h, ctll::term<'u'>) -> ctll::push<
-      ctll::anything, ctll::term<'n'>, ctll::term<'c'>, ctll::term<'t'>,
-      class_named_punct>;
+  static constexpr auto rule(h, ctll::term<'r'>)
+      -> ctll::push<
+          ctll::anything, ctll::term<'i'>, ctll::term<'n'>, ctll::term<'t'>,
+          class_named_print>;
+  static constexpr auto rule(h, ctll::term<'u'>)
+      -> ctll::push<
+          ctll::anything, ctll::term<'n'>, ctll::term<'c'>, ctll::term<'t'>,
+          class_named_punct>;
 
-  static constexpr auto rule(hexdec_repeat, ctll::term<'\x7D'>)
-      -> ctll::epsilon;
+  static constexpr auto
+      rule(hexdec_repeat, ctll::term<'\x7D'>) -> ctll::epsilon;
   static constexpr auto rule(
       hexdec_repeat, ctll::set<
                          '0', 'A', 'B', 'C', 'D', 'E', 'F', 'a', 'b', 'c', 'd',
                          'e', 'f', '1', '2', '3', '4', '5', '6', '7', '8', '9'>)
       -> ctll::push<ctll::anything, push_hexdec, hexdec_repeat>;
 
-  static constexpr auto rule(i, ctll::term<'^'>) -> ctll::push<
-      ctll::anything, class_named_name, negate_class_named, ctll::term<':'>,
-      ctll::term<']'>>;
-  static constexpr auto rule(i, ctll::term<'x'>) -> ctll::push<
-      ctll::anything, ctll::term<'d'>, ctll::term<'i'>, ctll::term<'g'>,
-      ctll::term<'i'>, ctll::term<'t'>, class_named_xdigit, ctll::term<':'>,
-      ctll::term<']'>>;
-  static constexpr auto rule(i, ctll::term<'d'>) -> ctll::push<
-      ctll::anything, ctll::term<'i'>, ctll::term<'g'>, ctll::term<'i'>,
-      ctll::term<'t'>, class_named_digit, ctll::term<':'>, ctll::term<']'>>;
-  static constexpr auto rule(i, ctll::term<'b'>) -> ctll::push<
-      ctll::anything, ctll::term<'l'>, ctll::term<'a'>, ctll::term<'n'>,
-      ctll::term<'k'>, class_named_blank, ctll::term<':'>, ctll::term<']'>>;
-  static constexpr auto rule(i, ctll::term<'c'>) -> ctll::push<
-      ctll::anything, ctll::term<'n'>, ctll::term<'t'>, ctll::term<'r'>,
-      ctll::term<'l'>, class_named_cntrl, ctll::term<':'>, ctll::term<']'>>;
-  static constexpr auto rule(i, ctll::term<'w'>) -> ctll::push<
-      ctll::anything, ctll::term<'o'>, ctll::term<'r'>, ctll::term<'d'>,
-      class_named_word, ctll::term<':'>, ctll::term<']'>>;
-  static constexpr auto rule(i, ctll::term<'l'>) -> ctll::push<
-      ctll::anything, ctll::term<'o'>, ctll::term<'w'>, ctll::term<'e'>,
-      ctll::term<'r'>, class_named_lower, ctll::term<':'>, ctll::term<']'>>;
-  static constexpr auto rule(i, ctll::term<'s'>) -> ctll::push<
-      ctll::anything, ctll::term<'p'>, ctll::term<'a'>, ctll::term<'c'>,
-      ctll::term<'e'>, class_named_space, ctll::term<':'>, ctll::term<']'>>;
-  static constexpr auto rule(i, ctll::term<'u'>) -> ctll::push<
-      ctll::anything, ctll::term<'p'>, ctll::term<'p'>, ctll::term<'e'>,
-      ctll::term<'r'>, class_named_upper, ctll::term<':'>, ctll::term<']'>>;
-  static constexpr auto rule(i, ctll::term<'g'>) -> ctll::push<
-      ctll::anything, ctll::term<'r'>, ctll::term<'a'>, ctll::term<'p'>,
-      ctll::term<'h'>, class_named_graph, ctll::term<':'>, ctll::term<']'>>;
+  static constexpr auto rule(i, ctll::term<'^'>)
+      -> ctll::push<
+          ctll::anything, class_named_name, negate_class_named, ctll::term<':'>,
+          ctll::term<']'>>;
+  static constexpr auto rule(i, ctll::term<'x'>)
+      -> ctll::push<
+          ctll::anything, ctll::term<'d'>, ctll::term<'i'>, ctll::term<'g'>,
+          ctll::term<'i'>, ctll::term<'t'>, class_named_xdigit, ctll::term<':'>,
+          ctll::term<']'>>;
+  static constexpr auto rule(i, ctll::term<'d'>)
+      -> ctll::push<
+          ctll::anything, ctll::term<'i'>, ctll::term<'g'>, ctll::term<'i'>,
+          ctll::term<'t'>, class_named_digit, ctll::term<':'>, ctll::term<']'>>;
+  static constexpr auto rule(i, ctll::term<'b'>)
+      -> ctll::push<
+          ctll::anything, ctll::term<'l'>, ctll::term<'a'>, ctll::term<'n'>,
+          ctll::term<'k'>, class_named_blank, ctll::term<':'>, ctll::term<']'>>;
+  static constexpr auto rule(i, ctll::term<'c'>)
+      -> ctll::push<
+          ctll::anything, ctll::term<'n'>, ctll::term<'t'>, ctll::term<'r'>,
+          ctll::term<'l'>, class_named_cntrl, ctll::term<':'>, ctll::term<']'>>;
+  static constexpr auto rule(i, ctll::term<'w'>)
+      -> ctll::push<
+          ctll::anything, ctll::term<'o'>, ctll::term<'r'>, ctll::term<'d'>,
+          class_named_word, ctll::term<':'>, ctll::term<']'>>;
+  static constexpr auto rule(i, ctll::term<'l'>)
+      -> ctll::push<
+          ctll::anything, ctll::term<'o'>, ctll::term<'w'>, ctll::term<'e'>,
+          ctll::term<'r'>, class_named_lower, ctll::term<':'>, ctll::term<']'>>;
+  static constexpr auto rule(i, ctll::term<'s'>)
+      -> ctll::push<
+          ctll::anything, ctll::term<'p'>, ctll::term<'a'>, ctll::term<'c'>,
+          ctll::term<'e'>, class_named_space, ctll::term<':'>, ctll::term<']'>>;
+  static constexpr auto rule(i, ctll::term<'u'>)
+      -> ctll::push<
+          ctll::anything, ctll::term<'p'>, ctll::term<'p'>, ctll::term<'e'>,
+          ctll::term<'r'>, class_named_upper, ctll::term<':'>, ctll::term<']'>>;
+  static constexpr auto rule(i, ctll::term<'g'>)
+      -> ctll::push<
+          ctll::anything, ctll::term<'r'>, ctll::term<'a'>, ctll::term<'p'>,
+          ctll::term<'h'>, class_named_graph, ctll::term<':'>, ctll::term<']'>>;
   static constexpr auto rule(i, ctll::term<'a'>)
       -> ctll::push<ctll::anything, g, ctll::term<':'>, ctll::term<']'>>;
   static constexpr auto rule(i, ctll::term<'p'>)
@@ -1821,15 +1882,16 @@ struct pcre {
       -> ctll::push<ctll::anything, push_character, make_range>;
   static constexpr auto rule(j, _others)
       -> ctll::push<ctll::anything, push_character, make_range>;
-  static constexpr auto rule(j, ctll::set<'-', '[', ']', '^', '|'>)
-      -> ctll::reject;
+  static constexpr auto
+      rule(j, ctll::set<'-', '[', ']', '^', '|'>) -> ctll::reject;
 
-  static constexpr auto rule(k, ctll::term<'\x7B'>) -> ctll::push<
-      create_hexdec, ctll::anything,
-      ctll::set<
-          '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D',
-          'E', 'F', 'a', 'b', 'c', 'd', 'e', 'f'>,
-      push_hexdec, hexdec_repeat, ctll::term<'\x7D'>, finish_hexdec>;
+  static constexpr auto rule(k, ctll::term<'\x7B'>)
+      -> ctll::push<
+          create_hexdec, ctll::anything,
+          ctll::set<
+              '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C',
+              'D', 'E', 'F', 'a', 'b', 'c', 'd', 'e', 'f'>,
+          push_hexdec, hexdec_repeat, ctll::term<'\x7D'>, finish_hexdec>;
   static constexpr auto rule(
       k, ctll::set<
              '0', 'A', 'B', 'C', 'D', 'E', 'F', 'a', 'b', 'c', 'd', 'e', 'f',
@@ -1849,12 +1911,13 @@ struct pcre {
               'D', 'E', 'F', 'a', 'b', 'c', 'd', 'e', 'f'>,
           push_hexdec, finish_hexdec>;
 
-  static constexpr auto rule(l, ctll::term<'\x7B'>) -> ctll::push<
-      create_hexdec, ctll::anything,
-      ctll::set<
-          '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D',
-          'E', 'F', 'a', 'b', 'c', 'd', 'e', 'f'>,
-      push_hexdec, hexdec_repeat, ctll::term<'\x7D'>, finish_hexdec>;
+  static constexpr auto rule(l, ctll::term<'\x7B'>)
+      -> ctll::push<
+          create_hexdec, ctll::anything,
+          ctll::set<
+              '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C',
+              'D', 'E', 'F', 'a', 'b', 'c', 'd', 'e', 'f'>,
+          push_hexdec, hexdec_repeat, ctll::term<'\x7D'>, finish_hexdec>;
   static constexpr auto rule(
       l, ctll::set<
              '0', 'A', 'B', 'C', 'D', 'E', 'F', 'a', 'b', 'c', 'd', 'e', 'f',
@@ -1871,8 +1934,10 @@ struct pcre {
           -> ctll::push<
               ctll::anything, create_number, number2, ctll::term<'\x7D'>,
               make_back_reference>;
-  static constexpr auto rule(m, ctll::term<'-'>) -> ctll::push<
-      ctll::anything, number, ctll::term<'\x7D'>, make_relative_back_reference>;
+  static constexpr auto
+      rule(m, ctll::term<'-'>) -> ctll::push<
+                                   ctll::anything, number, ctll::term<'\x7D'>,
+                                   make_relative_back_reference>;
   static constexpr auto rule(
       m,
       ctll::set<
@@ -1895,12 +1960,12 @@ struct pcre {
           '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'>) -> ctll::epsilon;
   static constexpr auto rule(mod, ctll::epsilon) -> ctll::epsilon;
   static constexpr auto rule(mod, _others) -> ctll::epsilon;
-  static constexpr auto rule(mod, ctll::term<'?'>)
-      -> ctll::push<ctll::anything, make_lazy>;
-  static constexpr auto rule(mod, ctll::term<'+'>)
-      -> ctll::push<ctll::anything, make_possessive>;
-  static constexpr auto rule(mod, ctll::set<'*', '\x7B', '\x7D'>)
-      -> ctll::reject;
+  static constexpr auto
+      rule(mod, ctll::term<'?'>) -> ctll::push<ctll::anything, make_lazy>;
+  static constexpr auto
+      rule(mod, ctll::term<'+'>) -> ctll::push<ctll::anything, make_possessive>;
+  static constexpr auto
+      rule(mod, ctll::set<'*', '\x7B', '\x7D'>) -> ctll::reject;
 
   static constexpr auto rule(
       mod_opt,
@@ -1913,10 +1978,10 @@ struct pcre {
           '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'>) -> ctll::epsilon;
   static constexpr auto rule(mod_opt, ctll::epsilon) -> ctll::epsilon;
   static constexpr auto rule(mod_opt, _others) -> ctll::epsilon;
-  static constexpr auto rule(mod_opt, ctll::term<'?'>)
-      -> ctll::push<ctll::anything, make_lazy>;
-  static constexpr auto rule(mod_opt, ctll::set<'*', '+', '\x7B', '\x7D'>)
-      -> ctll::reject;
+  static constexpr auto
+      rule(mod_opt, ctll::term<'?'>) -> ctll::push<ctll::anything, make_lazy>;
+  static constexpr auto
+      rule(mod_opt, ctll::set<'*', '+', '\x7B', '\x7D'>) -> ctll::reject;
 
   static constexpr auto
       rule(n, ctll::set<'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'>)
@@ -1935,13 +2000,15 @@ struct pcre {
       rule(number, ctll::set<'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'>)
           -> ctll::push<ctll::anything, create_number, number2>;
 
-  static constexpr auto rule(o, ctll::term<'p'>) -> ctll::push<
-      ctll::anything, ctll::term<'h'>, ctll::term<'a'>, class_named_alpha>;
-  static constexpr auto rule(o, ctll::term<'n'>) -> ctll::push<
-      ctll::anything, ctll::term<'u'>, ctll::term<'m'>, class_named_alnum>;
+  static constexpr auto rule(o, ctll::term<'p'>)
+      -> ctll::push<
+          ctll::anything, ctll::term<'h'>, ctll::term<'a'>, class_named_alpha>;
+  static constexpr auto rule(o, ctll::term<'n'>)
+      -> ctll::push<
+          ctll::anything, ctll::term<'u'>, ctll::term<'m'>, class_named_alnum>;
 
-  static constexpr auto rule(p, ctll::term<'-'>)
-      -> ctll::push<push_character, ctll::anything, j>;
+  static constexpr auto
+      rule(p, ctll::term<'-'>) -> ctll::push<push_character, ctll::anything, j>;
   static constexpr auto rule(
       p, ctll::set<
              '!', '$', '\x28', '\x29', '*', '+', ',', '.', ':', '<', '=', '>',
@@ -1955,8 +2022,8 @@ struct pcre {
   static constexpr auto rule(p, _others) -> ctll::push<push_character>;
   static constexpr auto rule(p, ctll::term<'|'>) -> ctll::reject;
 
-  static constexpr auto rule(property_name2, ctll::term<'\x7D'>)
-      -> ctll::epsilon;
+  static constexpr auto
+      rule(property_name2, ctll::term<'\x7D'>) -> ctll::epsilon;
   static constexpr auto rule(property_name2, ctll::term<'='>)
       -> ctll::push<ctll::anything, property_value>;
   static constexpr auto rule(
@@ -1979,8 +2046,8 @@ struct pcre {
           '2', '3', '4', '5', '6', '7', '8', '9'>)
       -> ctll::push<ctll::anything, push_property_name, property_name2>;
 
-  static constexpr auto rule(property_value2, ctll::term<'\x7D'>)
-      -> ctll::epsilon;
+  static constexpr auto
+      rule(property_value2, ctll::term<'\x7D'>) -> ctll::epsilon;
   static constexpr auto rule(
       property_value2,
       ctll::set<
@@ -2001,8 +2068,8 @@ struct pcre {
           '2', '3', '4', '5', '6', '7', '8', '9'>)
       -> ctll::push<ctll::anything, push_property_value, property_value2>;
 
-  static constexpr auto rule(q, ctll::term<'-'>)
-      -> ctll::push<push_character, ctll::anything, j>;
+  static constexpr auto
+      rule(q, ctll::term<'-'>) -> ctll::push<push_character, ctll::anything, j>;
   static constexpr auto rule(
       q, ctll::set<
              '!', '$', '\x28', '\x29', '*', '+', ',', '.', ':', '<', '=', '>',
@@ -2017,19 +2084,19 @@ struct pcre {
   static constexpr auto rule(q, ctll::term<'|'>) -> ctll::reject;
 
   static constexpr auto rule(
-      range, ctll::set<
-                 '!', '$', '\x28', '\x29', '*', '+', ',', '.', ':', '<', '=',
-                 '>', '?', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',
-                 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V',
-                 'W', 'X', 'Y', 'Z', '[', '\\', ']', '^', '_', 'a', 'b', 'c',
-                 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o',
-                 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '\x7B',
-                 '\x7D', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'>)
-      -> ctll::epsilon;
+      range,
+      ctll::set<
+          '!', '$', '\x28', '\x29', '*', '+', ',', '.', ':', '<', '=', '>', '?',
+          'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N',
+          'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '[', '\\',
+          ']', '^', '_', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k',
+          'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y',
+          'z', '\x7B', '\x7D', '0', '1', '2', '3', '4', '5', '6', '7', '8',
+          '9'>) -> ctll::epsilon;
   static constexpr auto rule(range, ctll::epsilon) -> ctll::epsilon;
   static constexpr auto rule(range, _others) -> ctll::epsilon;
-  static constexpr auto rule(range, ctll::term<'-'>)
-      -> ctll::push<ctll::anything, j>;
+  static constexpr auto
+      rule(range, ctll::term<'-'>) -> ctll::push<ctll::anything, j>;
   static constexpr auto rule(range, ctll::term<'|'>) -> ctll::reject;
 
   static constexpr auto rule(
@@ -2045,8 +2112,8 @@ struct pcre {
   static constexpr auto rule(repeat, _others) -> ctll::epsilon;
   static constexpr auto rule(repeat, ctll::term<'?'>)
       -> ctll::push<ctll::anything, make_optional, mod_opt>;
-  static constexpr auto rule(repeat, ctll::term<'\x7B'>)
-      -> ctll::push<ctll::anything, number, b>;
+  static constexpr auto
+      rule(repeat, ctll::term<'\x7B'>) -> ctll::push<ctll::anything, number, b>;
   static constexpr auto rule(repeat, ctll::term<'+'>)
       -> ctll::push<ctll::anything, repeat_plus, mod>;
   static constexpr auto rule(repeat, ctll::term<'*'>)
@@ -2054,8 +2121,9 @@ struct pcre {
   static constexpr auto rule(repeat, ctll::term<'\x7D'>) -> ctll::reject;
 
   static constexpr auto rule(set2a, ctll::term<']'>) -> ctll::epsilon;
-  static constexpr auto rule(set2a, ctll::term<'['>) -> ctll::push<
-      ctll::anything, ctll::term<':'>, i, range, set_start, set2b>;
+  static constexpr auto rule(set2a, ctll::term<'['>)
+      -> ctll::push<
+          ctll::anything, ctll::term<':'>, i, range, set_start, set2b>;
   static constexpr auto rule(set2a, ctll::term<'\\'>)
       -> ctll::push<ctll::anything, f, set_start, set2b>;
   static constexpr auto rule(
@@ -2073,8 +2141,9 @@ struct pcre {
   static constexpr auto rule(set2a, ctll::set<'-', '|'>) -> ctll::reject;
 
   static constexpr auto rule(set2b, ctll::term<']'>) -> ctll::epsilon;
-  static constexpr auto rule(set2b, ctll::term<'['>) -> ctll::push<
-      ctll::anything, ctll::term<':'>, i, range, set_combine, set2b>;
+  static constexpr auto rule(set2b, ctll::term<'['>)
+      -> ctll::push<
+          ctll::anything, ctll::term<':'>, i, range, set_combine, set2b>;
   static constexpr auto rule(set2b, ctll::term<'\\'>)
       -> ctll::push<ctll::anything, f, set_combine, set2b>;
   static constexpr auto rule(
@@ -2097,12 +2166,16 @@ struct pcre {
       -> ctll::push<ctll::anything, backslash, repeat, string2, make_sequence>;
   static constexpr auto rule(string2, ctll::term<'['>)
       -> ctll::push<ctll::anything, c, repeat, string2, make_sequence>;
-  static constexpr auto rule(string2, ctll::term<'\x28'>) -> ctll::push<
-      ctll::anything, prepare_capture, block, repeat, string2, make_sequence>;
-  static constexpr auto rule(string2, ctll::term<'^'>) -> ctll::push<
-      ctll::anything, push_assert_begin, repeat, string2, make_sequence>;
-  static constexpr auto rule(string2, ctll::term<'$'>) -> ctll::push<
-      ctll::anything, push_assert_end, repeat, string2, make_sequence>;
+  static constexpr auto rule(string2, ctll::term<'\x28'>)
+      -> ctll::push<
+          ctll::anything, prepare_capture, block, repeat, string2,
+          make_sequence>;
+  static constexpr auto rule(string2, ctll::term<'^'>)
+      -> ctll::push<
+          ctll::anything, push_assert_begin, repeat, string2, make_sequence>;
+  static constexpr auto rule(string2, ctll::term<'$'>)
+      -> ctll::push<
+          ctll::anything, push_assert_end, repeat, string2, make_sequence>;
   static constexpr auto rule(
       string2, ctll::set<
                    '!', ',', '-', ':', '<', '=', '>', 'A', 'B', 'C', 'D', 'E',
@@ -2113,12 +2186,15 @@ struct pcre {
                    'y', 'z', '1', '2', '3', '4', '5', '6', '7', '8', '9'>)
       -> ctll::push<
           ctll::anything, push_character, repeat, string2, make_sequence>;
-  static constexpr auto rule(string2, _others) -> ctll::push<
-      ctll::anything, push_character, repeat, string2, make_sequence>;
-  static constexpr auto rule(string2, ctll::term<'.'>) -> ctll::push<
-      ctll::anything, push_character_anything, repeat, string2, make_sequence>;
-  static constexpr auto rule(string2, ctll::set<'*', '+', '?', '\x7B', '\x7D'>)
-      -> ctll::reject;
+  static constexpr auto rule(string2, _others)
+      -> ctll::push<
+          ctll::anything, push_character, repeat, string2, make_sequence>;
+  static constexpr auto rule(string2, ctll::term<'.'>)
+      -> ctll::push<
+          ctll::anything, push_character_anything, repeat, string2,
+          make_sequence>;
+  static constexpr auto
+      rule(string2, ctll::set<'*', '+', '?', '\x7B', '\x7D'>) -> ctll::reject;
 };
 
 } // namespace ctre
@@ -2563,8 +2639,7 @@ struct binary_property<Block> {
 
 template <typename = void> // Make it always a template as propnamecomp isn't
                            // defined yet
-                           constexpr property_type property_type_from_name(
-                               std::string_view str) noexcept
+constexpr property_type property_type_from_name(std::string_view str) noexcept
 {
   using namespace std::string_view_literals;
   if (uni::detail::propnamecomp(str, "script"sv) == 0
@@ -2685,15 +2760,15 @@ template <auto... Name>
 struct id {
   static constexpr auto name = ctll::fixed_string<sizeof...(Name)> {{Name...}};
 
-  friend constexpr auto operator==(id<Name...>, id<Name...>) noexcept
-      -> std::true_type
+  friend constexpr auto
+  operator==(id<Name...>, id<Name...>) noexcept -> std::true_type
   {
     return {};
   }
 
   template <auto... Other>
-  friend constexpr auto operator==(id<Name...>, id<Other...>) noexcept
-      -> std::false_type
+  friend constexpr auto
+  operator==(id<Name...>, id<Other...>) noexcept -> std::false_type
   {
     return {};
   }
@@ -4281,9 +4356,9 @@ struct pcre_actions {
 
   // template <template <typename...> typename SetType, typename A, typename
   // BHead, typename... Bs> struct set_merge_helper { 	using step =
-  //decltype(push_back_into_set<SetType>(BHead(), A())); 	using type =
-  //ctll::conditional<(sizeof...(Bs) > 0), set_merge_helper<SetType, step,
-  //Bs...>, step>;
+  // decltype(push_back_into_set<SetType>(BHead(), A())); 	using type =
+  // ctll::conditional<(sizeof...(Bs) > 0), set_merge_helper<SetType, step,
+  // Bs...>, step>;
   // };
   //
   //// add set into set if not exists
@@ -4346,7 +4421,7 @@ struct pcre_actions {
   // pcre_context<ctll::list<set<As...>,set<Bs...>,Ts...>, Parameters> subject)
   // { 	auto new_set = push_back_into_set<set>(set<As...>(), set<Bs...>());
   //	return pcre_context{ctll::push_front(new_set, ctll::list<Ts...>()),
-  //subject.parameters};
+  // subject.parameters};
   // }
 
   // negative_set{A...} + B = negative_set{A,B}
@@ -4368,9 +4443,9 @@ struct pcre_actions {
   // Parameters> static constexpr auto apply(pcre::set_combine, ctll::term<V>,
   // pcre_context<ctll::list<negative_set<As...>,negative_set<Bs...>,Ts...>,
   // Parameters> subject) { 	auto new_set =
-  //push_back_into_set<negative_set>(negative_set<As...>(),
-  //negative_set<Bs...>()); 	return pcre_context{ctll::push_front(new_set,
-  //ctll::list<Ts...>()), subject.parameters};
+  // push_back_into_set<negative_set>(negative_set<As...>(),
+  // negative_set<Bs...>()); 	return pcre_context{ctll::push_front(new_set,
+  // ctll::list<Ts...>()), subject.parameters};
   // }
   //  negate_class_named: [[^:digit:]] = [^[:digit:]]
   template <auto V, typename A, typename... Ts, typename Parameters>
@@ -5271,7 +5346,6 @@ using return_type = decltype(regex_results(
 
 // support for structured bindings
 
-#ifndef __EDG__
 #ifdef __clang__
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wmismatched-tags"
@@ -5293,7 +5367,6 @@ public:
 
 #ifdef __clang__
 #pragma clang diagnostic pop
-#endif
 #endif
 
 #endif

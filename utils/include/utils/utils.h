@@ -17,8 +17,27 @@
 
 namespace utils {
 
-std::vector<std::string>
-split(std::string const& str, std::string const& delim);
+constexpr std::vector<std::string>
+split(std::string const& str, std::string const& delim)
+{
+  auto ret = std::vector<std::string> {};
+
+  auto start = 0;
+  auto end   = std::string::npos;
+
+  while (true) {
+    end = str.find(delim, start);
+    ret.push_back(str.substr(start, end - start));
+
+    if (end == std::string::npos) {
+      break;
+    }
+
+    start = end + delim.size();
+  }
+
+  return ret;
+}
 
 template <typename T>
 std::set<T> intersect(std::set<T> const& a, std::set<T> const& b)
@@ -107,7 +126,7 @@ void for_each_line(Func&& f)
 }
 
 template <typename T, typename Func>
-auto map(std::vector<T> const& vec, Func&& f)
+constexpr auto map(std::vector<T> const& vec, Func&& f) noexcept
     -> std::vector<std::invoke_result_t<Func, T const&>>
 {
   using result = std::invoke_result_t<Func, T const&>;
@@ -216,6 +235,31 @@ constexpr long pow(long x, long n)
     return x * pow(x, n - 1);
   }
 }
+
+template <typename Int>
+constexpr std::size_t digits(Int i)
+  requires(std::is_integral_v<Int>)
+{
+  if constexpr (std::is_signed_v<Int>) {
+    if (i < 0) {
+      i = -i;
+    }
+  }
+
+  auto digits = std::size_t {1};
+  while (i >= 10) {
+    i /= 10;
+    digits += 1;
+  }
+  return digits;
+}
+
+static_assert(digits(0) == 1);
+static_assert(digits(1) == 1);
+static_assert(digits(9) == 1);
+static_assert(digits(10) == 2);
+static_assert(digits(99) == 2);
+static_assert(digits(-100298) == 6);
 
 inline void hash_combine(std::size_t& seed) { }
 

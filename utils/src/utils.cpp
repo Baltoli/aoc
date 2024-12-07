@@ -18,27 +18,6 @@ std::vector<std::string> get_lines()
   return ret;
 }
 
-std::vector<std::string> split(std::string const& str, std::string const& delim)
-{
-  auto ret = std::vector<std::string> {};
-
-  auto start = 0;
-  auto end   = std::string::npos;
-
-  while (true) {
-    end = str.find(delim, start);
-    ret.push_back(str.substr(start, end - start));
-
-    if (end == std::string::npos) {
-      break;
-    }
-
-    start = end + delim.size();
-  }
-
-  return ret;
-}
-
 std::string get_single_line() { return get_lines()[0]; }
 
 std::generator<std::string> lines()

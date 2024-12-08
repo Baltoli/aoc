@@ -56,14 +56,32 @@ constexpr point operator+(point const& a, point const& b) noexcept
   return point {a.x + b.x, a.y + b.y};
 }
 
+constexpr point& operator+=(point& a, point const& b) noexcept
+{
+  a = a + b;
+  return a;
+}
+
 constexpr point operator-(point const& a, point const& b) noexcept
 {
   return point {a.x - b.x, a.y - b.y};
 }
 
+constexpr point& operator-=(point& a, point const& b) noexcept
+{
+  a = a - b;
+  return a;
+}
+
 constexpr point operator*(point const& p, std::int64_t s) noexcept
 {
   return point {p.x * s, p.y * s};
+}
+
+constexpr point& operator*=(point& a, std::int64_t s) noexcept
+{
+  a = a * s;
+  return a;
 }
 
 constexpr point point::right_turn() noexcept

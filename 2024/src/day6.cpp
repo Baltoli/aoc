@@ -8,18 +8,6 @@
 
 using exit_pad = utils::fill_pad<'%'>;
 
-namespace std {
-template <>
-struct hash<std::pair<utils::point, utils::point>> {
-  size_t operator()(std::pair<utils::point, utils::point> const& p) const
-  {
-    auto seed = std::size_t {0};
-    std::apply(utils::hash_combine_curry(seed), p);
-    return seed;
-  }
-};
-} // namespace std
-
 class map_grid : public utils::grid<exit_pad> {
 public:
   template <typename Range>

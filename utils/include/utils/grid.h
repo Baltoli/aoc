@@ -1,5 +1,7 @@
 #pragma once
 
+#include <fmt/format.h>
+
 #include <algorithm>
 #include <cassert>
 #include <cstdint>
@@ -54,6 +56,11 @@ constexpr point operator+(point const& a, point const& b) noexcept
   return point {a.x + b.x, a.y + b.y};
 }
 
+constexpr point operator-(point const& a, point const& b) noexcept
+{
+  return point {a.x - b.x, a.y - b.y};
+}
+
 constexpr point operator*(point const& p, std::int64_t s) noexcept
 {
   return point {p.x * s, p.y * s};
@@ -82,19 +89,21 @@ constexpr point point::right_turn() noexcept
   assert(false);
 }
 
-template <typename Pad = no_pad>
+template <typename Pad = no_pad, typename Element = char>
   requires(is_pad_policy_v<Pad>)
 class grid;
 
-template <typename Pad>
+template <typename Pad, typename Element>
 struct getter {
-  static char at(grid<Pad> const&, point);
+  static Element at(grid<Pad> const&, point);
 };
 
-template <typename Pad>
+template <typename Pad, typename Element>
   requires(is_pad_policy_v<Pad>)
 class grid {
 public:
+  using element_t = Element;
+
   template <typename Range>
   grid(Range&& lines)
       : data_ {}
@@ -133,9 +142,19 @@ public:
     }
   }
 
-  char at(point p) const { return getter<Pad>::at(*this, p); }
+  Element at(point p) const { return getter<Pad, Element>::at(*this, p); }
 
-  template <typename T>
+  void dump() const
+  {
+    for (auto y = 0; y < height_; ++y) {
+      for (auto x = 0; x < width_; ++x) {
+        fmt::print(stderr, "{}", at({x, y}));
+      }
+      fmt::print(stderr, "\n");
+    }
+  }
+
+  template <typename, typename>
   friend struct getter;
 
 protected:
@@ -150,14 +169,14 @@ protected:
     return p.x >= 0 && p.x < width_ && p.y >= 0 && p.y < height_;
   }
 
-  std::vector<char> data_;
-  std::size_t       width_;
-  std::size_t       height_;
+  std::vector<Element> data_;
+  std::size_t          width_;
+  std::size_t          height_;
 };
 
-template <>
-struct getter<no_pad> {
-  static char at(grid<no_pad> const& g, point p)
+template <typename Element>
+struct getter<no_pad, Element> {
+  static Element at(grid<no_pad> const& g, point p)
   {
     if (!g.in_bounds(p)) {
       throw std::invalid_argument("out of bounds");
@@ -167,9 +186,9 @@ struct getter<no_pad> {
   }
 };
 
-template <char C>
-struct getter<fill_pad<C>> {
-  static char at(grid<fill_pad<C>> const& g, point p)
+template <char C, typename Element>
+struct getter<fill_pad<C>, Element> {
+  static Element at(grid<fill_pad<C>> const& g, point p)
   {
     if (!g.in_bounds(p)) {
       return C;
@@ -185,5 +204,10 @@ namespace std {
 template <>
 struct hash<::utils::point> {
   size_t operator()(::utils::point const&) const;
+};
+
+template <>
+struct hash<std::pair<::utils::point, ::utils::point>> {
+  size_t operator()(std::pair<::utils::point, ::utils::point> const& p) const;
 };
 } // namespace std

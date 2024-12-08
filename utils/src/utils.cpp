@@ -101,3 +101,11 @@ size_t std::hash<::utils::point>::operator()(::utils::point const& p) const
   utils::hash_combine(seed, p.y);
   return seed;
 }
+
+size_t std::hash<std::pair<::utils::point, ::utils::point>>::operator()(
+    std::pair<utils::point, utils::point> const& p) const
+{
+  auto seed = std::size_t {0};
+  std::apply(utils::hash_combine_curry(seed), p);
+  return seed;
+}

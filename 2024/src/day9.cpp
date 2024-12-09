@@ -2,8 +2,9 @@
 
 #include <fmt/format.h>
 
+#include <cassert>
 #include <list>
-#include <ranges>
+#include <map>
 
 constexpr std::int64_t empty_id = -1;
 
@@ -63,7 +64,62 @@ void defrag(std::vector<std::int64_t>& bs)
   }
 }
 
-void defrag_whole(std::vector<std::int64_t>& bs) { }
+void defrag_whole(std::vector<std::int64_t>& bs)
+{
+  auto empty_slots = std::map<std::size_t, std::size_t> {};
+  auto block_slots
+      = std::map<std::int64_t, std::pair<std::size_t, std::size_t>> {};
+
+  for (auto i = 0u; i < bs.size(); ++i) {
+    auto slot_begin = i;
+    while (bs.at(i) == empty_id) {
+      empty_slots.try_emplace(slot_begin, 0);
+      empty_slots.at(slot_begin)++;
+      ++i;
+    }
+  }
+
+  auto first_fit = [&empty_slots](auto size) {
+    return std::find_if(empty_slots.begin(), empty_slots.end(), [size](auto p) {
+      return p.second >= size;
+    });
+  };
+
+  for (auto i = 0u; i < bs.size();) {
+    auto slot_begin = i;
+    auto id         = bs.at(i);
+
+    if (id == empty_id) {
+      ++i;
+      continue;
+    }
+
+    while (i < bs.size() && bs.at(i) == id) {
+      block_slots.try_emplace(id, std::pair {slot_begin, 0});
+      block_slots.at(id).second++;
+      ++i;
+    }
+  }
+
+  for (auto it = block_slots.rbegin(); it != block_slots.rend(); ++it) {
+    auto req_size = it->second.second;
+    auto slot     = first_fit(req_size);
+
+    if (slot != empty_slots.end()) {
+      assert(slot->second >= req_size);
+
+      if (it->second.first > slot->first) {
+        for (auto i = 0u; i < req_size; ++i) {
+          bs[slot->first + i]      = it->first;
+          bs[it->second.first + i] = empty_id;
+        }
+
+        empty_slots.emplace(slot->first + req_size, slot->second - req_size);
+        empty_slots.erase(slot);
+      }
+    }
+  }
+}
 
 std::int64_t checksum(std::vector<std::int64_t> const& bs)
 {
@@ -82,7 +138,7 @@ int main()
 {
   auto in_line = utils::get_single_line();
   auto in      = build_bytes(in_line);
-  auto in_2    = in;
+  auto in_2    = build_bytes(in_line);
 
   defrag(in);
   fmt::print("{}\n", checksum(in));

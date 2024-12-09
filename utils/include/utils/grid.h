@@ -1,5 +1,7 @@
 #pragma once
 
+#include <utils/vector.h>
+
 #include <fmt/format.h>
 
 #include <algorithm>

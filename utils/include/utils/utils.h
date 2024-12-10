@@ -197,10 +197,18 @@ int  svtoi(std::string_view);
 long stol(std::string const&);
 int  stoi(std::string const&);
 
-int  ctoi(char);
-long ctol(char);
 char itoc(int);
 char ltoc(long);
+
+template <typename Int>
+  requires(std::integral<Int>)
+constexpr Int c_to(char c) noexcept
+{
+  return static_cast<Int>(c) - static_cast<Int>('0');
+}
+
+constexpr int  ctoi(char c) noexcept { return c_to<int>(c); }
+constexpr long ctol(char c) noexcept { return c_to<long>(c); }
 
 template <typename T>
 int sgn(T val)

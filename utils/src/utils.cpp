@@ -87,8 +87,6 @@ long stol(std::string const& s) { return std::stol(s); }
 
 int stoi(std::string const& s) { return std::stoi(s); }
 
-int  ctoi(char c) { return c - '0'; }
-long ctol(char c) { return c - '0'; }
 char itoc(int i) { return i + '0'; }
 char ltoc(long l) { return l + '0'; }
 

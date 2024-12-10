@@ -113,7 +113,7 @@ class grid;
 
 template <typename Pad, typename Element>
 struct getter {
-  static Element at(grid<Pad> const&, point);
+  static grid<Pad, Element>::element_t at(grid<Pad, Element> const&, point);
 };
 
 template <typename Pad, typename Element>
@@ -121,8 +121,10 @@ template <typename Pad, typename Element>
 class grid {
 public:
   using element_t = Element;
+  using getter_t  = getter<Pad, Element>;
 
   template <typename Range, typename Func>
+    requires(std::is_convertible_v<std::invoke_result_t<Func, char>, element_t>)
   grid(Range&& lines, Func&& f)
       : data_ {}
       , width_ {0}
@@ -168,7 +170,7 @@ public:
     }
   }
 
-  Element at(point p) const { return getter<Pad, Element>::at(*this, p); }
+  element_t at(point p) const { return getter_t::at(*this, p); }
 
   void dump() const
   {
@@ -195,14 +197,14 @@ protected:
     return p.x >= 0 && p.x < width_ && p.y >= 0 && p.y < height_;
   }
 
-  std::vector<Element> data_;
-  std::size_t          width_;
-  std::size_t          height_;
+  std::vector<element_t> data_;
+  std::size_t            width_;
+  std::size_t            height_;
 };
 
 template <typename Element>
 struct getter<no_pad, Element> {
-  static Element at(grid<no_pad> const& g, point p)
+  static auto at(grid<no_pad, Element> const& g, point p)
   {
     if (!g.in_bounds(p)) {
       throw std::invalid_argument("out of bounds");
@@ -214,7 +216,7 @@ struct getter<no_pad, Element> {
 
 template <char C, typename Element>
 struct getter<fill_pad<C>, Element> {
-  static Element at(grid<fill_pad<C>> const& g, point p)
+  static auto at(grid<fill_pad<C>, Element> const& g, point p)
   {
     if (!g.in_bounds(p)) {
       return C;

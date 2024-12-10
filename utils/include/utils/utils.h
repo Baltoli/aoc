@@ -96,6 +96,15 @@ long sum(It begin, It end, Func&& f)
   });
 }
 
+template <typename Range, typename Func>
+std::int64_t sum(Range&& r, Func&& f)
+{
+  return std::ranges::fold_left(
+      std::forward<Range>(r), std::int64_t {0}, [&](auto acc, auto const& elt) {
+        return acc + std::forward<Func>(f)(elt);
+      });
+}
+
 std::generator<std::string> lines();
 
 template <typename Func>

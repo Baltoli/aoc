@@ -48,10 +48,9 @@ public:
   template <typename Func>
   std::int64_t run(Func&& f) const
   {
-    return std::ranges::fold_left(
-        coords(), std::int64_t {0}, [this, &f](auto acc, auto const& p) {
-          return acc + (at(p).height == 0 ? std::forward<Func>(f)(at(p)) : 0);
-        });
+    return utils::sum(coords(), [this, &f](auto const& p) {
+      return at(p).height == 0 ? std::forward<Func>(f)(at(p)) : 0;
+    });
   }
 
   std::int64_t part_1() const

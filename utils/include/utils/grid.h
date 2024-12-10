@@ -122,8 +122,8 @@ class grid {
 public:
   using element_t = Element;
 
-  template <typename Range>
-  grid(Range&& lines)
+  template <typename Range, typename Func>
+  grid(Range&& lines, Func&& f)
       : data_ {}
       , width_ {0}
       , height_ {0}
@@ -132,12 +132,20 @@ public:
       assert(width_ == 0 || width_ == line.size());
       width_ = line.size();
 
-      std::ranges::copy(line, std::back_inserter(data_));
+      for (auto c : line) {
+        data_.push_back(std::forward<Func>(f)(c));
+      }
       height_ += 1;
     }
 
     assert(width_ <= std::numeric_limits<std::int64_t>::max());
     assert(height_ <= std::numeric_limits<std::int64_t>::max());
+  }
+
+  template <typename Range>
+  grid(Range&& lines)
+      : grid(std::forward<Range>(lines), std::identity {})
+  {
   }
 
   std::generator<point> coords() const

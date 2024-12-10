@@ -170,6 +170,24 @@ public:
     }
   }
 
+  std::generator<point> ortho_neighbour_deltas() const
+  {
+    co_yield {-1, 0};
+    co_yield {1, 0};
+    co_yield {0, 1};
+    co_yield {0, -1};
+  }
+
+  std::generator<point> ortho_neighbours(point p, bool use_pad = false) const
+  {
+    for (auto nd : ortho_neighbour_deltas()) {
+      auto neighbour = p + nd;
+      if (in_bounds(neighbour) || use_pad) {
+        co_yield neighbour;
+      }
+    }
+  }
+
   element_t at(point p) const { return getter_t::at(*this, p); }
 
   void dump() const

@@ -3,15 +3,13 @@
 #include <fmt/format.h>
 
 #include <cassert>
-#include <list>
 #include <vector>
 
-std::list<std::uint64_t> read_input()
+std::vector<std::uint64_t> read_input()
 {
-  auto vec = utils::map(
+  return utils::map(
       utils::split(utils::get_single_line(), " "),
       utils::to_int<std::uint64_t>);
-  return std::list(vec.begin(), vec.end());
 }
 
 constexpr bool even_digits(std::uint64_t i)
@@ -60,7 +58,7 @@ void fill(Arr& table, std::uint64_t n, std::uint64_t steps)
 }
 
 template <std::size_t max_steps>
-std::uint64_t dp_step(std::list<std::uint64_t> const& stones)
+std::uint64_t dp_step(std::vector<std::uint64_t> const& stones)
 {
   // table[s][n] = size of n after s steps
   auto table = std::array<

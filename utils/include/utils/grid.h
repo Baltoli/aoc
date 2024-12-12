@@ -43,9 +43,14 @@ struct point {
   std::int64_t x;
   std::int64_t y;
 
-  constexpr std::int64_t magnitude() noexcept { return (x * x) + (y * y); }
+  constexpr std::int64_t magnitude() const noexcept
+  {
+    return (x * x) + (y * y);
+  }
 
-  constexpr point right_turn() noexcept;
+  constexpr point right_turn() const noexcept;
+  constexpr point reverse() const noexcept;
+  constexpr point left_turn() const noexcept;
 };
 
 constexpr bool operator==(point const& a, point const& b) noexcept
@@ -86,7 +91,7 @@ constexpr point& operator*=(point& a, std::int64_t s) noexcept
   return a;
 }
 
-constexpr point point::right_turn() noexcept
+constexpr point point::right_turn() const noexcept
 {
   assert(magnitude() == 1);
 
@@ -107,6 +112,16 @@ constexpr point point::right_turn() noexcept
   }
 
   assert(false);
+}
+
+constexpr point point::reverse() const noexcept
+{
+  return right_turn().right_turn();
+}
+
+constexpr point point::left_turn() const noexcept
+{
+  return right_turn().right_turn().right_turn();
 }
 
 template <typename Pad = no_pad, typename Element = char>
@@ -252,10 +267,5 @@ namespace std {
 template <>
 struct hash<::utils::point> {
   size_t operator()(::utils::point const&) const;
-};
-
-template <>
-struct hash<std::pair<::utils::point, ::utils::point>> {
-  size_t operator()(std::pair<::utils::point, ::utils::point> const& p) const;
 };
 } // namespace std

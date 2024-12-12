@@ -275,3 +275,15 @@ inline auto hash_combine_curry(std::size_t& seed)
 }
 
 } // namespace utils
+
+namespace std {
+template <typename A, typename B>
+struct hash<std::pair<A, B>> {
+  size_t operator()(std::pair<A, B> const& p) const
+  {
+    auto seed = std::size_t {0};
+    utils::hash_combine(seed, p.first, p.second);
+    return seed;
+  }
+};
+} // namespace std

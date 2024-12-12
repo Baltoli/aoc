@@ -15,11 +15,11 @@ struct region {
   garden_grid&                     grid;
   std::unordered_set<utils::point> points = {};
 
+  std::pair<utils::point, utils::point> bounding_box() const;
+
   std::size_t area() const;
-  std::size_t perimeter() const;
-  std::size_t sides() const;
-  std::size_t cost() const;
-  std::size_t bulk_cost() const;
+  std::size_t perimeter(bool unique) const;
+  std::size_t cost(bool unique) const;
 };
 
 class garden_grid : public base_grid {
@@ -57,63 +57,99 @@ public:
         }
       }
     }
-
-    validate();
   }
 
-  std::size_t cost() const
+  std::size_t cost(bool unique) const
   {
-    return utils::sum(regions_, [](auto const& r) { return r.cost(); });
-  }
-
-  std::size_t bulk_cost() const
-  {
-    return utils::sum(regions_, [](auto const& r) { return r.bulk_cost(); });
+    return utils::sum(
+        regions_, [unique](auto const& r) { return r.cost(unique); });
   }
 
 private:
-  void validate() const
-  {
-    auto sum = std::size_t {0};
-    for (auto const& r : regions_) {
-      assert(!r.points.empty());
-      assert(std::ranges::all_of(r.points, [this, &r](auto p) {
-        return at(p) == at(*r.points.begin());
-      }));
-      sum += r.points.size();
-    }
-    assert(sum == data_.size());
-  }
-
   std::vector<region> regions_;
 };
 
 std::size_t region::area() const { return points.size(); }
 
-std::size_t region::perimeter() const
+std::pair<utils::point, utils::point> region::bounding_box() const
 {
-  auto perim = std::size_t {0};
+  auto i64_min = std::numeric_limits<std::int64_t>::min();
+  auto i64_max = std::numeric_limits<std::int64_t>::max();
+
+  auto min = utils::point {i64_max, i64_max};
+  auto max = utils::point {i64_min, i64_min};
+
   for (auto p : points) {
-    auto out_sides = std::size_t {4};
-    for (auto n : grid.ortho_neighbours(p)) {
-      if (points.contains(n)) {
-        out_sides -= 1;
-      }
-    }
-    perim += out_sides;
+    min.x = std::min(min.x, p.x);
+    min.y = std::min(min.y, p.y);
+    max.x = std::max(max.x, p.x);
+    max.y = std::max(max.y, p.y);
   }
-  return perim;
+
+  auto offset = utils::point {1, 1};
+  return {min - offset, max + offset};
 }
 
-std::size_t region::sides() const { return 0; }
+std::size_t region::perimeter(bool unique) const
+{
+  auto [min, max] = bounding_box();
+  auto sides      = 0;
 
-std::size_t region::cost() const { return area() * perimeter(); }
+  auto prev_scan = std::unordered_set<std::pair<std::int64_t, std::int64_t>> {};
 
-std::size_t region::bulk_cost() const { return area() * sides(); }
+  for (auto y = min.y; y <= max.y; ++y) {
+    auto scan = std::unordered_set<std::pair<std::int64_t, std::int64_t>> {};
+    for (auto x = min.x; x < max.x; ++x) {
+      auto in_here = points.contains({x, y});
+      auto in_next = points.contains({x + 1, y});
+
+      if (in_here != in_next) {
+        scan.insert(std::pair {x, in_here - in_next});
+      }
+    }
+
+    for (auto cross : scan) {
+      if (!prev_scan.contains(cross) || !unique) {
+        sides += 1;
+      }
+    }
+
+    prev_scan = scan;
+  }
+
+  prev_scan = {};
+
+  for (auto x = min.x; x <= max.x; ++x) {
+    auto scan = std::unordered_set<std::pair<std::int64_t, std::int64_t>> {};
+    for (auto y = min.y; y < max.y; ++y) {
+      auto in_here = points.contains({x, y});
+      auto in_next = points.contains({x, y + 1});
+
+      if (in_here != in_next) {
+        scan.insert(std::pair {y, in_here - in_next});
+      }
+    }
+
+    for (auto cross : scan) {
+      if (!prev_scan.contains(cross) || !unique) {
+        sides += 1;
+      }
+    }
+
+    prev_scan = scan;
+  }
+
+  return sides;
+}
+
+std::size_t region::cost(bool unique) const
+{
+  return area() * perimeter(unique);
+}
 
 int main()
 {
   auto in = garden_grid(utils::lines());
-  fmt::print("{}\n", in.cost());
-  fmt::print("{}\n", in.bulk_cost());
+  fmt::print("{}\n", in.cost(false));
+  fmt::print("{}\n", in.cost(true));
 }

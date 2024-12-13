@@ -259,6 +259,43 @@ static_assert(digits(10) == 2);
 static_assert(digits(99) == 2);
 static_assert(digits(-100298) == 6);
 
+constexpr std::int64_t gcd(std::int64_t a, std::int64_t b)
+{
+  if (b == 0) {
+    return a;
+  }
+
+  return gcd(b, a % b);
+}
+
+static_assert(gcd(3, 6) == 3);
+static_assert(gcd(17, 19) == 1);
+static_assert(gcd(32657, 0) == 32657);
+static_assert(gcd(1, 328) == 1);
+
+struct egcd_result {
+  std::int64_t x;
+  std::int64_t y;
+  std::int64_t g;
+};
+
+constexpr bool operator==(egcd_result const& a, egcd_result const& b)
+{
+  return std::tie(a.x, a.y, a.g) == std::tie(b.x, b.y, b.g);
+}
+
+constexpr egcd_result egcd(std::int64_t a, std::int64_t b)
+{
+  if (b == 0) {
+    return {1, 0, a};
+  }
+
+  auto [x_1, y_1, g] = egcd(b, a % b);
+  return {y_1, x_1 - y_1 * (a / b), g};
+}
+
+static_assert(egcd(237, 32) == egcd_result {5, -37, 1});
+
 inline void hash_combine(std::size_t& seed) { }
 
 template <typename T, typename... Rest>

@@ -21,54 +21,29 @@ struct machine {
   utils::point b;
   utils::point prize;
 
-  constexpr bool solvable() const noexcept
-  {
-    return prize.x % utils::gcd(a.x, b.x) == 0
-           && prize.y % utils::gcd(a.y, b.y) == 0;
-  }
-
   constexpr utils::point solve() const noexcept
   {
-    auto [a_1, b_1, g] = utils::egcd(a.x, b.x);
-    auto scale         = prize.x / g;
-    auto coef_a        = scale * a_1;
-    auto coef_b        = scale * b_1;
+    auto eq_x     = std::array {b.x * a.y, prize.x * a.y};
+    auto eq_y     = std::array {b.y * a.x, prize.y * a.x};
+    auto b_factor = eq_y[0] - eq_x[0];
+    auto cst      = eq_y[1] - eq_x[1];
 
-    auto a_k_factor = b.x / g;
-    auto b_k_factor = a.x / g;
-
-    auto [min_k, max_k] = [=] {
-      return std::pair {
-          std::min(-(coef_a / a_k_factor), (coef_b / b_k_factor)),
-          std::max(-(coef_a - 100) / a_k_factor, (coef_b - 100) / b_k_factor)};
-    }();
-
-    min_k = std::min(min_k, max_k);
-    max_k = std::max(min_k, max_k);
-
-    constexpr auto in_range
-        = [](auto presses) { return presses >= 0 && presses <= 100; };
-
-    auto best_score = std::numeric_limits<std::int64_t>::min();
-    auto best_play  = utils::point {0, 0};
-
-    for (auto k = min_k; k <= max_k; ++k) {
-      auto a_presses = coef_a + a_k_factor * k;
-      auto b_presses = coef_b - b_k_factor * k;
-
-      if (in_range(a_presses) && in_range(b_presses)) {
-        assert(a_presses * a.x + b_presses * b.x == prize.x);
-        if (a_presses * a.y + b_presses * b.y == prize.y) {
-          auto score = a_presses * 3 + b_presses;
-          if (score > best_score) {
-            best_score = score;
-            best_play  = {a_presses, b_presses};
-          }
-        }
-      }
+    if (cst % b_factor != 0) {
+      return {};
     }
 
-    return best_play;
+    auto b_press     = cst / b_factor;
+    auto remaining_a = prize.x - b_press * b.x;
+    if (remaining_a % a.x != 0) {
+      return {};
+    }
+
+    auto a_press = remaining_a / a.x;
+    if (a_press < 0 || b_press < 0) {
+      return {};
+    }
+
+    return {a_press, b_press};
   }
 };
 
@@ -78,16 +53,7 @@ constexpr machine test_case = {
     .prize = {8400, 5400},
 };
 
-static_assert(test_case.solvable());
 static_assert(test_case.solve() == utils::point {80, 40});
-
-constexpr machine fail_case = {
-    .a     = {26, 66},
-    .b     = {67, 21},
-    .prize = {12748, 12176},
-};
-
-static_assert(!fail_case.solvable());
 
 std::generator<machine> input()
 {
@@ -115,20 +81,20 @@ std::generator<machine> input()
 }
 
 template <typename Range>
-std::int64_t part_1(Range&& r)
+std::int64_t run(Range&& r, std::int64_t offset = 0)
 {
-  return utils::sum(std::forward<Range>(r), [](auto const& m) {
-    if (m.solvable()) {
-      auto [a, b] = m.solve();
-      return a * 3 + b;
-    }
+  return utils::sum(std::forward<Range>(r), [offset](auto m) {
+    m.prize.x += offset;
+    m.prize.y += offset;
 
-    return std::int64_t {0};
+    auto [a, b] = m.solve();
+    return a * 3 + b;
   });
 }
 
 int main()
 {
   auto in = input() | std::ranges::to<std::vector>();
-  fmt::print("{}\n", part_1(in));
+  fmt::print("{}\n", run(in));
+  fmt::print("{}\n", run(in, 10000000000000));
 }

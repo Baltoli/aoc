@@ -87,7 +87,6 @@ long stol(std::string const& s) { return std::stol(s); }
 
 int stoi(std::string const& s) { return std::stoi(s); }
 
-char itoc(int i) { return i + '0'; }
 char ltoc(long l) { return l + '0'; }
 
 } // namespace utils

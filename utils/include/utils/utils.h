@@ -1,6 +1,7 @@
 #pragma once
 
 #include <algorithm>
+#include <cassert>
 #include <functional>
 #include <generator>
 #include <iostream>
@@ -206,7 +207,14 @@ int  svtoi(std::string_view);
 long stol(std::string const&);
 int  stoi(std::string const&);
 
-char itoc(int);
+template <typename Int>
+char itoc(Int i)
+  requires(std::integral<Int>)
+{
+  assert(i >= 0 && i <= 9);
+  return i + '0';
+}
+
 char ltoc(long);
 
 template <typename Int>
@@ -295,6 +303,25 @@ constexpr egcd_result egcd(std::int64_t a, std::int64_t b)
 }
 
 static_assert(egcd(237, 32) == egcd_result {5, -37, 1});
+
+constexpr std::int64_t solve_crt(
+    std::int64_t a_0, std::int64_t n_0, std::int64_t a_1, std::int64_t n_1)
+{
+  auto [coef_n_0, coef_n_1, gcd] = egcd(n_0, n_1);
+  assert(gcd == 1);
+
+  auto mod    = n_0 * n_1;
+  auto result = (a_0 * n_1 * coef_n_1) + (a_1 * n_0 * coef_n_0);
+  result %= mod;
+
+  if (result < 0) {
+    result += mod;
+  }
+
+  return result;
+}
+
+static_assert(solve_crt(48, 101, 1, 103) == 7623);
 
 inline void hash_combine(std::size_t& seed) { }
 

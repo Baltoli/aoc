@@ -163,6 +163,7 @@ public:
 
   template <typename Range>
   grid(Range&& lines)
+    requires(std::ranges::range<Range>)
       : grid(std::forward<Range>(lines), std::identity {})
   {
   }
@@ -230,6 +231,13 @@ protected:
   bool in_bounds(point p) const
   {
     return p.x >= 0 && p.x < width_ && p.y >= 0 && p.y < height_;
+  }
+
+  grid(std::vector<element_t> data, std::size_t width, std::size_t height)
+      : data_(std::move(data))
+      , width_(width)
+      , height_(height)
+  {
   }
 
   std::vector<element_t> data_;

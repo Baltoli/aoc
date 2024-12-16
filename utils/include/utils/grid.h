@@ -208,6 +208,23 @@ public:
 
   element_t at(point p) const { return getter_t::at(*this, p); }
 
+  template <typename Func>
+  std::optional<point> find_if(Func&& f) const
+  {
+    for (auto p : coords()) {
+      if (std::forward<Func>(f)(at(p))) {
+        return p;
+      }
+    }
+
+    return std::nullopt;
+  }
+
+  auto find(element_t elt) const
+  {
+    return find_if([&](auto const& e) { return e == elt; });
+  }
+
   void dump() const
   {
     for (auto y = 0; y < height_; ++y) {

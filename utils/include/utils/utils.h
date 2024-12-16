@@ -338,6 +338,16 @@ inline auto hash_combine_curry(std::size_t& seed)
   return [&seed](auto const&... args) { hash_combine(seed, args...); };
 }
 
+template <typename T>
+T unwrap(std::optional<T> opt)
+{
+  if (opt.has_value()) {
+    return *opt;
+  }
+
+  assert(false && "Bad unwrap!");
+}
+
 } // namespace utils
 
 namespace std {
